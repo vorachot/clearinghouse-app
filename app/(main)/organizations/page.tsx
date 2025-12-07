@@ -1,3 +1,5 @@
+import OrganizationList from "@/components/org-list";
+
 const OrganizationsPage = () => {
   return (
     <div className="flex flex-col justify-center gap-7">
@@ -5,7 +7,7 @@ const OrganizationsPage = () => {
         Your Organizations
       </h1>
       <div className="h-full dark:text-white">
-        Organizations will be listed here.
+        <OrganizationList />
       </div>
     </div>
   );
