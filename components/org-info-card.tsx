@@ -5,6 +5,7 @@ import {
   MemoryRounded as CpuIcon,
   GraphicEqRounded as GpuIcon,
 } from "@mui/icons-material";
+import Link from "next/link";
 
 type Props = {
   id?: string;
@@ -13,11 +14,11 @@ type Props = {
 
 const OrgInfoCard = ({ id, name }: Props) => {
   return (
-    // <Link
-    //   aria-label={`View project ${title} details`}
-    //   className="no-underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
-    //   href={`/projects/${id}`}
-    // >
+    <Link
+      aria-label={`View project ${name} details`}
+      className="no-underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
+      href={`/organizations/${id}`}
+    >
     <Card
       aria-label={`Organization card for ${name}`}
       className="w-[300px] px-4 py-6 bg-white dark:bg-blue-900 shadow-md border border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-300 ease-in-out 
@@ -58,6 +59,7 @@ const OrgInfoCard = ({ id, name }: Props) => {
         </div>
       </CardFooter>
     </Card>
+    </Link>
   );
 };
 export default OrgInfoCard;
