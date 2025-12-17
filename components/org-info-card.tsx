@@ -19,46 +19,61 @@ const OrgInfoCard = ({ id, name }: Props) => {
       className="no-underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
       href={`/organizations/${id}`}
     >
-    <Card
-      aria-label={`Organization card for ${name}`}
-      className="w-[300px] px-4 py-6 bg-white dark:bg-blue-900 shadow-md border border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-300 ease-in-out 
+      <Card
+        aria-label={`Organization card for ${name}`}
+        className="w-[300px] p-4 bg-white dark:bg-blue-900 shadow-md border border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-300 ease-in-out 
       hover:shadow-xl hover:scale-[1.02]"
-      role="article"
-    >
-      <CardHeader className="flex gap-3 py-0 mb-2 items-start">
-        <p className="text-[18px] font-semibold truncate flex-1" title={name}>
-          {name}
-        </p>
-      </CardHeader>
-      <Divider />
-      <CardFooter className="flex flex-col gap-2">
-        <div className="flex gap-10 justify-between mt-2">
-          <div className="flex items-center gap-1">
-            <CpuIcon className="!w-5 !h-5 text-gray-500 dark:text-gray-400" />
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-              CPU
-            </p>
+        role="article"
+      >
+        <CardHeader className="flex gap-3 py-0 mb-2 items-start">
+          <p className="text-large font-semibold truncate flex-1" title={name}>
+            {name}
+          </p>
+        </CardHeader>
+        <Divider />
+        <CardFooter className="flex flex-col gap-2">
+          <div className="flex gap-10 justify-between mt-2">
+            <div className="flex items-center gap-1">
+              <CpuIcon className="!w-5 !h-5 text-gray-500 dark:text-gray-400" />
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                CPU
+              </p>
+            </div>
+            <div className="flex items-center gap-1">
+              <GpuIcon className="!w-5 !h-5 text-gray-500 dark:text-gray-400" />
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                GPU
+              </p>
+            </div>
+            <div className="flex items-center gap-1">
+              <RamIcon className="!w-5 !h-5 text-gray-500 dark:text-gray-400" />
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                RAM
+              </p>
+            </div>
           </div>
-          <div className="flex items-center gap-1">
-            <GpuIcon className="!w-5 !h-5 text-gray-500 dark:text-gray-400" />
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-              GPU
-            </p>
+          <div className="flex gap-12 justify-between mt-1 text-center text-gray-800 dark:text-gray-200">
+            <div className="flex gap-1 items-center">
+              <p className="text-large font-bold">16 </p>
+              <span className="text-xs font-semibold text-gray-800 dark:text-gray-200">
+                Core
+              </span>
+            </div>
+            <div className="flex gap-1 items-center">
+              <p className="text-large font-bold">32</p>
+              <span className="text-xs font-semibold text-gray-800 dark:text-gray-200">
+                GB
+              </span>
+            </div>
+            <div className="flex gap-1 items-center">
+              <p className="text-large font-bold">128</p>
+              <span className="text-xs font-semibold text-gray-800 dark:text-gray-200">
+                GB
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-1">
-            <RamIcon className="!w-5 !h-5 text-gray-500 dark:text-gray-400" />
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-              RAM
-            </p>
-          </div>
-        </div>
-        <div className="flex gap-12 justify-between mt-1 text-center text-gray-800 dark:text-gray-200">
-          <p className="text-md font-medium">16 GB</p>
-          <p className="text-md font-medium">32 GB</p>
-          <p className="text-md font-medium">128 GB</p>
-        </div>
-      </CardFooter>
-    </Card>
+        </CardFooter>
+      </Card>
     </Link>
   );
 };
