@@ -3,6 +3,14 @@
 import { useParams } from "next/navigation";
 import { Button } from "@heroui/button";
 import AddIcon from "@mui/icons-material/Add";
+import NsCard from "./ns-card";
+
+const namespaces = [
+  { id: "1", name: "Namespace One" },
+  { id: "2", name: "Namespace Two" },
+  { id: "3", name: "Namespace Three" },
+  { id: "4", name: "Namespace Four" },
+]
 
 const ProjectDetailPage = () => {
   const params = useParams();
@@ -37,6 +45,17 @@ const ProjectDetailPage = () => {
           {" "}
           Namespace
         </Button>
+      </div>
+      <div className="flex gap-4 flex-wrap">
+        {namespaces.map((namespace) => (
+          <NsCard
+            key={namespace.id}
+            organizationId={orgId}
+            projectId={projectId}
+            id={namespace.id}
+            name={namespace.name}
+          />
+        ))}
       </div>
     </div>
   );

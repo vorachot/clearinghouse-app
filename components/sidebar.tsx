@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  ConfirmationNumber,
+  ConfirmationNumberRounded,
   HomeWorkRounded,
   PeopleAltRounded,
 } from "@mui/icons-material";
@@ -24,7 +24,7 @@ const navigationItems = [
   },
   {
     title: "Quotas",
-    icon: <ConfirmationNumber className={iconClass} />,
+    icon: <ConfirmationNumberRounded className={iconClass} />,
     url: "/quotas",
   },
 ];

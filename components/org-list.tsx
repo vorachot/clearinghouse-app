@@ -4,6 +4,7 @@ import OrgInfoCard from "./org-info-card";
 const orgs = [
   { id: '1', name: 'King Mongkut\'s Institute of Technology Ladkrabang' },
   { id: '2', name: 'King Mongkut\'s University of Technology Thonburi' },
+  { id: '3', name: 'Chulalongkorn University' },
 ]
 
 const OrganizationList = () => {
@@ -18,7 +19,7 @@ const OrganizationList = () => {
     );
   }
   return (
-    <div className="flex flex-row flex-wrap gap-10">
+    <div className="flex gap-4 flex-wrap">
       {orgs.map((org, index) => (
         <OrgInfoCard
           key={index}
