@@ -4,6 +4,8 @@ import { useParams } from "next/navigation";
 import ProjectCard from "./project-card";
 import { Button } from "@heroui/button";
 import AddIcon from "@mui/icons-material/Add";
+import CreateProjDialog from "./create-proj-dialog";
+import { useState } from "react";
 
 const projects = [
   { id: "1", name: "Project Alpha" },
@@ -13,6 +15,18 @@ const projects = [
 ];
 
 const OrgDetailPage = () => {
+  const [open, setOpen] = useState(false);
+
+  const onOpen = () => setOpen(true);
+  const onClose = () => setOpen(false);
+
+  const handleOpenCreateProject = () => {
+    if (open) {
+      onClose();
+    } else {
+      onOpen();
+    }
+  };
   const params = useParams();
   const { orgId } = params as { orgId: string };
   return (
@@ -33,6 +47,7 @@ const OrgDetailPage = () => {
           color="primary"
           className="gap-0"
           startContent={<AddIcon />}
+          onPress={handleOpenCreateProject}
         >
           {" "}
           Project
@@ -48,6 +63,7 @@ const OrgDetailPage = () => {
           />
         ))}
       </div>
+      {open && <CreateProjDialog orgId={orgId} setOnClose={onClose} />}
     </div>
   );
 };
