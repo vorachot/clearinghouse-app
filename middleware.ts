@@ -1,12 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
+  const accessToken = request.cookies.get("access_token")?.value;
+
+  const isLoginPage = request.nextUrl.pathname === "/login";
+  const isCallbackPath = request.nextUrl.pathname.startsWith("/callback");
   const isPublicPath =
     request.nextUrl.pathname.startsWith("/_next") ||
     request.nextUrl.pathname.startsWith("/api/public");
 
-  // ถ้า path ที่ไม่ต้องป้องกัน ก็ให้ผ่านไปเลย
   if (isPublicPath) return NextResponse.next();
+  if (isCallbackPath) return NextResponse.next();
+
+  if (!accessToken && !isLoginPage) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  if (accessToken && isLoginPage) {
+    return NextResponse.redirect(new URL("/organizations", request.url));
+  }
 
   if (request.nextUrl.pathname === "/") {
     return NextResponse.redirect(new URL("/organizations", request.url));
