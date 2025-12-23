@@ -33,8 +33,8 @@ const ProjForm = ({ orgId, setOnClose }: Props) => {
         </div>
       </div> */}
       <Form onSubmit={handleSubmit}>
-        <div className="flex flex-col gap-6 mb-6">
-          <div className="flex flex-col mb-2">
+        <div className="flex flex-col gap-3 mb-6">
+          <div className="flex flex-col">
             <Input
               type="text"
               label="Project Name"

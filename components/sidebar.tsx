@@ -2,6 +2,7 @@
 
 import {
   ConfirmationNumberRounded,
+  DnsRounded,
   HomeWorkRounded,
   PeopleAltRounded,
 } from "@mui/icons-material";
@@ -21,6 +22,11 @@ const navigationItems = [
     title: "Members",
     icon: <PeopleAltRounded className={iconClass} />,
     url: "/members",
+  },
+  {
+    title: "Resources",
+    icon: <DnsRounded className={iconClass} />,
+    url: "/resources",
   },
   {
     title: "Quotas",

@@ -33,30 +33,30 @@ const OrgInfoCard = ({ id, name }: Props) => {
           </p>
         </CardHeader>
         <Divider />
-        <CardFooter className="flex flex-col gap-2">
-          <div className="flex gap-3 justify-between mt-2">
+        <CardFooter className="flex flex-col gap-1">
+          <div className="flex gap-5 justify-between mt-2">
             <div className="flex items-center gap-1">
-              <CpuIcon className="!w-5 !h-5 text-gray-500 dark:text-gray-400" />
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+              <CpuIcon className="!w-5 !h-5 text-gray-700 dark:text-gray-400" />
+              <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
                 CPU
               </p>
             </div>
             <div className="flex items-center gap-1">
-              <GpuIcon className="!w-5 !h-5 text-gray-500 dark:text-gray-400" />
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+              <GpuIcon className="!w-5 !h-5 text-gray-700 dark:text-gray-400" />
+              <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
                 GPU
               </p>
             </div>
             <div className="flex items-center gap-1">
-              <RamIcon className="!w-5 !h-5 text-gray-500 dark:text-gray-400" />
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+              <RamIcon className="!w-5 !h-5 text-gray-700 dark:text-gray-400" />
+              <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
                 RAM
               </p>
             </div>
           </div>
           <div className="flex gap-5 justify-between text-center text-gray-800 dark:text-gray-200">
             <div className="flex gap-1 items-center">
-              <p className="text-large font-bold">16 </p>
+              <p className="text-large font-bold ">16 </p>
               <span className="text-xs font-semibold text-gray-800 dark:text-gray-200">
                 Core
               </span>
