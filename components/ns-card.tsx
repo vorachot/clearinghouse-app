@@ -6,6 +6,7 @@ import EditButton from "./edit-button";
 import {
   ConfirmationNumberRounded,
   PeopleAltRounded,
+  TollRounded,
 } from "@mui/icons-material";
 type Props = {
   organizationId: string;
@@ -36,10 +37,11 @@ const NsCard = ({ id, name }: Props) => {
       hover:shadow-xl"
       role="article"
     >
-      <CardHeader className="flex gap-3 py-0 mb-2 items-start">
+      <CardHeader className="flex gap-3 py-0 mb-2 items-start justify-between">
         <p className="text-large font-semibold truncate flex-1" title={name}>
           {name}
         </p>
+        <EditButton onClick={handleOpenEditQuota} />
       </CardHeader>
       <Divider />
       <CardBody className="px-4">
@@ -52,28 +54,22 @@ const NsCard = ({ id, name }: Props) => {
       <CardFooter className="flex justify-center gap-4">
         <div className="flex flex-col gap-2 justify-between items-center">
           <div className="flex gap-1">
+            <TollRounded className="text-gray-600 dark:text-gray-300 !w-4 !h-4" />
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-300">
+              Credit
+            </p>
+          </div>
+          <span className="text-md font-bold">5000</span>
+        </div>
+        <Divider orientation="vertical" />
+        <div className="flex flex-col gap-2 justify-between items-center">
+          <div className="flex gap-1">
             <PeopleAltRounded className="text-gray-600 dark:text-gray-300 !w-4 !h-4" />
             <p className="text-xs font-medium text-gray-600 dark:text-gray-300">
               Member
             </p>
           </div>
-          <div className="flex">
-            <span className="text-md font-bold">5</span>
-            <EditButton onClick={handleOpenEditQuota} />
-          </div>
-        </div>
-        <Divider orientation="vertical" />
-        <div className="flex flex-col gap-2 justify-between items-center">
-          <div className="flex gap-1">
-            <ConfirmationNumberRounded className="text-gray-600 dark:text-gray-300 !w-4 !h-4" />
-            <p className="text-xs font-medium text-gray-600 dark:text-gray-300">
-              Quota
-            </p>
-          </div>
-          <div className="flex">
-            <span className="text-md font-bold">5</span>
-            <EditButton onClick={handleOpenEditQuota} />
-          </div>
+          <span className="text-md font-bold">5</span>
         </div>
       </CardFooter>
     </Card>

@@ -4,6 +4,8 @@ import { useParams } from "next/navigation";
 import { Button } from "@heroui/button";
 import AddIcon from "@mui/icons-material/Add";
 import NsCard from "./ns-card";
+import { useState } from "react";
+import CreateNsDialog from "./create-ns-dialog";
 
 const namespaces = [
   { id: "1", name: "Namespace One" },
@@ -14,6 +16,18 @@ const namespaces = [
 
 const ProjectDetailPage = () => {
   const params = useParams();
+    const [open, setOpen] = useState(false);
+  
+    const onOpen = () => setOpen(true);
+    const onClose = () => setOpen(false);
+  
+    const handleOpenCreateNs = () => {
+      if (open) {
+        onClose();
+      } else {
+        onOpen();
+      }
+    };
   const { orgId, projectId } = params as { orgId: string; projectId: string };
   return (
     <div className="container mx-auto pt-1 p-4 space-y-5">
@@ -41,6 +55,7 @@ const ProjectDetailPage = () => {
           color="primary"
           className="gap-0"
           startContent={<AddIcon />}
+          onPress={handleOpenCreateNs}
         >
           {" "}
           Namespace
@@ -57,6 +72,7 @@ const ProjectDetailPage = () => {
           />
         ))}
       </div>
+      {open && <CreateNsDialog orgId={orgId} projectId={projectId} setOnClose={onClose} />}
     </div>
   );
 };

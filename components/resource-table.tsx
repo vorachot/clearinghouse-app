@@ -11,13 +11,29 @@ import {
 
 const resourceColumns = [
   { header: "NAME", accessor: "name" },
+  { header: "NODE", accessor: "node" },
   { header: "ORGANIZATION", accessor: "organization" },
   { header: "RESOURCE", accessor: "resource" },
 ];
 const resourceRows = [
-  { name: "node1", organization: "Org A", resource: "CPU: 4, GPU: 1, RAM: 16" },
-  { name: "node2", organization: "Org B", resource: "CPU: 8, GPU: 2, RAM: 32" },
-  { name: "node3", organization: "Org C", resource: "CPU: 2, GPU: 2, RAM: 8" },
+  {
+    name: "pool-1",
+    node: "Node 1",
+    organization: "Org A",
+    resource: "CPU: 4, GPU: 1, RAM: 16",
+  },
+  {
+    name: "pool-2",
+    node: "Node 2",
+    organization: "Org B",
+    resource: "CPU: 8, GPU: 2, RAM: 32",
+  },
+  {
+    name: "pool-3",
+    node: "Node 3",
+    organization: "Org C",
+    resource: "CPU: 2, GPU: 2, RAM: 8",
+  },
 ];
 
 const ResourceTable = () => {

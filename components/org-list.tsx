@@ -1,13 +1,13 @@
 import { HomeWorkRounded } from "@mui/icons-material";
 import OrgInfoCard from "./org-info-card";
 
-const orgs = [
-  { id: '1', name: 'King Mongkut\'s Institute of Technology Ladkrabang' },
-  { id: '2', name: 'King Mongkut\'s University of Technology Thonburi' },
-  { id: '3', name: 'Chulalongkorn University' },
-]
+// const orgs = [
+//   { id: '1', name: 'King Mongkut\'s Institute of Technology Ladkrabang' },
+//   { id: '2', name: 'King Mongkut\'s University of Technology Thonburi' },
+//   { id: '3', name: 'Chulalongkorn University' },
+// ]
 
-const OrganizationList = () => {
+const OrganizationList = ({ orgs }: { orgs: Organization[] }) => {
   if (orgs.length === 0) {
     return (
       <div className="h-[500px] flex flex-col justify-center items-center text-center opacity-50">
