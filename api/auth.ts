@@ -12,7 +12,7 @@ export async function googleAuthWithCH(queryString: string): Promise<Response> {
   return response;
 }
 export async function me() {
-  const response = await apiClient.get("/users/me");
+  const response = await apiClient.get("/auth/me");
 
   return response;
 }
