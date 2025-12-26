@@ -1,5 +1,6 @@
 import { HomeWorkRounded } from "@mui/icons-material";
 import OrgInfoCard from "./org-info-card";
+import { Organization } from "@/types/org";
 
 // const orgs = [
 //   { id: '1', name: 'King Mongkut\'s Institute of Technology Ladkrabang' },

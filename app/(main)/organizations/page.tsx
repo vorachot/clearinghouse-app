@@ -9,6 +9,7 @@ import { Button } from "@heroui/button";
 import AddIcon from "@mui/icons-material/Add";
 import { useState } from "react";
 import { HomeWorkRounded } from "@mui/icons-material";
+import { Organization } from "@/types/org";
 
 const OrganizationsPage = () => {
   const [open, setOpen] = useState(false);

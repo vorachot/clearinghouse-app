@@ -1,82 +1,166 @@
-import { Card, CardFooter, CardHeader } from "@heroui/card";
+import { Card, CardHeader, CardBody } from "@heroui/card";
 import { Divider } from "@heroui/divider";
+import { Button } from "@heroui/button";
+import { Tooltip } from "@heroui/tooltip";
 import {
   StorageRounded as RamIcon,
   MemoryRounded as CpuIcon,
   GraphicEqRounded as GpuIcon,
   CorporateFareRounded,
+  EditRounded,
+  DeleteRounded,
 } from "@mui/icons-material";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type Props = {
   id?: string;
   name?: string;
+  onEdit?: (id: string) => void;
+  onDelete?: (id: string) => void;
 };
 
-const OrgInfoCard = ({ id, name }: Props) => {
+const OrgInfoCard = ({ id, name, onEdit, onDelete }: Props) => {
+  const router = useRouter();
+
+  const handleEdit = () => {
+    if (id && onEdit) {
+      onEdit(id);
+    }
+  };
+
+  const handleDelete = () => {
+    if (id && onDelete) {
+      onDelete(id);
+    }
+  };
+
+  const handleCardClick = () => {
+    if (id) {
+      router.push(`/organizations/${id}`);
+    }
+  };
+
   return (
-    <Link
-      aria-label={`View project ${name} details`}
-      className="no-underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
-      href={`/organizations/${id}`}
+    <Card
+      aria-label={`Organization card for ${name}`}
+      className="group w-[250px] bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 shadow-lg border border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-300 ease-in-out 
+      hover:shadow-2xl hover:scale-[1.03]"
+      role="article"
+      isPressable
+      onPress={handleCardClick}
     >
-      <Card
-        aria-label={`Organization card for ${name}`}
-        className="w-[250px] p-4 bg-white dark:bg-blue-900 shadow-md border border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-300 ease-in-out 
-      hover:shadow-xl hover:scale-[1.02]"
-        role="article"
-      >
-        <CardHeader className="flex gap-2 py-0 mb-2 items-start">
-          <CorporateFareRounded className="!w-6 !h-6 text-gray-500 dark:text-gray-400" />
-          <p className="text-large font-semibold truncate flex-1" title={name}>
-            {name}
-          </p>
-        </CardHeader>
-        <Divider />
-        <CardFooter className="flex flex-col gap-1">
-          <div className="flex gap-5 justify-between mt-2">
-            <div className="flex items-center gap-1">
-              <CpuIcon className="!w-5 !h-5 text-gray-700 dark:text-gray-400" />
-              <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
-                CPU
-              </p>
+      <CardHeader className="flex flex-col gap-3 pb-2">
+        <div className="flex items-start justify-between w-full">
+          <div className="flex gap-3 items-center flex-1 min-w-0">
+            <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+              <CorporateFareRounded className="!w-6 !h-6 text-blue-600 dark:text-blue-400" />
             </div>
-            <div className="flex items-center gap-1">
-              <GpuIcon className="!w-5 !h-5 text-gray-700 dark:text-gray-400" />
-              <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
-                GPU
+            <Tooltip content={name} className="dark:text-white">
+              <p
+                className="text-lg font-bold truncate text-gray-900 dark:text-white"
+                title={name}
+              >
+                {name}
               </p>
-            </div>
-            <div className="flex items-center gap-1">
-              <RamIcon className="!w-5 !h-5 text-gray-700 dark:text-gray-400" />
-              <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
-                RAM
-              </p>
-            </div>
+            </Tooltip>
           </div>
-          <div className="flex gap-5 justify-between text-center text-gray-800 dark:text-gray-200">
-            <div className="flex gap-1 items-center">
-              <p className="text-large font-bold ">16 </p>
-              <span className="text-xs font-semibold text-gray-800 dark:text-gray-200">
+          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <Tooltip
+              content="Edit"
+              placement="top"
+              className="dark:text-white"
+            >
+              <Button
+                isIconOnly
+                size="sm"
+                variant="flat"
+                color="primary"
+                aria-label="Edit organization"
+                onPress={handleEdit}
+                className="min-w-unit-8 w-8 h-8"
+              >
+                <EditRounded className="!w-4 !h-4" />
+              </Button>
+            </Tooltip>
+            <Tooltip
+              content="Delete"
+              placement="top"
+              className="dark:text-white"
+            >
+              <Button
+                isIconOnly
+                size="sm"
+                variant="flat"
+                color="danger"
+                aria-label="Delete organization"
+                onPress={handleDelete}
+                className="min-w-unit-8 w-8 h-8"
+              >
+                <DeleteRounded className="!w-4 !h-4" />
+              </Button>
+            </Tooltip>
+          </div>
+        </div>
+      </CardHeader>
+      <Divider className="bg-gray-200 dark:bg-gray-700" />
+      <CardBody className="pt-4 pb-4">
+        <div className="space-y-3">
+          {/* CPU Resource */}
+          <div className="flex items-center justify-between p-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 transition-colors">
+            <div className="flex items-center gap-2">
+              <CpuIcon className="!w-5 !h-5 text-blue-600 dark:text-blue-400" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                CPU
+              </span>
+            </div>
+            <div className="flex items-baseline gap-1">
+              <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                16
+              </span>
+              <span className="text-xs text-gray-600 dark:text-gray-400">
                 Core
               </span>
             </div>
-            <div className="flex gap-1 items-center">
-              <p className="text-large font-bold">32</p>
-              <span className="text-xs font-semibold text-gray-800 dark:text-gray-200">
-                GB
+          </div>
+
+          {/* GPU Resource */}
+          <div className="flex items-center justify-between p-2 rounded-lg bg-purple-50 dark:bg-purple-900/20 transition-colors">
+            <div className="flex items-center gap-2">
+              <GpuIcon className="!w-5 !h-5 text-purple-600 dark:text-purple-400" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                GPU
               </span>
             </div>
-            <div className="flex gap-1 items-center">
-              <p className="text-large font-bold">128</p>
-              <span className="text-xs font-semibold text-gray-800 dark:text-gray-200">
+            <div className="flex items-baseline gap-3">
+              <span className="text-xl font-bold text-purple-600 dark:text-purple-400">
+                32
+              </span>
+              <span className="text-xs text-gray-600 dark:text-gray-400">
                 GB
               </span>
             </div>
           </div>
-        </CardFooter>
-      </Card>
-    </Link>
+
+          {/* RAM Resource */}
+          <div className="flex items-center justify-between p-2 rounded-lg bg-green-50 dark:bg-green-900/20 transition-colors">
+            <div className="flex items-center gap-2">
+              <RamIcon className="!w-5 !h-5 text-green-600 dark:text-green-400" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                RAM
+              </span>
+            </div>
+            <div className="flex items-baseline gap-3">
+              <span className="text-xl font-bold text-green-600 dark:text-green-400">
+                128
+              </span>
+              <span className="text-xs text-gray-600 dark:text-gray-400">
+                GB
+              </span>
+            </div>
+          </div>
+        </div>
+      </CardBody>
+    </Card>
   );
 };
 export default OrgInfoCard;
