@@ -6,6 +6,7 @@ import { Button } from "@heroui/button";
 import { LogoutOutlined, KeyboardArrowDown } from "@mui/icons-material";
 
 import { useUser } from "@/context/UserContext";
+import { logoutUser } from "@/api/auth";
 // import { logoutUser } from "@/api/auth";
 
 export const UserProfile = () => {
@@ -39,19 +40,19 @@ export const UserProfile = () => {
     };
   }, [showActions]);
 
-  // const handleLogout = async () => {
-  //   setIsLoggingOut(true);
-  //   try {
-  //     await logoutUser();
-  //     clearUser();
-  //     window.location.href = "/login";
-  //   } catch {
-  //     clearUser();
-  //     window.location.href = "/login";
-  //   } finally {
-  //     setIsLoggingOut(false);
-  //   }
-  // };
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logoutUser();
+      clearUser();
+      window.location.href = "/login";
+    } catch {
+      clearUser();
+      window.location.href = "/login";
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   if (!user) {
     return (
@@ -96,7 +97,7 @@ export const UserProfile = () => {
               variant="light"
               className="justify-start px-4 py-3 text-sm font-medium rounded-none hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
               onPress={() => {
-                alert("Logout clicked");
+                handleLogout();
               }}
             >
               <div className="flex items-center gap-3">
