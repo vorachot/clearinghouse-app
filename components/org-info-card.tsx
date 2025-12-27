@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardBody } from "@heroui/card";
+import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 import { Button } from "@heroui/button";
 import { Tooltip } from "@heroui/tooltip";
@@ -9,6 +9,7 @@ import {
   CorporateFareRounded,
   EditRounded,
   DeleteRounded,
+  VisibilityRounded,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 
@@ -34,7 +35,7 @@ const OrgInfoCard = ({ id, name, onEdit, onDelete }: Props) => {
     }
   };
 
-  const handleCardClick = () => {
+  const handleView = () => {
     if (id) {
       router.push(`/organizations/${id}`);
     }
@@ -43,11 +44,9 @@ const OrgInfoCard = ({ id, name, onEdit, onDelete }: Props) => {
   return (
     <Card
       aria-label={`Organization card for ${name}`}
-      className="group w-[250px] bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 shadow-lg border border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-300 ease-in-out 
+      className="group w-[250px] bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 shadow-lg border border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out 
       hover:shadow-2xl hover:scale-[1.03]"
       role="article"
-      isPressable
-      onPress={handleCardClick}
     >
       <CardHeader className="flex flex-col gap-3 pb-2">
         <div className="flex items-start justify-between w-full">
@@ -64,12 +63,11 @@ const OrgInfoCard = ({ id, name, onEdit, onDelete }: Props) => {
               </p>
             </Tooltip>
           </div>
-          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            <Tooltip
-              content="Edit"
-              placement="top"
-              className="dark:text-white"
-            >
+          <div
+            className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Tooltip content="Edit" placement="top" className="dark:text-white">
               <Button
                 isIconOnly
                 size="sm"
@@ -160,6 +158,19 @@ const OrgInfoCard = ({ id, name, onEdit, onDelete }: Props) => {
           </div>
         </div>
       </CardBody>
+      <Divider className="bg-gray-200 dark:bg-gray-700" />
+      <CardFooter className="pt-3 pb-3">
+        <Button
+          fullWidth
+          size="sm"
+          color="primary"
+          variant="flat"
+          startContent={<VisibilityRounded className="!w-4 !h-4" />}
+          onPress={handleView}
+        >
+          View Details
+        </Button>
+      </CardFooter>
     </Card>
   );
 };

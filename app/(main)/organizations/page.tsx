@@ -77,7 +77,6 @@ const OrganizationsPage = () => {
           startContent={<AddIcon />}
           onPress={handleOpenCreateOrg}
         >
-          {" "}
           Organization
         </Button>
       </div>
