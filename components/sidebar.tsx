@@ -14,25 +14,25 @@ import { ThemeSwitch } from "./theme-switch";
 const iconClass = "!w-6 !h-6";
 const navigationItems = [
   {
-    title: "Organizations",
+    title: "Dashboard",
     icon: <HomeWorkRounded className={iconClass} />,
     url: "/organizations",
   },
-  {
-    title: "Members",
-    icon: <PeopleAltRounded className={iconClass} />,
-    url: "/members",
-  },
-  {
-    title: "Resources",
-    icon: <DnsRounded className={iconClass} />,
-    url: "/resources",
-  },
-  {
-    title: "Quotas",
-    icon: <ConfirmationNumberRounded className={iconClass} />,
-    url: "/quotas",
-  },
+  // {
+  //   title: "Resources",
+  //   icon: <DnsRounded className={iconClass} />,
+  //   url: "/resources",
+  // },
+  // {
+  //   title: "Quotas",
+  //   icon: <ConfirmationNumberRounded className={iconClass} />,
+  //   url: "/quotas",
+  // },
+  // {
+  //   title: "Members",
+  //   icon: <PeopleAltRounded className={iconClass} />,
+  //   url: "/members",
+  // },
 ];
 
 const Sidebar = () => {
@@ -47,7 +47,7 @@ const Sidebar = () => {
         {navigationItems.map((item, index) => (
           <Link
             key={index}
-            className={`flex items-center gap-4 py-3 px-3 rounded-3xl text-[14px] font-semibold transition-colors ${
+            className={`flex items-center gap-4 py-3 px-3 rounded-3xl text-[14px] font-semibold transition-colors truncate ${
               pathname === item.url
                 ? "bg-blue-500 text-white dark:bg-blue-700 dark:text-white"
                 : "text-gray-800 hover:bg-blue-400 dark:text-gray-200 dark:hover:bg-blue-800"
