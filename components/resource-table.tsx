@@ -10,8 +10,12 @@ import {
 } from "@heroui/table";
 import { Chip } from "@heroui/chip";
 import { Card, CardBody } from "@heroui/card";
+import { Button } from "@heroui/button";
+import { Tooltip } from "@heroui/tooltip";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import AddResourceDialog from "./add-resource-dialog";
-import type { ResourcePool } from "@/types";
+import type { ResourcePool } from "@/types/resource";
 
 const resourceColumns = [
   { header: "POOL NAME", accessor: "name" },
@@ -120,11 +124,11 @@ const ResourceTable = () => {
               className="min-w-full"
             >
               <TableHeader>
-                <TableColumn>RESOURCE TYPE</TableColumn>
+                <TableColumn>TYPE</TableColumn>
+                <TableColumn>NAME</TableColumn>
                 <TableColumn>AMOUNT</TableColumn>
                 <TableColumn>UNIT</TableColumn>
-                <TableColumn>PRICE/HOUR</TableColumn>
-                <TableColumn>MAX DURATION</TableColumn>
+                <TableColumn>ACTION</TableColumn>
               </TableHeader>
               <TableBody>
                 {pool.resources && pool.resources.length > 0 ? (
@@ -135,12 +139,39 @@ const ResourceTable = () => {
                           {resource.resourceTypeName}
                         </Chip>
                       </TableCell>
+                      <TableCell className="font-medium">
+                        {resource.resourceTypeName} Pool
+                      </TableCell>
                       <TableCell className="font-semibold">
                         {resource.amount}
                       </TableCell>
                       <TableCell>{resource.unit}</TableCell>
-                      <TableCell>฿{resource.price}</TableCell>
-                      <TableCell>{resource.maxDuration} hours</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Tooltip content="Edit resource">
+                            <Button
+                              isIconOnly
+                              size="sm"
+                              variant="light"
+                              color="primary"
+                              aria-label="Edit"
+                            >
+                              <EditIcon className="!w-4 !h-4" />
+                            </Button>
+                          </Tooltip>
+                          <Tooltip content="Delete resource" color="danger">
+                            <Button
+                              isIconOnly
+                              size="sm"
+                              variant="light"
+                              color="danger"
+                              aria-label="Delete"
+                            >
+                              <DeleteIcon className="!w-4 !h-4" />
+                            </Button>
+                          </Tooltip>
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))
                 ) : (

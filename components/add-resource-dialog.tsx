@@ -25,10 +25,8 @@ export default function AddResourceDialog({
 }: AddResourceDialogProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [resourceType, setResourceType] = useState("");
+  const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
-  const [unit, setUnit] = useState("");
-  const [price, setPrice] = useState("");
-  const [maxDuration, setMaxDuration] = useState("");
 
   // Mock resource types - should be fetched from API
   const resourceTypes = [
@@ -37,41 +35,23 @@ export default function AddResourceDialog({
     { id: "3", name: "RAM" },
   ];
 
-  // Suggest units based on resource type
-  const getUnitsForType = (type: string) => {
-    switch (type) {
-      case "CPU":
-        return ["Core", "vCPU"];
-      case "GPU":
-        return ["Unit", "GB"];
-      case "RAM":
-        return ["GB", "TB"];
-      default:
-        return ["Unit"];
-    }
-  };
-
   const handleSubmit = () => {
     // TODO: Implement API call to add resource to pool
     const resource = {
       poolId,
       resourceTypeId: resourceType,
+      name,
       amount: parseFloat(amount),
-      unit,
-      price: parseFloat(price),
-      maxDuration: parseFloat(maxDuration),
     };
     console.log("Adding resource to pool:", resource);
     onOpenChange();
     // Reset form
     setResourceType("");
+    setName("");
     setAmount("");
-    setUnit("");
-    setPrice("");
-    setMaxDuration("");
   };
 
-  const isFormValid = resourceType && amount && unit && price && maxDuration;
+  const isFormValid = resourceType && name && amount;
 
   return (
     <>
@@ -99,7 +79,6 @@ export default function AddResourceDialog({
                     onSelectionChange={(keys) => {
                       const selected = Array.from(keys)[0] as string;
                       setResourceType(selected);
-                      setUnit(""); // Reset unit when type changes
                     }}
                     isRequired
                   >
@@ -108,71 +87,22 @@ export default function AddResourceDialog({
                     ))}
                   </Select>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <Input
-                      type="number"
-                      label="Amount"
-                      placeholder="e.g., 100"
-                      value={amount}
-                      onValueChange={setAmount}
-                      isRequired
-                    />
-                    <Select
-                      label="Unit"
-                      placeholder="Select unit"
-                      selectedKeys={unit ? [unit] : []}
-                      onSelectionChange={(keys) =>
-                        setUnit(Array.from(keys)[0] as string)
-                      }
-                      isRequired
-                      isDisabled={!resourceType}
-                    >
-                      {getUnitsForType(
-                        resourceTypes.find((t) => t.id === resourceType)
-                          ?.name || ""
-                      ).map((u) => (
-                        <SelectItem key={u}>{u}</SelectItem>
-                      ))}
-                    </Select>
-                  </div>
-
                   <Input
-                    type="number"
-                    label="Price per Hour (฿)"
-                    placeholder="e.g., 10"
-                    value={price}
-                    onValueChange={setPrice}
+                    label="Resource Name"
+                    placeholder="e.g., Main CPU Pool"
+                    value={name}
+                    onValueChange={setName}
                     isRequired
-                    startContent={
-                      <div className="pointer-events-none flex items-center">
-                        <span className="text-default-400 text-small">฿</span>
-                      </div>
-                    }
                   />
 
                   <Input
                     type="number"
-                    label="Max Duration per Session (hours)"
-                    placeholder="e.g., 24"
-                    value={maxDuration}
-                    onValueChange={setMaxDuration}
+                    label="Amount"
+                    placeholder="e.g., 100"
+                    value={amount}
+                    onValueChange={setAmount}
                     isRequired
                   />
-
-                  <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg">
-                    <p className="text-sm font-semibold mb-1">Preview:</p>
-                    {resourceType && amount && unit && price ? (
-                      <p className="text-sm">
-                        {resourceTypes.find((t) => t.id === resourceType)?.name}
-                        : {amount} {unit} @ ฿{price}/hour
-                        {maxDuration && ` (Max: ${maxDuration} hours)`}
-                      </p>
-                    ) : (
-                      <p className="text-sm text-gray-500">
-                        Fill in the form to see preview
-                      </p>
-                    )}
-                  </div>
                 </div>
               </ModalBody>
               <ModalFooter>
