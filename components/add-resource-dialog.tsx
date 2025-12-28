@@ -15,13 +15,15 @@ import { Select, SelectItem } from "@heroui/select";
 import AddIcon from "@mui/icons-material/Add";
 
 interface AddResourceDialogProps {
+  nodeId: string;
+  nodeName: string;
   poolId: string;
-  poolName: string;
 }
 
 export default function AddResourceDialog({
+  nodeId,
+  nodeName,
   poolId,
-  poolName,
 }: AddResourceDialogProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [resourceType, setResourceType] = useState("");
@@ -36,14 +38,15 @@ export default function AddResourceDialog({
   ];
 
   const handleSubmit = () => {
-    // TODO: Implement API call to add resource to pool
+    // TODO: Implement API call to add resource to node
     const resource = {
+      nodeId,
       poolId,
       resourceTypeId: resourceType,
       name,
       amount: parseFloat(amount),
     };
-    console.log("Adding resource to pool:", resource);
+    console.log("Adding resource to node:", resource);
     onOpenChange();
     // Reset form
     setResourceType("");
@@ -61,14 +64,14 @@ export default function AddResourceDialog({
         startContent={<AddIcon />}
         onPress={onOpen}
       >
-        Add Resource
+        Resource
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg">
         <ModalContent>
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Add Resource to {poolName}
+                Add Resource to {nodeName}
               </ModalHeader>
               <ModalBody>
                 <div className="flex flex-col gap-4">

@@ -14,13 +14,24 @@ export type ResourcePool = {
   organizationId?: string; // Optional during creation
   organizationName?: string;
   createdAt: string;
+  nodes?: Node[];
+};
+
+// Node (belongs to a pool)
+export type Node = {
+  id: string;
+  poolId: string;
+  name: string;
+  description?: string;
+  createdAt: string;
   resources?: Resource[];
 };
 
-// Resource (belongs to a pool)
+// Resource (belongs to a node)
 export type Resource = {
   id: string;
-  poolId: string;
+  nodeId: string;
+  poolId: string; // For reference
   resourceTypeId: string;
   resourceTypeName: string; // CPU, GPU, RAM
   amount: number; // e.g., 100 for CPU cores

@@ -14,7 +14,8 @@ const ResourcesPage = () => {
             Resource Management
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            Create resource types, manage pools, and allocate resources
+            Create resource types, manage pools, create nodes, and allocate
+            resources
           </p>
         </div>
         <div className="flex gap-2">
@@ -24,7 +25,7 @@ const ResourcesPage = () => {
       </div>
 
       {/* Info Card */}
-      <Card>
+      {/* <Card>
         <CardBody className="p-4">
           <h3 className="font-semibold mb-2">📋 Workflow</h3>
           <div className="flex flex-col md:flex-row gap-4 text-sm">
@@ -57,15 +58,27 @@ const ResourcesPage = () => {
                 <span className="bg-secondary text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
                   3
                 </span>
+                <span className="font-semibold">Create Nodes</span>
+              </div>
+              <p className="text-gray-600 dark:text-gray-400 ml-8">
+                Add nodes to pools (e.g., node-01)
+              </p>
+            </div>
+            <Divider orientation="vertical" className="hidden md:block" />
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="bg-warning text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
+                  4
+                </span>
                 <span className="font-semibold">Add Resources</span>
               </div>
               <p className="text-gray-600 dark:text-gray-400 ml-8">
-                Add resources with price & limits
+                Add resources to nodes with limits
               </p>
             </div>
           </div>
         </CardBody>
-      </Card>
+      </Card> */}
 
       {/* Resource Pools Section */}
       <div>
