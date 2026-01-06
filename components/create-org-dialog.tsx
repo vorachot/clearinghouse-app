@@ -10,13 +10,12 @@ type Props = {
 
 const CreateOrgDialog = ({ setOnClose }: Props) => {
   return (
-    <Modal isOpen={true} scrollBehavior="inside" size="xs" onClose={setOnClose}>
+    <Modal isOpen={true} scrollBehavior="inside" size="md" onClose={setOnClose}>
       <ModalContent>
-        <ModalHeader className="flex flex-col gap-1 pb-2">
-          <h2 className="text-2xl font-bold dark:text-white">New Organization</h2>
+        <ModalHeader className="flex flex-col gap-1">
+          Create Organization
         </ModalHeader>
-        <Divider />
-        <ModalBody className="py-6">
+        <ModalBody>
           <OrgForm setOnClose={setOnClose} />
         </ModalBody>
       </ModalContent>

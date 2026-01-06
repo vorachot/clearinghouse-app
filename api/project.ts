@@ -17,3 +17,8 @@ export async function getProjectById(id: string): Promise<any> {
   const response = await apiClient.get(`/projects/${id}`);
   return response.data;
 }
+
+export async function getProjectsByOrgId(orgId: string): Promise<any> {
+  const response = await apiClient.get(`/projects/organization/${orgId}`);
+  return response.data;
+}

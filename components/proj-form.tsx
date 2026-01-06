@@ -1,7 +1,9 @@
+import { createProject } from "@/api/project";
 import { Button } from "@heroui/button";
 import { Form } from "@heroui/form";
 import { Input } from "@heroui/input";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
+import { mutate } from "swr";
 
 type Props = {
   orgId?: string;
@@ -11,66 +13,48 @@ type Props = {
 const ProjForm = ({ orgId, setOnClose }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const quotaItems = [
-    { label: "CPU", unit: "Core", key: "cpu" },
-    { label: "GPU", unit: "GiB", key: "gpu" },
-    { label: "RAM", unit: "GiB", key: "ram" },
-  ];
-
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    console.log("Form submitted with data:", data);
-    setIsSubmitting(false);
+
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      name: formData.get("name") as string,
+      organization_id: orgId ?? "",
+    };
+
+    try {
+      await createProject(data);
+      if (setOnClose) {
+        setOnClose();
+      }
+      await mutate(["orgs", orgId, "projects"], undefined, {
+        revalidate: true,
+      });
+    } catch (error) {
+      console.error("Error creating organization:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="w-full max-w-md mx-auto">
-      {/* <div className="mb-6">
-        <div className="flex items-center gap-4">
-          <span className="font-semibold">Project:</span>
-          <span>{projectId || "Project 01"}</span>
-        </div>
-      </div> */}
       <Form onSubmit={handleSubmit}>
-        <div className="flex flex-col gap-3 mb-6">
-          <div className="flex flex-col">
+        <div className="w-full flex flex-col gap-3 mb-6">
+          <div className="w-full flex flex-col">
             <Input
               type="text"
               label="Project Name"
-              name="projectName"
-              labelPlacement="outside-top"
-              classNames={{
-                label: "text-medium font-semibold",
-              }}
+              placeholder="e.g., project-alpha"
+              name="name"
+              isRequired
             />
-          </div>
-          <div className="flex flex-col gap-4">
-            {" "}
-            <span className="text-medium font-semibold dark:text-white">Quota Limits</span>
-            {quotaItems.map((item) => (
-              <div key={item.key} className="flex items-center gap-4">
-                <Input
-                  label={item.label}
-                  labelPlacement="outside-left"
-                  name={item.key}
-                  type="number"
-                  min={0}
-                  classNames={{
-                    input: "text-center",
-                    label: "w-16 font-semibold",
-                  }}
-                />
-                <span className="w-12 text-left font-semibold text-xs text-gray-700 dark:text-gray-300">
-                  {item.unit}
-                </span>
-              </div>
-            ))}
           </div>
         </div>
 
         <div className="w-full flex justify-end gap-2">
-          <Button variant="bordered" className="w-24" onPress={setOnClose}>
+          <Button color="danger" variant="light" onPress={setOnClose}>
             Cancel
           </Button>
           <Button

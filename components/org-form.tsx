@@ -44,18 +44,15 @@ const OrgForm = ({ setOnClose }: Props) => {
             <Input
               type="text"
               label="Organization Name"
+              placeholder="e.g., KMITL"
               name="name"
-              labelPlacement="outside-top"
               isRequired
-              classNames={{
-                label: "text-medium font-semibold",
-              }}
             />
           </div>
         </div>
 
         <div className="w-full flex justify-end gap-2">
-          <Button variant="bordered" className="w-24" onPress={setOnClose}>
+          <Button color="danger" variant="light" onPress={setOnClose}>
             Cancel
           </Button>
           <Button

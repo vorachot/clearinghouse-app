@@ -2,7 +2,6 @@
 
 import { Divider } from "@heroui/divider";
 import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/modal";
-import ProjForm from "./proj-form";
 import NsForm from "./ns-form";
 
 type Props = {
@@ -13,13 +12,12 @@ type Props = {
 
 const CreateNsDialog = ({ orgId, projectId, setOnClose }: Props) => {
   return (
-    <Modal isOpen={true} scrollBehavior="inside" size="xs" onClose={setOnClose}>
+    <Modal isOpen={true} scrollBehavior="inside" size="md" onClose={setOnClose}>
       <ModalContent>
-        <ModalHeader className="flex flex-col gap-1 pb-2">
-          <h2 className="text-2xl font-bold dark:text-white">New Namespace</h2>
+        <ModalHeader className="flex flex-col gap-1">
+          Create Namespace
         </ModalHeader>
-        <Divider />
-        <ModalBody className="py-6">
+        <ModalBody>
           <NsForm orgId={orgId} projectId={projectId} setOnClose={setOnClose} />
         </ModalBody>
       </ModalContent>

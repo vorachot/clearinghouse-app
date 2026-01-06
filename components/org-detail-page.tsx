@@ -7,6 +7,7 @@ import AddIcon from "@mui/icons-material/Add";
 import CreateProjDialog from "./create-proj-dialog";
 import { useState } from "react";
 import { getOrganizationById } from "@/api/org";
+import { getProjectsByOrgId } from "@/api/project";
 import useSWR from "swr";
 import Loading from "@/app/loading";
 import { OrgDetail } from "@/types/org";
@@ -20,45 +21,7 @@ import AddMemberDialog from "./add-member-dialog";
 import ProjectTable from "./project-table";
 import MemberModal from "./member-modal";
 import MemberCard from "./member-card";
-const projects = [
-  { id: "1", name: "Project Alpha" },
-  { id: "2", name: "Project Beta" },
-  { id: "3", name: "Project Gamma" },
-  { id: "4", name: "Project Delta" },
-];
-
-const members = [
-  {
-    id: "1",
-    first_name: "John",
-    last_name: "Doe",
-    email: "john.doe@example.com",
-  },
-  // {
-  //   id: "2",
-  //   first_name: "Jane",
-  //   last_name: "Smith",
-  //   email: "jane.smith@example.com",
-  // },
-  // {
-  //   id: "3",
-  //   first_name: "Alice",
-  //   last_name: "Johnson",
-  //   email: "alice.johnson@example.com",
-  // },
-  // {
-  //   id: "4",
-  //   first_name: "Bob",
-  //   last_name: "Brown",
-  //   email: "bob.brown@example.com",
-  // },
-  // {
-  //   id: "5",
-  //   first_name: "Charlie",
-  //   last_name: "Davis",
-  //   email: "charlie.davis@example.com",
-  // },
-];
+import { Project } from "@/types/project";
 
 const OrgDetailPage = () => {
   const params = useParams();
@@ -80,7 +43,7 @@ const OrgDetailPage = () => {
   };
   const handleOpenAddMember = () => setOpenAddMember(true);
   const handleCloseAddMember = () => setOpenAddMember(false);
-  const { data, error, isLoading } = useSWR(
+  const organizationData = useSWR(
     ["orgs", orgId],
     () => getOrganizationById(orgId),
     {
@@ -88,11 +51,20 @@ const OrgDetailPage = () => {
       dedupingInterval: 5000,
     }
   );
+  const projectsData = useSWR(
+    ["orgs", orgId, "projects"],
+    () => getProjectsByOrgId(orgId),
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 5000,
+    }
+  );
+  const projects: Project[] = projectsData.data || [];
 
-  if (isLoading) return <Loading />;
-  if (error) return <div>Error loading organization</div>;
+  if (organizationData.isLoading) return <Loading />;
+  if (organizationData.error) return <div>Error loading organization</div>;
 
-  const organization: OrgDetail = data || {};
+  const organization: OrgDetail = organizationData.data || {};
   return (
     <div className="container mx-auto pt-1 p-4 space-y-5">
       <div>
@@ -169,7 +141,7 @@ const OrgDetailPage = () => {
 
         {/* Members Card */}
         <MemberCard
-          members={members}
+          members={organization.members}
           handleOpenAddMember={handleOpenAddMember}
           setOpenMembersModal={setOpenMembersModal}
         />
@@ -177,11 +149,24 @@ const OrgDetailPage = () => {
 
       {/* Projects Section - Conditional Rendering */}
       {projects.length === 0 ? (
-        <div className="h-[400px] flex flex-col justify-center items-center text-center opacity-50">
-          <FolderCopyRounded className="!w-16 !h-16 mx-auto mb-4 text-gray-400" />
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-            No Available Projects in this Organization
-          </h3>
+        <div>
+          <div className="flex items-center justify-end mb-4">
+            <Button
+              size="sm"
+              color="primary"
+              className="gap-0"
+              startContent={<AddIcon />}
+              onPress={handleOpenCreateProject}
+            >
+              Project
+            </Button>
+          </div>
+          <div className="h-[200px] flex flex-col justify-center items-center text-center opacity-50">
+            <FolderCopyRounded className="!w-16 !h-16 mx-auto mb-4 text-gray-400" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+              No Available Projects in this Organization
+            </h3>
+          </div>
         </div>
       ) : (
         <div className="mt-6">
@@ -213,7 +198,7 @@ const OrgDetailPage = () => {
         <MemberModal
           isOpen={openMembersModal}
           setOpenMembersModal={setOpenMembersModal}
-          members={members}
+          members={organization.members}
         />
       )}
     </div>
