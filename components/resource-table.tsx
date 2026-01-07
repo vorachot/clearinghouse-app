@@ -19,113 +19,17 @@ import CreateNodeDialog from "./create-node-dialog";
 import type { ResourcePool } from "@/types/resource";
 
 const resourceColumns = [
-  { header: "POOL NAME", accessor: "name" },
-  { header: "ORGANIZATION", accessor: "organization" },
-  { header: "RESOURCES", accessor: "resources" },
-  { header: "ACTIONS", accessor: "actions" },
+  { header: "TYPE", accessor: "type" },
+  { header: "NAME", accessor: "name" },
+  { header: "QUANTITY", accessor: "quantity" },
+  { header: "UNIT", accessor: "unit" },
+  { header: "ACTION", accessor: "action" },
 ];
 
-// Mock data - should be fetched from API
-const mockResourcePools: ResourcePool[] = [
-  {
-    id: "1",
-    name: "kmitl-pool",
-    description: "KMITL main resource pool",
-    organizationName: "KMITL",
-    createdAt: "2025-12-01",
-    nodes: [
-      {
-        id: "n1",
-        poolId: "1",
-        name: "node-01",
-        description: "Primary compute node",
-        createdAt: "2025-12-01",
-        resources: [
-          {
-            id: "r1",
-            nodeId: "n1",
-            poolId: "1",
-            resourceTypeId: "1",
-            resourceTypeName: "CPU",
-            amount: 100,
-            unit: "Core",
-            price: 10,
-            maxDuration: 24,
-            createdAt: "2025-12-01",
-          },
-          {
-            id: "r2",
-            nodeId: "n1",
-            poolId: "1",
-            resourceTypeId: "2",
-            resourceTypeName: "GPU",
-            amount: 50,
-            unit: "GB",
-            price: 50,
-            maxDuration: 12,
-            createdAt: "2025-12-01",
-          },
-        ],
-      },
-      {
-        id: "n2",
-        poolId: "1",
-        name: "node-02",
-        description: "Secondary compute node",
-        createdAt: "2025-12-02",
-        resources: [
-          {
-            id: "r3",
-            nodeId: "n2",
-            poolId: "1",
-            resourceTypeId: "3",
-            resourceTypeName: "RAM",
-            amount: 500,
-            unit: "GB",
-            price: 5,
-            maxDuration: 24,
-            createdAt: "2025-12-02",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "2",
-    name: "research-pool",
-    description: "Research department pool",
-    organizationName: "Not Assigned",
-    createdAt: "2025-12-10",
-    nodes: [
-      {
-        id: "n3",
-        poolId: "2",
-        name: "research-node-01",
-        description: "Research compute node",
-        createdAt: "2025-12-10",
-        resources: [
-          {
-            id: "r4",
-            nodeId: "n3",
-            poolId: "2",
-            resourceTypeId: "1",
-            resourceTypeName: "CPU",
-            amount: 64,
-            unit: "Core",
-            price: 8,
-            maxDuration: 48,
-            createdAt: "2025-12-10",
-          },
-        ],
-      },
-    ],
-  },
-];
-
-const ResourceTable = () => {
+const ResourceTable = ({ resourcePools }: { resourcePools: ResourcePool[] }) => {
   return (
     <Accordion variant="splitted" selectionMode="multiple">
-      {mockResourcePools.map((pool) => (
+      {resourcePools.map((pool) => (
         <AccordionItem
           key={pool.id}
           aria-label={pool.name}
@@ -144,7 +48,7 @@ const ResourceTable = () => {
         >
           <div className="px-2 pb-4">
             <div className="flex justify-end mb-4">
-              <CreateNodeDialog poolId={pool.id} poolName={pool.name} />
+              <CreateNodeDialog orgId={pool.organization_id} poolId={pool.id} poolName={pool.name} />
             </div>
 
             {/* Nodes Section */}
@@ -172,7 +76,7 @@ const ResourceTable = () => {
                       <AddResourceDialog
                         nodeId={node.id}
                         nodeName={node.name}
-                        poolId={pool.id}
+                        orgId={pool.organization_id}
                       />
                     </div>
 
@@ -181,11 +85,11 @@ const ResourceTable = () => {
                       className="min-w-full"
                     >
                       <TableHeader>
-                        <TableColumn>TYPE</TableColumn>
-                        <TableColumn>NAME</TableColumn>
-                        <TableColumn>AMOUNT</TableColumn>
-                        <TableColumn>UNIT</TableColumn>
-                        <TableColumn>ACTION</TableColumn>
+                        {resourceColumns.map((col) => (
+                          <TableColumn key={col.accessor}>
+                            {col.header}
+                          </TableColumn>
+                        ))}
                       </TableHeader>
                       <TableBody>
                         {node.resources && node.resources.length > 0 ? (
@@ -193,16 +97,16 @@ const ResourceTable = () => {
                             <TableRow key={resource.id}>
                               <TableCell>
                                 <Chip size="sm" color="primary" variant="flat">
-                                  {resource.resourceTypeName}
+                                  {resource.resource_type.name}
                                 </Chip>
                               </TableCell>
                               <TableCell className="font-medium">
-                                {resource.resourceTypeName} Resource
+                                {resource.name}
                               </TableCell>
                               <TableCell className="font-semibold">
-                                {resource.amount}
+                                {resource.quantity}
                               </TableCell>
-                              <TableCell>{resource.unit}</TableCell>
+                              <TableCell>{resource.resource_type.unit}</TableCell>
                               <TableCell>
                                 <div className="flex items-center gap-2">
                                   <Tooltip content="Edit resource">

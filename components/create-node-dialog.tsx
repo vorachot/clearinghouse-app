@@ -11,28 +11,44 @@ import {
 } from "@heroui/modal";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
-import { Textarea } from "@heroui/input";
 import AddIcon from "@mui/icons-material/Add";
+import { createResourceNode } from "@/api/resource";
+import { mutate } from "swr";
 
 interface CreateNodeDialogProps {
+  orgId?: string;
   poolId: string;
   poolName: string;
 }
 
 export default function CreateNodeDialog({
+  orgId,
   poolId,
   poolName,
 }: CreateNodeDialogProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
 
-  const handleSubmit = () => {
-    // TODO: Implement API call to create node
-    console.log("Creating node:", { poolId, name, description });
-    onOpenChange();
-    setName("");
-    setDescription("");
+    const data = {
+      resource_pool_id: poolId,
+      name: name,
+    };
+
+    try {
+      await createResourceNode(data);
+      onOpenChange();
+      setName("");
+      await mutate(["resourcePools", orgId], undefined, {
+        revalidate: true,
+      });
+    } catch (error) {
+      console.error("Error creating resource node:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -61,12 +77,6 @@ export default function CreateNodeDialog({
                     onValueChange={setName}
                     isRequired
                   />
-                  <Textarea
-                    label="Description"
-                    placeholder="Optional description"
-                    value={description}
-                    onValueChange={setDescription}
-                  />
                   <p className="text-sm text-gray-500">
                     Resources can be added to this node after creation
                   </p>
@@ -80,6 +90,7 @@ export default function CreateNodeDialog({
                   color="primary"
                   onPress={handleSubmit}
                   isDisabled={!name}
+                  isLoading={isSubmitting}
                 >
                   Create Node
                 </Button>

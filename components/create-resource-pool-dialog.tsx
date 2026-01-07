@@ -11,20 +11,35 @@ import {
 } from "@heroui/modal";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
-import { Textarea } from "@heroui/input";
 import AddIcon from "@mui/icons-material/Add";
+import { createResourcePool } from "@/api/resource";
+import { mutate } from "swr";
 
-export default function CreateResourcePoolDialog() {
+export default function CreateResourcePoolDialog({ orgId }: { orgId: string }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
 
-  const handleSubmit = () => {
-    // TODO: Implement API call to create resource pool
-    console.log("Creating resource pool:", { name, description });
-    onOpenChange();
-    setName("");
-    setDescription("");
+    const data = {
+      organization_id: orgId,
+      name: name,
+      glidelet_urn: "default-glidelet-urn",
+    };
+
+    try {
+      await createResourcePool(data);
+      onOpenChange();
+      setName("");
+      await mutate(["resourcePools", orgId], undefined, {
+        revalidate: true,
+      });
+    } catch (error) {
+      console.error("Error creating resource pool:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -53,15 +68,12 @@ export default function CreateResourcePoolDialog() {
                     onValueChange={setName}
                     isRequired
                   />
-                  <Textarea
+                  {/* <Textarea
                     label="Description"
                     placeholder="Optional description"
                     value={description}
                     onValueChange={setDescription}
-                  />
-                  <p className="text-sm text-gray-500">
-                    Note: Organization can be assigned later
-                  </p>
+                  /> */}
                 </div>
               </ModalBody>
               <ModalFooter>
@@ -72,6 +84,7 @@ export default function CreateResourcePoolDialog() {
                   color="primary"
                   onPress={handleSubmit}
                   isDisabled={!name}
+                  isLoading={isSubmitting}
                 >
                   Create
                 </Button>

@@ -13,48 +13,63 @@ import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Select, SelectItem } from "@heroui/select";
 import AddIcon from "@mui/icons-material/Add";
+import useSWR, { mutate } from "swr";
+import { createResource, getResourceType } from "@/api/resource";
+import { ResourceType } from "@/types/resource";
 
 interface AddResourceDialogProps {
   nodeId: string;
   nodeName: string;
-  poolId: string;
+  orgId?: string;
 }
 
 export default function AddResourceDialog({
   nodeId,
   nodeName,
-  poolId,
+  orgId,
 }: AddResourceDialogProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [resourceType, setResourceType] = useState("");
+  const [quantity, setQuantity] = useState("");
   const [name, setName] = useState("");
-  const [amount, setAmount] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Mock resource types - should be fetched from API
-  const resourceTypes = [
-    { id: "1", name: "CPU" },
-    { id: "2", name: "GPU" },
-    { id: "3", name: "RAM" },
-  ];
+  const resourceTypesData = useSWR(
+    ["resourceTypes"],
+    () => getResourceType(),
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 5000,
+    }
+  );
 
-  const handleSubmit = () => {
-    // TODO: Implement API call to add resource to node
-    const resource = {
-      nodeId,
-      poolId,
-      resourceTypeId: resourceType,
-      name,
-      amount: parseFloat(amount),
+  const resourceTypes: ResourceType[] = resourceTypesData.data || [];
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+
+    const data = {
+      resource_node_id: nodeId,
+      resource_type_id: resourceType,
+      quantity: parseInt(quantity, 10),
+      name: name,
     };
-    console.log("Adding resource to node:", resource);
-    onOpenChange();
-    // Reset form
-    setResourceType("");
-    setName("");
-    setAmount("");
+
+    try {
+      await createResource(data);
+      onOpenChange();
+      setName("");
+      await mutate(["resourcePools", orgId], undefined, {
+        revalidate: true,
+      });
+    } catch (error) {
+      console.error("Error creating resource:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const isFormValid = resourceType && name && amount;
+  const isFormValid = resourceType && name && quantity && !isSubmitting;
 
   return (
     <>
@@ -100,10 +115,10 @@ export default function AddResourceDialog({
 
                   <Input
                     type="number"
-                    label="Amount"
+                    label="Quantity"
                     placeholder="e.g., 100"
-                    value={amount}
-                    onValueChange={setAmount}
+                    value={quantity}
+                    onValueChange={setQuantity}
                     isRequired
                   />
                 </div>
@@ -116,6 +131,7 @@ export default function AddResourceDialog({
                   color="primary"
                   onPress={handleSubmit}
                   isDisabled={!isFormValid}
+                  isLoading={isSubmitting}
                 >
                   Add Resource
                 </Button>

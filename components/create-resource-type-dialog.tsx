@@ -11,20 +11,36 @@ import {
 } from "@heroui/modal";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
-import { Textarea } from "@heroui/input";
 import AddIcon from "@mui/icons-material/Add";
+import { createResourceType } from "@/api/resource";
+import { mutate } from "swr";
 
 export default function CreateResourceTypeDialog() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [unit, setUnit] = useState("");
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
 
-  const handleSubmit = () => {
-    // TODO: Implement API call to create resource type
-    console.log("Creating resource type:", { name, description });
-    onOpenChange();
-    setName("");
-    setDescription("");
+    const data = {
+      name: name,
+      unit: unit,
+    };
+
+    try {
+      await createResourceType(data);
+      onOpenChange();
+      setName("");
+      setUnit("");
+      await mutate(["resourceTypes"], undefined, {
+        revalidate: true,
+      });
+    } catch (error) {
+      console.error("Error creating resource type:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -53,11 +69,12 @@ export default function CreateResourceTypeDialog() {
                     onValueChange={setName}
                     isRequired
                   />
-                  <Textarea
-                    label="Description"
-                    placeholder="Optional description"
-                    value={description}
-                    onValueChange={setDescription}
+                  <Input
+                    label="Unit"
+                    placeholder="e.g., CORE, GiB"
+                    value={unit}
+                    onValueChange={setUnit}
+                    isRequired
                   />
                 </div>
               </ModalBody>
@@ -68,7 +85,8 @@ export default function CreateResourceTypeDialog() {
                 <Button
                   color="primary"
                   onPress={handleSubmit}
-                  isDisabled={!name}
+                  isDisabled={!name || !unit}
+                  isLoading={isSubmitting}
                 >
                   Create
                 </Button>

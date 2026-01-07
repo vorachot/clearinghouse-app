@@ -1,17 +1,36 @@
+"use client";
+
 import ResourceTable from "@/components/resource-table";
 import CreateResourceTypeDialog from "@/components/create-resource-type-dialog";
 import CreateResourcePoolDialog from "@/components/create-resource-pool-dialog";
-import { Card, CardBody } from "@heroui/card";
-import { Divider } from "@heroui/divider";
+import useSWR from "swr";
+import { useParams } from "next/navigation";
+import { getResourcePoolsByOrgId } from "@/api/resource";
+import Loading from "@/app/loading";
+import { ResourcePool } from "@/types/resource";
 
 const ResourcesPage = () => {
+  const params = useParams();
+  const { orgId } = params as { orgId: string };
+  const resourcePoolsData = useSWR(
+    ["resourcePools", orgId],
+    () => getResourcePoolsByOrgId(orgId),
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 5000,
+    }
+  );
+  if (resourcePoolsData.isLoading) return <Loading />;
+  if (resourcePoolsData.error) return <div>Error loading resources</div>;
+
+  const resourcePools: ResourcePool[] = resourcePoolsData.data || [];
   return (
     <div className="container mx-auto pt-1 p-4 space-y-6">
       {/* Header Section */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">
-            Resource Management
+            Resource Pools Management
           </h1>
           <p className="text-sm text-gray-500 mt-1">
             Create resource types, manage pools, create nodes, and allocate
@@ -20,7 +39,7 @@ const ResourcesPage = () => {
         </div>
         <div className="flex gap-2">
           <CreateResourceTypeDialog />
-          <CreateResourcePoolDialog />
+          <CreateResourcePoolDialog orgId={orgId} />
         </div>
       </div>
 
@@ -82,10 +101,12 @@ const ResourcesPage = () => {
 
       {/* Resource Pools Section */}
       <div>
-        <h2 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
-          Resource Pools
-        </h2>
-        <ResourceTable />
+        {resourcePools.length === 0 && (
+          <p className="text-gray-600 dark:text-gray-400">
+            No resource pools found. Create one to get started.
+          </p>
+        )}
+        <ResourceTable resourcePools={resourcePools} />
       </div>
     </div>
   );
