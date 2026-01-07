@@ -20,14 +20,11 @@ import {
   GraphicEqRounded as GpuIcon,
   StorageRounded as RamIcon,
   VisibilityRounded,
+  PeopleAltRounded,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import EditQuotaDialog from "./edit-quota-dialog";
-
-type Project = {
-  id: string;
-  name: string;
-};
+import { Project } from "@/types/project";
 
 type Props = {
   organizationId: string;
@@ -57,10 +54,11 @@ const ProjectTable = ({ organizationId, projects, onDelete }: Props) => {
 
   const columns = [
     { key: "name", label: "PROJECT NAME" },
-    { key: "cpu", label: "CPU" },
-    { key: "gpu", label: "GPU" },
-    { key: "ram", label: "RAM" },
-    { key: "status", label: "STATUS" },
+    // { key: "cpu", label: "CPU" },
+    // { key: "gpu", label: "GPU" },
+    // { key: "ram", label: "RAM" },
+    { key: "quotas", label: "QUOTAS" },
+    { key: "members", label: "MEMBERS" },
     { key: "actions", label: "ACTIONS" },
   ];
 
@@ -100,32 +98,36 @@ const ProjectTable = ({ organizationId, projects, onDelete }: Props) => {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-2">
-                    <CpuIcon className="!w-4 !h-4 text-blue-600 dark:text-blue-400" />
-                    <span className="font-medium dark:text-blue-400">
-                      16 Cores
-                    </span>
+                  <div className="flex gap-2">
+                    <div className="flex items-center gap-2">
+                      <CpuIcon className="!w-4 !h-4 text-blue-600 dark:text-blue-400" />
+                      <span className="font-medium dark:text-blue-400">
+                        16 Cores
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <GpuIcon className="!w-4 !h-4 text-purple-600 dark:text-purple-400" />
+                      <span className="font-medium dark:text-purple-400">
+                        32 GB
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <RamIcon className="!w-4 !h-4 text-green-600 dark:text-green-400" />
+                      <span className="font-medium dark:text-green-400">
+                        128 GB
+                      </span>
+                    </div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-2">
-                    <GpuIcon className="!w-4 !h-4 text-purple-600 dark:text-purple-400" />
-                    <span className="font-medium dark:text-purple-400">
-                      32 GB
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <RamIcon className="!w-4 !h-4 text-green-600 dark:text-green-400" />
-                    <span className="font-medium dark:text-green-400">
-                      128 GB
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Chip size="sm" color="success" variant="flat">
-                    Active
+                  <Chip
+                    size="sm"
+                    color="success"
+                    variant="flat"
+                    className="px-2"
+                  >
+                    <PeopleAltRounded className="!w-4 !h-4 mr-1" />
+                    <span className="font-medium dark:text-green-400">{project.members.length}</span>
                   </Chip>
                 </TableCell>
                 <TableCell>
