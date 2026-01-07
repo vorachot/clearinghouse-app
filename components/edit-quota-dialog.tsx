@@ -13,7 +13,7 @@ const EditQuotaDialog = ({ projectId, setOnClose }: Props) => {
   return (
     <Modal isOpen={true} scrollBehavior="inside" size="xs" onClose={setOnClose}>
       <ModalContent>
-        <ModalHeader className="flex flex-col gap-1 pb-2">
+        <ModalHeader className=" dark:text-white flex flex-col gap-1 pb-2">
           <h2 className="text-2xl font-bold dark:text-white">Quota Limits</h2>
         </ModalHeader>
         <Divider />

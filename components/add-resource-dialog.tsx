@@ -85,11 +85,11 @@ export default function AddResourceDialog({
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">
+              <ModalHeader className="dark:text-white flex flex-col gap-1">
                 Add Resource to {nodeName}
               </ModalHeader>
               <ModalBody>
-                <div className="flex flex-col gap-4">
+                <div className=" dark:text-white flex flex-col gap-4">
                   <Select
                     label="Resource Type"
                     placeholder="Select resource type"
@@ -101,7 +101,7 @@ export default function AddResourceDialog({
                     isRequired
                   >
                     {resourceTypes.map((type) => (
-                      <SelectItem key={type.id}>{type.name}</SelectItem>
+                      <SelectItem key={type.id} className="dark:text-white">{type.name}</SelectItem>
                     ))}
                   </Select>
 

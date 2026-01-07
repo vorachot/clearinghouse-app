@@ -56,7 +56,7 @@ export default function CreateResourcePoolDialog({ orgId }: { orgId: string }) {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">
+              <ModalHeader className=" dark:text-white flex flex-col gap-1">
                 Create Resource Pool
               </ModalHeader>
               <ModalBody>

@@ -57,7 +57,7 @@ export default function CreateResourceTypeDialog() {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">
+              <ModalHeader className="dark:text-white flex flex-col gap-1">
                 Create Resource Type
               </ModalHeader>
               <ModalBody>

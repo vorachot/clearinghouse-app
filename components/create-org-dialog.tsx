@@ -11,7 +11,7 @@ const CreateOrgDialog = ({ setOnClose }: Props) => {
   return (
     <Modal isOpen={true} scrollBehavior="inside" size="md" onClose={setOnClose}>
       <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">
+        <ModalHeader className="dark:text-white flex flex-col gap-1">
           Create Organization
         </ModalHeader>
         <ModalBody>

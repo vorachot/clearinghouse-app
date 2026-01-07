@@ -65,7 +65,7 @@ export default function CreateNodeDialog({
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">
+              <ModalHeader className=" dark:text-white flex flex-col gap-1">
                 Create Node in {poolName}
               </ModalHeader>
               <ModalBody>
@@ -77,9 +77,6 @@ export default function CreateNodeDialog({
                     onValueChange={setName}
                     isRequired
                   />
-                  <p className="text-sm text-gray-500">
-                    Resources can be added to this node after creation
-                  </p>
                 </div>
               </ModalBody>
               <ModalFooter>
