@@ -38,20 +38,11 @@ export type ProjectQuota = {
   id: string;
   name: string;
   description: string;
-  projectId: string;
-  projectName: string;
-  organizationId: string;
-  organizationName: string;
-  source: ProjectQuotaSource;
-  sourceId: string; // Organization Quota ID or Resource Pool ID
-  sourceName: string;
-  nodeId: string;
-  nodeName: string;
+  organization_id: string;
+  organization_quota_id?: string;
+  project_id: string;
+  node_id: string;
   resources: QuotaResource[];
-  totalPrice: number;
-  status: "active" | "inactive" | "expired";
-  createdAt: string;
-  updatedAt: string;
 };
 
 // Namespace Quota
@@ -115,13 +106,27 @@ export type CreateOrganizationQuotaDTO = {
 export type CreateProjectQuotaDTO = {
   name: string;
   description: string;
-  projectId: string;
-  source: ProjectQuotaSource;
-  sourceId: string; // Org Quota ID or Resource Pool ID
-  nodeId: string;
+  project_id: string;
+  org_quota_id: string;
+  org_id: string;
+  node_id: string;
   resources: {
-    resourceTypeId: string;
     quantity: number;
+    resource_id: string;
+    price: number;
+    duration: number;
+  }[];
+};
+
+export type CreateProjectQuotaInternalDTO = {
+  name: string;
+  description: string;
+  org_id: string;
+  node_id: string;
+  project_id: string;
+  resources: {
+    quantity: number;
+    resource_id: string;
     price: number;
     duration: number;
   }[];

@@ -1,20 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Tabs, Tab } from "@heroui/tabs";
 import { Card, CardBody } from "@heroui/card";
 import OrganizationQuotaList from "@/components/org-quota-list";
 import OrganizationQuotaForm from "@/components/org-quota-form";
 import OrganizationQuotaDetail from "@/components/org-quota-detail";
-import ProjectQuotaManager from "@/components/project-quota-manager";
-import NamespaceQuotaManager from "@/components/namespace-quota-manager";
 import {
   OrganizationQuota,
-  ProjectQuota,
-  NamespaceQuota,
-  NamespaceQuotaTemplate,
   CreateOrganizationQuotaDTO,
-  CreateProjectQuotaDTO,
   CreateNamespaceQuotaDTO,
   CreateQuotaTemplateDTO,
   AssignTemplateToNamespacesDTO,
@@ -25,15 +18,9 @@ import { getOrganizations } from "@/api/org";
 import { createOrgQuota, getOrgQuotasByOrgId } from "@/api/quota";
 import { useParams } from "next/navigation";
 
-const QuotasPage = () => {
+const OrgQuotasPage = () => {
   const params = useParams();
   const { orgId } = params as { orgId: string };
-  // const [orgQuotas, setOrgQuotas] = useState<OrganizationQuota[]>([]);
-  const [projectQuotas, setProjectQuotas] = useState<ProjectQuota[]>([]);
-  const [namespaceQuotas, setNamespaceQuotas] = useState<NamespaceQuota[]>([]);
-  const [quotaTemplates, setQuotaTemplates] = useState<
-    NamespaceQuotaTemplate[]
-  >([]);
 
   const [isOrgFormOpen, setIsOrgFormOpen] = useState(false);
   const [selectedOrgQuota, setSelectedOrgQuota] =
@@ -74,11 +61,6 @@ const QuotasPage = () => {
     setIsDetailOpen(true);
   };
 
-  const handleCreateProjectQuota = (data: CreateProjectQuotaDTO) => {
-    console.log("Creating project quota:", data);
-    // TODO: Implement API call
-  };
-
   const handleCreateNamespaceQuota = (data: CreateNamespaceQuotaDTO) => {
     console.log("Creating namespace quota:", data);
     // TODO: Implement API call
@@ -102,36 +84,35 @@ const QuotasPage = () => {
         </h1>
       </div>
 
-      <Tabs aria-label="Quota management levels" color="primary" size="lg">
-        <Tab key="organization" title="Organization Quotas">
-          <Card>
-            <CardBody className="p-4">
-              <OrganizationQuotaList
-                quotas={orgQuotas}
-                onCreateClick={() => setIsOrgFormOpen(true)}
-                onViewDetails={handleViewOrgQuotaDetails}
-              />
-            </CardBody>
-          </Card>
-
-          <OrganizationQuotaForm
-            isOpen={isOrgFormOpen}
-            onClose={() => setIsOrgFormOpen(false)}
-            onSubmit={handleCreateOrgQuota}
-            organizations={organizations}
+      <Card>
+        <CardBody className="p-4">
+          <OrganizationQuotaList
+            quotas={orgQuotas.filter((q) => q.from_organization_id === orgId)}
+            onCreateClick={() => setIsOrgFormOpen(true)}
+            onViewDetails={handleViewOrgQuotaDetails}
           />
+        </CardBody>
+      </Card>
 
-          <OrganizationQuotaDetail
-            quota={selectedOrgQuota}
-            isOpen={isDetailOpen}
-            onClose={() => setIsDetailOpen(false)}
-          />
-        </Tab>
+      <OrganizationQuotaForm
+        isOpen={isOrgFormOpen}
+        onClose={() => setIsOrgFormOpen(false)}
+        onSubmit={handleCreateOrgQuota}
+        organizations={organizations}
+      />
+
+      <OrganizationQuotaDetail
+        quota={selectedOrgQuota}
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+      />
+      {/* <Tabs aria-label="Quota management levels" color="primary" size="lg">
+        <Tab key="organization" title="Organization Quotas"></Tab>
 
         <Tab key="project" title="Project Quotas">
           <Card>
             <CardBody className="p-4">
-              {/* <ProjectQuotaManager
+              <ProjectQuotaManager
                 projectQuotas={projectQuotas}
                 organizations={organizations}
                 projects={mockProjects}
@@ -140,7 +121,7 @@ const QuotasPage = () => {
                 nodes={mockNodes}
                 resourceTypes={mockResourceTypes}
                 onCreateQuota={handleCreateProjectQuota}
-              /> */}
+              />
             </CardBody>
           </Card>
         </Tab>
@@ -148,7 +129,7 @@ const QuotasPage = () => {
         <Tab key="namespace" title="Namespace Quotas">
           <Card>
             <CardBody className="p-4">
-              {/* <NamespaceQuotaManager
+              <NamespaceQuotaManager
                 namespaceQuotas={namespaceQuotas}
                 templates={quotaTemplates}
                 projects={mockProjects}
@@ -159,13 +140,13 @@ const QuotasPage = () => {
                 onCreateQuota={handleCreateNamespaceQuota}
                 onCreateTemplate={handleCreateQuotaTemplate}
                 onAssignTemplate={handleAssignTemplate}
-              /> */}
+              />
             </CardBody>
           </Card>
         </Tab>
-      </Tabs>
+      </Tabs> */}
     </div>
   );
 };
 
-export default QuotasPage;
+export default OrgQuotasPage;

@@ -1,6 +1,5 @@
 "use client";
 
-import { Divider } from "@heroui/divider";
 import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/modal";
 import NsForm from "./ns-form";
 

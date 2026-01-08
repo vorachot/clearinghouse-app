@@ -55,7 +55,7 @@ export default function OrganizationQuotaList({
               <TableColumn>RESOURCE TYPE</TableColumn>
               <TableColumn>QUANTITY</TableColumn>
               <TableColumn>DURATION</TableColumn>
-              <TableColumn>ACTIONS</TableColumn>
+              {/* <TableColumn>ACTIONS</TableColumn> */}
             </TableHeader>
             <TableBody emptyContent="No quotas found">
               {quotas.map((quota) => {
@@ -112,7 +112,7 @@ export default function OrganizationQuotaList({
                         ))}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <Button
                         size="sm"
                         variant="light"
@@ -121,7 +121,7 @@ export default function OrganizationQuotaList({
                       >
                         <VisibilityIcon fontSize="small" />
                       </Button>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 );
               })}
