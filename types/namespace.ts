@@ -10,5 +10,6 @@ export type Namespace = {
   quota_template_id?: string;
   quota_template: string;
   namespace_members: User[];
-  owner: User[];
+  owner_id: string;
+  owner: User;
 };

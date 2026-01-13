@@ -25,6 +25,7 @@ import {
 import { useRouter } from "next/navigation";
 import EditQuotaDialog from "./edit-quota-dialog";
 import { Project } from "@/types/project";
+import { useUser } from "@/context/UserContext";
 
 type Props = {
   organizationId: string;
@@ -34,6 +35,7 @@ type Props = {
 
 const ProjectTable = ({ organizationId, projects, onDelete }: Props) => {
   const router = useRouter();
+  const { user } = useUser();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
 
@@ -127,51 +129,63 @@ const ProjectTable = ({ organizationId, projects, onDelete }: Props) => {
                     className="px-2"
                   >
                     <PeopleAltRounded className="!w-4 !h-4 mr-1" />
-                    <span className="font-medium dark:text-green-400">{project.members.length}</span>
+                    <span className="font-medium dark:text-green-400">
+                      {project.members.length}
+                    </span>
                   </Chip>
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Tooltip content="View details" className="dark:text-white">
-                      <Button
-                        isIconOnly
-                        size="sm"
-                        variant="light"
-                        color="primary"
-                        aria-label="View project"
-                        onPress={() => handleView(project.id)}
+                  {user &&
+                  project.admins.some((admin) => admin.id === user.id) ? (
+                    <div className="flex items-center gap-2">
+                      <Tooltip
+                        content="View details"
+                        className="dark:text-white"
                       >
-                        <VisibilityRounded className="!w-4 !h-4" />
-                      </Button>
-                    </Tooltip>
-                    <Tooltip content="Edit quota" className="dark:text-white">
-                      <Button
-                        isIconOnly
-                        size="sm"
-                        variant="light"
-                        color="warning"
-                        aria-label="Edit quota"
-                        onPress={() => handleEdit(project.id)}
+                        <Button
+                          isIconOnly
+                          size="sm"
+                          variant="light"
+                          color="primary"
+                          aria-label="View project"
+                          onPress={() => handleView(project.id)}
+                        >
+                          <VisibilityRounded className="!w-4 !h-4" />
+                        </Button>
+                      </Tooltip>
+                      <Tooltip content="Edit quota" className="dark:text-white">
+                        <Button
+                          isIconOnly
+                          size="sm"
+                          variant="light"
+                          color="warning"
+                          aria-label="Edit quota"
+                          onPress={() => handleEdit(project.id)}
+                        >
+                          <EditRounded className="!w-4 !h-4" />
+                        </Button>
+                      </Tooltip>
+                      <Tooltip
+                        content="Delete project"
+                        className="dark:text-white"
                       >
-                        <EditRounded className="!w-4 !h-4" />
-                      </Button>
-                    </Tooltip>
-                    <Tooltip
-                      content="Delete project"
-                      className="dark:text-white"
-                    >
-                      <Button
-                        isIconOnly
-                        size="sm"
-                        variant="light"
-                        color="danger"
-                        aria-label="Delete project"
-                        onPress={() => handleDelete(project.id)}
-                      >
-                        <DeleteRounded className="!w-4 !h-4" />
-                      </Button>
-                    </Tooltip>
-                  </div>
+                        <Button
+                          isIconOnly
+                          size="sm"
+                          variant="light"
+                          color="danger"
+                          aria-label="Delete project"
+                          onPress={() => handleDelete(project.id)}
+                        >
+                          <DeleteRounded className="!w-4 !h-4" />
+                        </Button>
+                      </Tooltip>
+                    </div>
+                  ) : (
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      No actions available
+                    </span>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

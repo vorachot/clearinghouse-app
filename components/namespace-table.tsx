@@ -21,6 +21,7 @@ import {
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { Namespace } from "@/types/namespace";
+import { useUser } from "@/context/UserContext";
 
 type Props = {
   organizationId: string;
@@ -36,11 +37,10 @@ const NamespaceTable = ({
   onDelete,
 }: Props) => {
   const router = useRouter();
+  const { user } = useUser();
 
   const handleView = (namespaceId: string) => {
-    router.push(
-      `/organizations/${organizationId}/${projectId}/${namespaceId}`// ยังไม่สร้างหน้านี้
-    );
+    router.push(`/organizations/${organizationId}/${projectId}/${namespaceId}`);
   };
 
   const handleEdit = (namespaceId: string) => {
@@ -126,47 +126,57 @@ const NamespaceTable = ({
                 </Chip>
               </TableCell>
               <TableCell>
-                <div className="flex items-center gap-2">
-                  <Tooltip content="View details" className="dark:text-white">
-                    <Button
-                      isIconOnly
-                      size="sm"
-                      variant="light"
-                      color="primary"
-                      aria-label="View namespace"
-                      onPress={() => handleView(namespace.id)}
+                {user &&
+                namespace.owner_id === user.id ? (
+                  <div className="flex items-center gap-2">
+                    <Tooltip content="View details" className="dark:text-white">
+                      <Button
+                        isIconOnly
+                        size="sm"
+                        variant="light"
+                        color="primary"
+                        aria-label="View namespace"
+                        onPress={() => handleView(namespace.id)}
+                      >
+                        <VisibilityRounded className="!w-4 !h-4" />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip
+                      content="Edit namespace"
+                      className="dark:text-white"
                     >
-                      <VisibilityRounded className="!w-4 !h-4" />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip content="Edit namespace" className="dark:text-white">
-                    <Button
-                      isIconOnly
-                      size="sm"
-                      variant="light"
-                      color="warning"
-                      aria-label="Edit namespace"
-                      onPress={() => handleEdit(namespace.id)}
+                      <Button
+                        isIconOnly
+                        size="sm"
+                        variant="light"
+                        color="warning"
+                        aria-label="Edit namespace"
+                        onPress={() => handleEdit(namespace.id)}
+                      >
+                        <EditRounded className="!w-4 !h-4" />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip
+                      content="Delete namespace"
+                      className="dark:text-white"
                     >
-                      <EditRounded className="!w-4 !h-4" />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip
-                    content="Delete namespace"
-                    className="dark:text-white"
-                  >
-                    <Button
-                      isIconOnly
-                      size="sm"
-                      variant="light"
-                      color="danger"
-                      aria-label="Delete namespace"
-                      onPress={() => handleDelete(namespace.id)}
-                    >
-                      <DeleteRounded className="!w-4 !h-4" />
-                    </Button>
-                  </Tooltip>
-                </div>
+                      <Button
+                        isIconOnly
+                        size="sm"
+                        variant="light"
+                        color="danger"
+                        aria-label="Delete namespace"
+                        onPress={() => handleDelete(namespace.id)}
+                      >
+                        <DeleteRounded className="!w-4 !h-4" />
+                      </Button>
+                    </Tooltip>
+                  </div>
+                ) : (
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    No actions available
+                  </span>
+                )}
               </TableCell>
             </TableRow>
           ))}

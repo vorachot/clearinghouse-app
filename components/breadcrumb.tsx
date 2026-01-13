@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { getOrganizationById } from "@/api/org";
 import { getProjectById } from "@/api/project";
+import { getNamespaceById } from "@/api/namespace";
 
 import { UserProfile } from "./user-profile";
 
@@ -48,7 +49,7 @@ const Breadcrumb = () => {
             setLoading((prev) => ({ ...prev, [segment]: false }));
           }
           // Fetch project name
-          else if (i >= 2 && isUUID(segments[i - 1])) {
+          else if (i === 2 && isUUID(segments[i - 1])) {
             setLoading((prev) => ({ ...prev, [segment]: true }));
             try {
               const project = await getProjectById(segment);
@@ -58,6 +59,28 @@ const Breadcrumb = () => {
               }));
             } catch (error) {
               console.error("Error fetching project:", error);
+              setBreadcrumbData((prev) => ({
+                ...prev,
+                [segment]: segment.slice(0, 8),
+              }));
+            }
+            setLoading((prev) => ({ ...prev, [segment]: false }));
+          }
+          // Fetch namespace name
+          else if (
+            i === 3 &&
+            isUUID(segments[i - 1]) &&
+            isUUID(segments[i - 2])
+          ) {
+            setLoading((prev) => ({ ...prev, [segment]: true }));
+            try {
+              const namespace = await getNamespaceById(segment);
+              setBreadcrumbData((prev) => ({
+                ...prev,
+                [segment]: namespace.name,
+              }));
+            } catch (error) {
+              console.error("Error fetching namespace:", error);
               setBreadcrumbData((prev) => ({
                 ...prev,
                 [segment]: segment.slice(0, 8),
