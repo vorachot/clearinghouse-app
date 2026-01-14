@@ -136,3 +136,14 @@ export type AssignTemplateToNamespacesDTO = {
   project_id: string;
   quota_template_id: string;
 };
+
+export type QuotaUsage = {
+  usage: ResourceUsage[];
+};
+
+export type ResourceUsage = {
+  type_id: string;
+  type: string;
+  quota: number;
+  usage: number;
+};

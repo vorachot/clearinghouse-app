@@ -112,3 +112,8 @@ export async function assignTemplateToNamespaces(
 
   return response.data;
 }
+
+export async function getQuotaUsageByNamespaceId(quotaId: string, namespaceId: string): Promise<any> {
+  const response = await apiClient.get(`/quota/${quotaId}/usage/${namespaceId}`);
+  return response.data;
+}
