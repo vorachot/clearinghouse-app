@@ -5,6 +5,8 @@ import { Resource } from "./resource";
 export type QuotaResource = {
   id: string;
   organization_quota_id?: string;
+  project_quota_id?: string;
+  namespace_quota_id?: string;
   quantity: number;
   resource_property_id: string;
   resource_prop: ResourceProp;
@@ -31,9 +33,6 @@ export type OrganizationQuota = {
   resources: QuotaResource[];
 };
 
-// Project Quota Types
-export type ProjectQuotaSource = "organization_quota" | "resource_pool";
-
 export type ProjectQuota = {
   id: string;
   name: string;
@@ -49,20 +48,11 @@ export type ProjectQuota = {
 export type NamespaceQuota = {
   id: string;
   name: string;
-  description: string;
-  namespaceId: string;
-  namespaceName: string;
-  projectId: string;
-  projectName: string;
-  projectQuotaId: string;
-  projectQuotaName: string;
-  nodeId: string;
-  nodeName: string;
+  node_id: string;
+  node_name: string;
+  organization_name: string;
+  project_id: string;
   resources: QuotaResource[];
-  templateId?: string; // If created from template
-  templateName?: string;
-  createdAt: string;
-  updatedAt: string;
 };
 
 // Namespace Quota Template
@@ -76,16 +66,6 @@ export type NamespaceQuotaTemplate = {
   resources: QuotaResource[];
   createdAt: string;
   updatedAt: string;
-};
-
-// Namespace (for selection)
-export type Namespace = {
-  id: string;
-  name: string;
-  description?: string;
-  projectId: string;
-  projectName?: string;
-  createdAt: string;
 };
 
 // Form DTOs
@@ -135,11 +115,11 @@ export type CreateProjectQuotaInternalDTO = {
 export type CreateNamespaceQuotaDTO = {
   name: string;
   description: string;
-  projectId: string;
-  projectQuotaId: string;
-  nodeId: string;
+  project_id: string;
+  project_quota_id: string;
+  node_id: string;
   resources: {
-    resourceTypeId: string;
+    resource_id: string;
     quantity: number;
   }[];
 };
@@ -147,12 +127,12 @@ export type CreateNamespaceQuotaDTO = {
 export type CreateQuotaTemplateDTO = {
   name: string;
   description: string;
-  projectId: string;
-  sourceQuotaIds: string[];
+  project_id: string;
+  quota_ids: string[];
 };
 
 export type AssignTemplateToNamespacesDTO = {
-  projectId: string;
-  templateId: string;
-  namespaceIds: string[];
+  namespaces: string[];
+  project_id: string;
+  quota_template_id: string;
 };

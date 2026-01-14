@@ -8,9 +8,6 @@ import OrganizationQuotaDetail from "@/components/org-quota-detail";
 import {
   OrganizationQuota,
   CreateOrganizationQuotaDTO,
-  CreateNamespaceQuotaDTO,
-  CreateQuotaTemplateDTO,
-  AssignTemplateToNamespacesDTO,
 } from "@/types/quota";
 import { Organization } from "@/types/org";
 import useSWR, { mutate } from "swr";
@@ -61,21 +58,6 @@ const OrgQuotasPage = () => {
     setIsDetailOpen(true);
   };
 
-  const handleCreateNamespaceQuota = (data: CreateNamespaceQuotaDTO) => {
-    console.log("Creating namespace quota:", data);
-    // TODO: Implement API call
-  };
-
-  const handleCreateQuotaTemplate = (data: CreateQuotaTemplateDTO) => {
-    console.log("Creating quota template:", data);
-    // TODO: Implement API call
-  };
-
-  const handleAssignTemplate = (data: AssignTemplateToNamespacesDTO) => {
-    console.log("Assigning template:", data);
-    // TODO: Implement API call
-  };
-
   return (
     <div className="container mx-auto pt-1 p-4 space-y-5">
       <div className="flex items-end justify-between gap-5">
@@ -106,45 +88,6 @@ const OrgQuotasPage = () => {
         isOpen={isDetailOpen}
         onClose={() => setIsDetailOpen(false)}
       />
-      {/* <Tabs aria-label="Quota management levels" color="primary" size="lg">
-        <Tab key="organization" title="Organization Quotas"></Tab>
-
-        <Tab key="project" title="Project Quotas">
-          <Card>
-            <CardBody className="p-4">
-              <ProjectQuotaManager
-                projectQuotas={projectQuotas}
-                organizations={organizations}
-                projects={mockProjects}
-                orgQuotas={orgQuotas}
-                resourcePools={mockResourcePools}
-                nodes={mockNodes}
-                resourceTypes={mockResourceTypes}
-                onCreateQuota={handleCreateProjectQuota}
-              />
-            </CardBody>
-          </Card>
-        </Tab>
-
-        <Tab key="namespace" title="Namespace Quotas">
-          <Card>
-            <CardBody className="p-4">
-              <NamespaceQuotaManager
-                namespaceQuotas={namespaceQuotas}
-                templates={quotaTemplates}
-                projects={mockProjects}
-                projectQuotas={projectQuotas}
-                namespaces={mockNamespaces}
-                nodes={mockNodes}
-                resourceTypes={mockResourceTypes}
-                onCreateQuota={handleCreateNamespaceQuota}
-                onCreateTemplate={handleCreateQuotaTemplate}
-                onAssignTemplate={handleAssignTemplate}
-              />
-            </CardBody>
-          </Card>
-        </Tab>
-      </Tabs> */}
     </div>
   );
 };

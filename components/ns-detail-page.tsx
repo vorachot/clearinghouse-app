@@ -96,7 +96,7 @@ const NamespaceDetailPage = () => {
           isPressable
           isHoverable
           onPress={() =>
-            router.push(`/organizations/${orgId}/${projectId}/quotas`)
+            router.push(`/organizations/${orgId}/${projectId}/${namespaceId}/quotas`)
           }
           className="cursor-pointer transition-all hover:scale-[1.02]"
         >
@@ -127,17 +127,6 @@ const NamespaceDetailPage = () => {
           setOpenMembersModal={setOpenMembersModal}
         />
       </div>
-      {/* <div className="flex gap-4 flex-wrap">
-        {namespaces.map((namespace) => (
-          <NsCard
-            key={namespace.id}
-            organizationId={orgId}
-            projectId={projectId}
-            id={namespace.id}
-            name={namespace.name}
-          />
-        ))}
-      </div> */}
     </div>
   );
 };
