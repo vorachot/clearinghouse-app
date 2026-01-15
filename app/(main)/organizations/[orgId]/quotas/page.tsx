@@ -5,10 +5,7 @@ import { Card, CardBody } from "@heroui/card";
 import OrganizationQuotaList from "@/components/org-quota-list";
 import OrganizationQuotaForm from "@/components/org-quota-form";
 import OrganizationQuotaDetail from "@/components/org-quota-detail";
-import {
-  OrganizationQuota,
-  CreateOrganizationQuotaDTO,
-} from "@/types/quota";
+import { OrganizationQuota, CreateOrganizationQuotaDTO } from "@/types/quota";
 import { Organization } from "@/types/org";
 import useSWR, { mutate } from "swr";
 import { getOrganizations } from "@/api/org";
@@ -58,6 +55,13 @@ const OrgQuotasPage = () => {
     setIsDetailOpen(true);
   };
 
+  const allocatedQuotas = orgQuotas.filter(
+    (q) => q.from_organization_id === orgId
+  );
+  const receivedQuotas = orgQuotas.filter(
+    (q) => q.to_organization_id === orgId
+  );
+
   return (
     <div className="container mx-auto pt-1 p-4 space-y-5">
       <div className="flex items-end justify-between gap-5">
@@ -66,12 +70,25 @@ const OrgQuotasPage = () => {
         </h1>
       </div>
 
+      {/* Quotas Allocated by This Organization */}
       <Card>
         <CardBody className="p-4">
           <OrganizationQuotaList
-            quotas={orgQuotas.filter((q) => q.from_organization_id === orgId)}
+            quotas={allocatedQuotas}
             onCreateClick={() => setIsOrgFormOpen(true)}
             onViewDetails={handleViewOrgQuotaDetails}
+          />
+        </CardBody>
+      </Card>
+
+      {/* Quotas Received by This Organization */}
+      <Card>
+        <CardBody className="p-4">
+          <OrganizationQuotaList
+            quotas={receivedQuotas}
+            onCreateClick={() => {}} // No create button for received quotas
+            onViewDetails={handleViewOrgQuotaDetails}
+            hideCreateButton={true}
           />
         </CardBody>
       </Card>

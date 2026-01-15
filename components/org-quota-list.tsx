@@ -19,12 +19,14 @@ type OrganizationQuotaListProps = {
   quotas: OrganizationQuota[];
   onCreateClick: () => void;
   onViewDetails: (quota: OrganizationQuota) => void;
+  hideCreateButton?: boolean;
 };
 
 export default function OrganizationQuotaList({
   quotas,
   onCreateClick,
   onViewDetails,
+  hideCreateButton = false,
 }: OrganizationQuotaListProps) {
   const formatDuration = (seconds: number) => {
     if (seconds < 3600) {
@@ -36,14 +38,36 @@ export default function OrganizationQuotaList({
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Organization Quotas</h2>
-        <Button
-          color="primary"
-          startContent={<AddIcon />}
-          onPress={onCreateClick}
-        >
-          Create Quota
-        </Button>
+        {!hideCreateButton ? (
+          <>
+            <div className="mb-2">
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+                Quotas Allocated by This Organization
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Resources allocated to other organizations
+              </p>
+            </div>
+            <Button
+              color="primary"
+              startContent={<AddIcon />}
+              onPress={onCreateClick}
+            >
+              Create Quota
+            </Button>
+          </>
+        ) : (
+          <>
+            <div className="mb-2">
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+                Quotas Received by This Organization
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Resources received from other organizations
+              </p>
+            </div>
+          </>
+        )}
       </div>
 
       <Card>
@@ -53,6 +77,7 @@ export default function OrganizationQuotaList({
               <TableColumn>NAME</TableColumn>
               <TableColumn>FROM → TO</TableColumn>
               <TableColumn>RESOURCE TYPE</TableColumn>
+              <TableColumn>RESOURCE NAME</TableColumn>
               <TableColumn>QUANTITY</TableColumn>
               <TableColumn>DURATION</TableColumn>
               {/* <TableColumn>ACTIONS</TableColumn> */}
@@ -87,6 +112,16 @@ export default function OrganizationQuotaList({
                             {resource.resource_prop.resource.resource_type
                               .name ||
                               resource.resource_prop.resource.resource_type.id}
+                          </div>
+                        ))}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        {quota.resources.map((resource) => (
+                          <div key={resource.id} className="text-sm">
+                            {resource.resource_prop.resource.name ||
+                              resource.resource_prop.resource.id}
                           </div>
                         ))}
                       </div>
