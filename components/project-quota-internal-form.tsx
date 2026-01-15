@@ -254,9 +254,9 @@ export default function ProjectQuotaInternalForm({
                       <TableColumn>NAME</TableColumn>
                       <TableColumn>AVAILABLE</TableColumn>
                       <TableColumn>QUANTITY</TableColumn>
-                      <TableColumn>PRICE (credits/hr)</TableColumn>
+                      <TableColumn>PRICE (credits)</TableColumn>
                       <TableColumn>DURATION (hrs)</TableColumn>
-                      <TableColumn>TOTAL</TableColumn>
+                      {/* <TableColumn>TOTAL</TableColumn> */}
                     </TableHeader>
                     <TableBody>
                       {resources.map((resource) => (
@@ -332,7 +332,7 @@ export default function ProjectQuotaInternalForm({
                               className="w-24"
                             />
                           </TableCell>
-                          <TableCell>
+                          {/* <TableCell>
                             <span className="font-semibold">
                               {(
                                 resource.quantity *
@@ -340,7 +340,7 @@ export default function ProjectQuotaInternalForm({
                                 resource.duration
                               ).toFixed(2)}
                             </span>
-                          </TableCell>
+                          </TableCell> */}
                         </TableRow>
                       ))}
                     </TableBody>
@@ -350,7 +350,7 @@ export default function ProjectQuotaInternalForm({
             </Card>
 
             {/* Total Summary */}
-            {resources.length > 0 && resources.some((r) => r.quantity > 0) && (
+            {/* {resources.length > 0 && resources.some((r) => r.quantity > 0) && (
               <Card>
                 <CardBody>
                   <div className="flex justify-between items-center">
@@ -368,7 +368,7 @@ export default function ProjectQuotaInternalForm({
                   </div>
                 </CardBody>
               </Card>
-            )}
+            )} */}
           </div>
         </ModalBody>
         <ModalFooter>

@@ -204,7 +204,7 @@ export default function NamespaceQuotaForm({
                   ))}
                 </Select>
 
-                <Input
+                {/* <Input
                   label="Node"
                   value={
                     selectedProjectQuota
@@ -213,7 +213,7 @@ export default function NamespaceQuotaForm({
                   }
                   isReadOnly
                   description="Node is auto-filled from project quota"
-                />
+                /> */}
               </CardBody>
             </Card>
 

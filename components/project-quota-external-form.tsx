@@ -214,14 +214,14 @@ export default function ProjectQuotaExternalForm({
                   ))}
                 </Select>
 
-                {selectedOrgQuota && (
+                {/* {selectedOrgQuota && (
                   <Input
                     label="Node"
                     value={selectedOrgQuota.node_id}
                     isReadOnly
                     description="Node is auto-filled from organization quota"
                   />
-                )}
+                )} */}
               </CardBody>
             </Card>
 
@@ -246,9 +246,9 @@ export default function ProjectQuotaExternalForm({
                       <TableColumn>NAME</TableColumn>
                       <TableColumn>AVAILABLE</TableColumn>
                       <TableColumn>QUANTITY</TableColumn>
-                      <TableColumn>PRICE (credits/hr)</TableColumn>
+                      <TableColumn>PRICE (credits)</TableColumn>
                       <TableColumn>DURATION (hrs)</TableColumn>
-                      <TableColumn>TOTAL</TableColumn>
+                      {/* <TableColumn>TOTAL</TableColumn> */}
                     </TableHeader>
                     <TableBody>
                       {resources.map((resource) => (
@@ -324,7 +324,7 @@ export default function ProjectQuotaExternalForm({
                               className="w-24"
                             />
                           </TableCell>
-                          <TableCell>
+                          {/* <TableCell>
                             <span className="font-semibold">
                               {(
                                 resource.quantity *
@@ -332,7 +332,7 @@ export default function ProjectQuotaExternalForm({
                                 resource.duration
                               ).toFixed(2)}
                             </span>
-                          </TableCell>
+                          </TableCell> */}
                         </TableRow>
                       ))}
                     </TableBody>
@@ -342,7 +342,7 @@ export default function ProjectQuotaExternalForm({
             </Card>
 
             {/* Total Summary */}
-            {resources.length > 0 && resources.some((r) => r.quantity > 0) && (
+            {/* {resources.length > 0 && resources.some((r) => r.quantity > 0) && (
               <Card>
                 <CardBody>
                   <div className="flex justify-between items-center">
@@ -360,7 +360,7 @@ export default function ProjectQuotaExternalForm({
                   </div>
                 </CardBody>
               </Card>
-            )}
+            )} */}
           </div>
         </ModalBody>
         <ModalFooter>

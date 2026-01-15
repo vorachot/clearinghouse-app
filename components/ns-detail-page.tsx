@@ -24,7 +24,11 @@ const NamespaceDetailPage = () => {
 
   const handleOpenAddMember = () => setOpenAddMember(true);
   const handleCloseAddMember = () => setOpenAddMember(false);
-  const { orgId, projectId, namespaceId } = params as { orgId: string; projectId: string; namespaceId: string };
+  const { orgId, projectId, namespaceId } = params as {
+    orgId: string;
+    projectId: string;
+    namespaceId: string;
+  };
   const organizationData = useSWR(
     ["org", orgId],
     () => getOrganizationById(orgId),
@@ -90,13 +94,15 @@ const NamespaceDetailPage = () => {
           </span>
         </h1>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
         {/* Quotas Card */}
         <Card
           isPressable
           isHoverable
           onPress={() =>
-            router.push(`/organizations/${orgId}/${projectId}/${namespaceId}/quotas`)
+            router.push(
+              `/organizations/${orgId}/${projectId}/${namespaceId}/quotas`
+            )
           }
           className="cursor-pointer transition-all hover:scale-[1.02]"
         >
@@ -108,11 +114,11 @@ const NamespaceDetailPage = () => {
                     <PieChartOutlineRounded className="!w-6 !h-6 text-purple-600 dark:text-purple-400" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Quotas
+                    View Quotas
                   </h3>
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                  Set and monitor resource quotas and usage limits
+                  View assigned quota templates and monitor resource usage
                 </p>
               </div>
               <ArrowForwardRounded className="!w-5 !h-5 text-gray-400 ml-2" />

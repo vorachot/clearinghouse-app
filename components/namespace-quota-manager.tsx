@@ -101,22 +101,18 @@ export default function NamespaceQuotaManager({
                       </p>
                       <div className="space-y-2">
                         <div className="text-xs">
-                          <span className="text-gray-500">Project:</span>
-                          <span className="ml-2 font-medium">
-                            {template.projectName}
-                          </span>
-                        </div>
-                        <div className="text-xs">
                           <span className="text-gray-500">Resources:</span>
                           <div className="mt-1 flex flex-wrap gap-1">
-                            {template.resources?.map((r) => (
-                              <span
-                                key={r.id}
-                                className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs"
-                              >
-                                {r.resource_prop.resource.name}: {r.quantity}
-                              </span>
-                            )) || (
+                            {template.quotas?.flatMap((quota) =>
+                              quota.resources?.map((r) => (
+                                <span
+                                  key={r.id}
+                                  className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs"
+                                >
+                                  {r.resource_prop.resource.name}: {r.quantity}
+                                </span>
+                              ))
+                            ) || (
                               <span className="text-gray-500 text-xs">
                                 No resources
                               </span>

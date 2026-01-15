@@ -125,13 +125,15 @@ export default function NamespaceQuotaTemplateAssign({
                 </CardHeader>
                 <CardBody>
                   <div className="flex flex-wrap gap-2">
-                    {selectedTemplate.resources?.map((resource) => (
-                      <Chip key={resource.id} color="primary" variant="flat">
-                        {resource.resource_prop.resource.resource_type?.name ||
-                          "Unknown"}
-                        : {resource.quantity}
-                      </Chip>
-                    ))}
+                    {selectedTemplate.quotas?.flatMap((quota) =>
+                      quota.resources?.map((resource) => (
+                        <Chip key={resource.id} color="primary" variant="flat">
+                          {resource.resource_prop.resource.resource_type
+                            ?.name || "Unknown"}
+                          : {resource.quantity}
+                        </Chip>
+                      ))
+                    )}
                   </div>
                 </CardBody>
               </Card>

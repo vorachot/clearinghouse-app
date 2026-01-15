@@ -45,7 +45,7 @@ const NsCard = ({ id, name }: Props) => {
       </CardHeader>
       <Divider />
       <CardBody className="px-4">
-        <div className="flex flex-col gap-1">
+        <div className=" dark:text-white flex flex-col gap-1">
           <UsageBar label="CPU" value={40} maxValue={100} />
           <UsageBar label="GPU" value={20} maxValue={100} />
           <UsageBar label="Memory" value={60} maxValue={100} />

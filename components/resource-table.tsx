@@ -61,7 +61,7 @@ const ResourceTable = ({ resourcePools }: { resourcePools: ResourcePool[] }) => 
                   >
                     <div className="flex justify-between items-start mb-3">
                       <div>
-                        <h4 className="text-lg font-semibold flex items-center gap-2">
+                        <h4 className="dark:text-white text-lg font-semibold flex items-center gap-2">
                           <Chip size="sm" color="secondary" variant="flat">
                             NODE
                           </Chip>
@@ -100,13 +100,13 @@ const ResourceTable = ({ resourcePools }: { resourcePools: ResourcePool[] }) => 
                                   {resource.resource_type.name}
                                 </Chip>
                               </TableCell>
-                              <TableCell className="font-medium">
+                              <TableCell className="dark:text-white font-medium">
                                 {resource.name}
                               </TableCell>
-                              <TableCell className="font-semibold">
+                              <TableCell className="dark:text-white font-semibold">
                                 {resource.quantity}
                               </TableCell>
-                              <TableCell>{resource.resource_type.unit}</TableCell>
+                              <TableCell className="dark:text-white">{resource.resource_type.unit}</TableCell>
                               <TableCell>
                                 <div className="flex items-center gap-2">
                                   <Tooltip content="Edit resource">

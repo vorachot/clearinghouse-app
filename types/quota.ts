@@ -60,12 +60,17 @@ export type NamespaceQuotaTemplate = {
   id: string;
   name: string;
   description: string;
-  projectId: string;
-  projectName: string;
-  sourceQuotaIds: string[]; // One or more namespace quotas used as source
+  project_id: string;
+  quotas: QuotaTemplate[];
+};
+export type QuotaTemplate = {
+  id: string;
+  name: string;
+  description: string;
+  project_id: string;
+  project_quota_id: string;
+  node_id: string;
   resources: QuotaResource[];
-  createdAt: string;
-  updatedAt: string;
 };
 
 // Form DTOs

@@ -28,11 +28,11 @@ export default function ProjectQuotaList({
     return quota.organization_quota_id ? "Org Quota" : "Resource Pool";
   };
 
-  const calculateTotalPrice = (quota: ProjectQuota) => {
-    return quota.resources.reduce((total, resource) => {
-      return total + (resource.resource_prop?.price || 0) * resource.quantity;
-    }, 0);
-  };
+  // const calculateTotalPrice = (quota: ProjectQuota) => {
+  //   return quota.resources.reduce((total, resource) => {
+  //     return total + (resource.resource_prop?.price || 0) * resource.quantity;
+  //   }, 0);
+  // };
 
   return (
     <div className="space-y-4">
@@ -54,11 +54,12 @@ export default function ProjectQuotaList({
 
       <Table aria-label="Project quotas table">
         <TableHeader>
-          <TableColumn>NAME</TableColumn>
-          <TableColumn>NODE ID</TableColumn>
+          <TableColumn>QUOTA NAME</TableColumn>
+          {/* <TableColumn>NODE ID</TableColumn> */}
+          <TableColumn>DESCRIPTION</TableColumn>
           <TableColumn>SOURCE</TableColumn>
           <TableColumn>RESOURCES</TableColumn>
-          <TableColumn>TOTAL PRICE</TableColumn>
+          {/* <TableColumn>TOTAL PRICE</TableColumn> */}
         </TableHeader>
         <TableBody emptyContent="No quotas found">
           {quotas.map((quota) => (
@@ -66,24 +67,28 @@ export default function ProjectQuotaList({
               <TableCell>
                 <div>
                   <p className="font-semibold">{quota.name}</p>
-                  <p className="text-xs text-gray-500">{quota.description}</p>
                 </div>
               </TableCell>
               <TableCell>
                 <div>
-                  <p className="text-xs text-gray-500">{quota.node_id}</p>
+                  <p className="font-semibold">{quota.description}</p>
                 </div>
               </TableCell>
+              {/* <TableCell>
+                <div>
+                  <p className="text-xs text-gray-500">{quota.node_id}</p>
+                </div>
+              </TableCell> */}
               <TableCell>
                 <div>
                   <Chip size="sm" variant="flat" color="secondary">
                     {getSourceLabel(quota)}
                   </Chip>
-                  {quota.organization_quota_id && (
+                  {/* {quota.organization_quota_id && (
                     <p className="text-xs text-gray-500 mt-1">
                       ID: {quota.organization_quota_id}
                     </p>
-                  )}
+                  )} */}
                 </div>
               </TableCell>
               <TableCell>
@@ -101,11 +106,11 @@ export default function ProjectQuotaList({
                   )}
                 </div>
               </TableCell>
-              <TableCell>
+              {/* <TableCell>
                 <span className="font-semibold">
                   ${calculateTotalPrice(quota).toFixed(2)}
                 </span>
-              </TableCell>
+              </TableCell> */}
             </TableRow>
           ))}
         </TableBody>
