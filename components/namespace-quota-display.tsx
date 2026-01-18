@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardBody } from "@heroui/card";
-import { NamespaceQuota } from "@/types/quota";
+import { NamespaceQuota, NamespaceQuotaTemplate } from "@/types/quota";
 import useSWR from "swr";
 import {
   getNamespaceQuotasByNamespaceId,
@@ -9,13 +9,16 @@ import {
 } from "@/api/quota";
 import UsageBar from "./usagebar";
 import { useState, useEffect } from "react";
+import { StyleRounded } from "@mui/icons-material";
 
 type NamespaceQuotaDisplayProps = {
   namespaceId: string;
+  namespaceTemplate?: NamespaceQuotaTemplate;
 };
 
 export default function NamespaceQuotaDisplay({
   namespaceId,
+  namespaceTemplate,
 }: NamespaceQuotaDisplayProps) {
   const namespaceQuotasByNamespaceId = useSWR(
     ["namespace-quotas", namespaceId],
@@ -68,7 +71,16 @@ export default function NamespaceQuotaDisplay({
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Assigned Quotas</h2>
+        <h2 className="text-xl font-bold">Resource Quotas</h2>
+        {/* Template Info Section */}
+        {namespaceTemplate && (
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
+            <StyleRounded className="!w-4 !h-4 text-indigo-600 dark:text-indigo-400" />
+            <span className="text-sm font-medium text-indigo-600 dark:text-indigo-400">
+              {namespaceTemplate.name}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-4">
@@ -83,9 +95,7 @@ export default function NamespaceQuotaDisplay({
           if (quota?.node_name)
             quotaSourceParts.push(`Node: ${quota.node_name}`);
           if (quota?.organization_name)
-            quotaSourceParts.push(
-              `Org: ${quota.organization_name}`
-            );
+            quotaSourceParts.push(`Org: ${quota.organization_name}`);
 
           const quotaSource =
             quotaSourceParts.length > 0

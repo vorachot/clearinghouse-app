@@ -8,7 +8,7 @@ export type Namespace = {
   credit: number;
   project_id: string;
   organization_id: string;
-  quota_template_id?: string;
+  quota_template_id: string;
   quota_template: NamespaceQuotaTemplate;
   namespace_members: User[];
   owner_id: string;

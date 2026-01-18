@@ -43,7 +43,7 @@ export default function ProjectQuotaManager({
     <div className="space-y-4">
       <h2 className="text-2xl font-bold">Project Quotas</h2>
 
-      <Tabs aria-label="Project quota types" color="primary">
+      <Tabs aria-label="Project quota types">
         <Tab key="external" title="External (from Org Quota)">
           <Card>
             <CardBody className="p-4">
@@ -52,6 +52,7 @@ export default function ProjectQuotaManager({
                   (q) => q.organization_quota_id !== null
                 )}
                 onCreateClick={() => setIsExternalFormOpen(true)}
+                type="external"
               />
             </CardBody>
           </Card>
@@ -77,6 +78,7 @@ export default function ProjectQuotaManager({
                   (q) => q.organization_quota_id === null
                 )}
                 onCreateClick={() => setIsInternalFormOpen(true)}
+                type="internal"
               />
             </CardBody>
           </Card>

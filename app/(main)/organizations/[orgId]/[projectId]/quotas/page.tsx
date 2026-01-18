@@ -169,7 +169,7 @@ const ProjectQuotasPage = () => {
         </h1>
       </div>
 
-      <Tabs aria-label="Quota management sections" color="primary" size="lg">
+      <Tabs aria-label="Quota management sections" size="lg">
         <Tab key="project" title="Project Quotas">
           <Card>
             <CardBody className="p-4">

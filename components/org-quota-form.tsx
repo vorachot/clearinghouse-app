@@ -32,6 +32,7 @@ type OrganizationQuotaFormProps = {
   onClose: () => void;
   onSubmit: (data: CreateOrganizationQuotaDTO) => void;
   organizations: Organization[];
+  orgId: string;
 };
 
 type ResourceFormItem = {
@@ -50,6 +51,7 @@ export default function OrganizationQuotaForm({
   onClose,
   onSubmit,
   organizations,
+  orgId,
 }: OrganizationQuotaFormProps) {
   const [formData, setFormData] = useState({
     name: "",
@@ -61,6 +63,13 @@ export default function OrganizationQuotaForm({
   });
 
   const [resources, setResources] = useState<ResourceFormItem[]>([]);
+
+  // Auto-select the current organization when form opens
+  useEffect(() => {
+    if (orgId && !formData.fromOrgId) {
+      setFormData((prev) => ({ ...prev, fromOrgId: orgId }));
+    }
+  }, [orgId]);
 
   const { data: resourcePoolsData, isLoading: isLoadingPools } = useSWR(
     formData.fromOrgId ? ["resourcePools", formData.fromOrgId] : null,
@@ -213,11 +222,9 @@ export default function OrganizationQuotaForm({
                   }}
                   isRequired
                 >
-                  {organizations.map((org) => (
-                    <SelectItem key={org.id} className="dark:text-white">
-                      {org.name}
-                    </SelectItem>
-                  ))}
+                  <SelectItem key={orgId} className="dark:text-white">
+                    {organizations.find((org) => org.id === orgId)?.name || ""}
+                  </SelectItem>
                 </Select>
 
                 <Select

@@ -18,10 +18,13 @@ import {
   VisibilityRounded,
   PeopleAltRounded,
   StyleRounded,
+  TollRounded,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { Namespace } from "@/types/namespace";
 import { useUser } from "@/context/UserContext";
+import { useState, useEffect } from "react";
+import { getQuotaUsageByNamespaceId } from "@/api/quota";
 
 type Props = {
   organizationId: string;
@@ -38,6 +41,44 @@ const NamespaceTable = ({
 }: Props) => {
   const router = useRouter();
   const { user } = useUser();
+  const [namespaceUsages, setNamespaceUsages] = useState<
+    Record<string, Record<string, any>>
+  >({});
+
+  useEffect(() => {
+    const fetchAllUsages = async () => {
+      const allUsages: Record<string, Record<string, any>> = {};
+
+      for (const namespace of namespaces) {
+        if (namespace.quota_template?.quotas) {
+          const quotaUsages: Record<string, any> = {};
+
+          for (const quota of namespace.quota_template.quotas) {
+            try {
+              const usage = await getQuotaUsageByNamespaceId(
+                quota.id,
+                namespace.id
+              );
+              quotaUsages[quota.id] = usage;
+            } catch (error) {
+              console.error(
+                `Error fetching usage for quota ${quota.id}:`,
+                error
+              );
+            }
+          }
+
+          allUsages[namespace.id] = quotaUsages;
+        }
+      }
+
+      setNamespaceUsages(allUsages);
+    };
+
+    if (namespaces.length > 0) {
+      fetchAllUsages();
+    }
+  }, [namespaces]);
 
   const handleView = (namespaceId: string) => {
     router.push(`/organizations/${organizationId}/${projectId}/${namespaceId}`);
@@ -58,6 +99,7 @@ const NamespaceTable = ({
     { key: "name", label: "NAMESPACE NAME" },
     { key: "description", label: "DESCRIPTION" },
     { key: "template", label: "QUOTA TEMPLATE" },
+    { key: "usage", label: "USAGE" },
     { key: "members", label: "MEMBERS" },
     { key: "credit", label: "CREDIT" },
     { key: "actions", label: "ACTIONS" },
@@ -106,8 +148,33 @@ const NamespaceTable = ({
                 <div className="flex items-center gap-2">
                   <StyleRounded className="!w-4 !h-4 text-indigo-600 dark:text-indigo-400" />
                   <span className="font-medium text-indigo-600 dark:text-indigo-400">
-                    {namespace.quota_template?.name || "None"}
+                    {namespace.quota_template?.name || "N/A"}
                   </span>
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {namespace.quota_template?.quotas?.map((q) =>
+                    q.resources?.map((r) => {
+                      const quotaUsages = namespaceUsages[namespace.id];
+                      const usage = quotaUsages?.[q.id];
+                      const resourceTypeId =
+                        r.resource_prop?.resource?.resource_type_id;
+                      const matchingUsage = usage?.type?.find(
+                        (usageType: any) => usageType.type_id === resourceTypeId
+                      );
+                      const usedAmount = matchingUsage?.used || 0;
+                      const totalAmount = r.quantity || 0;
+
+                      return (
+                        <Chip key={r.id} size="sm" variant="flat">
+                          {r.resource_prop?.resource?.resource_type?.name ||
+                            "Unknown"}
+                          : {usedAmount}/{totalAmount}
+                        </Chip>
+                      );
+                    })
+                  )}
                 </div>
               </TableCell>
               <TableCell>
@@ -120,14 +187,14 @@ const NamespaceTable = ({
               </TableCell>
               <TableCell>
                 <Chip size="sm" color="primary" variant="flat" className="px-2">
+                  <TollRounded className="!w-4 !h-4 mr-1" />
                   <span className="font-medium">
                     {namespace.credit || 0} credits
                   </span>
                 </Chip>
               </TableCell>
               <TableCell>
-                {user &&
-                namespace.owner_id === user.id ? (
+                {user && namespace.owner_id === user.id ? (
                   <div className="flex items-center gap-2">
                     <Tooltip content="View details" className="dark:text-white">
                       <Button

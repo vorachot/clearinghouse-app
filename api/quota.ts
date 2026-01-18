@@ -59,18 +59,37 @@ export async function createProjectQuotaInternal(
   return response.data;
 }
 
-export async function getNamespaceQuotasByProjectId(projectId: string): Promise<any> {
-  const response = await apiClient.get(`/quota/project/${projectId}/namespaces`);
+export async function getNamespaceQuotasByProjectId(
+  projectId: string
+): Promise<any> {
+  const response = await apiClient.get(
+    `/quota/project/${projectId}/namespaces`
+  );
   return response.data;
 }
 
-export async function getNamespaceQuotasByNamespaceId(namespaceId: string): Promise<any> {
+export async function getNamespaceQuotasByNamespaceId(
+  namespaceId: string
+): Promise<any> {
   const response = await apiClient.get(`/quota/namespace/${namespaceId}`);
   return response.data;
 }
 
-export async function getNamespaceQuotaTemplatesByProjectId(projectId: string): Promise<any> {
-  const response = await apiClient.get(`/quota/namespace/template/project/${projectId}`);
+export async function getNamespaceQuotaTemplatesByProjectId(
+  projectId: string
+): Promise<any> {
+  const response = await apiClient.get(
+    `/quota/namespace/template/project/${projectId}`
+  );
+  return response.data;
+}
+
+export async function getNamespaceQuotaTemplateById(
+  templateId: string
+): Promise<any> {
+  const response = await apiClient.get(
+    `/quota/namespace/template/${templateId}`
+  );
   return response.data;
 }
 
@@ -89,7 +108,10 @@ export async function createNamespaceQuota(
 export async function createNamespaceQuotaTemplate(
   namespaceQuotaTemplateData: CreateQuotaTemplateDTO
 ): Promise<Response> {
-  const response = await apiClient.post(`/quota/namespace/template`, namespaceQuotaTemplateData);
+  const response = await apiClient.post(
+    `/quota/namespace/template`,
+    namespaceQuotaTemplateData
+  );
 
   if (response.status !== 201) {
     throw new Error("Failed to create namespace quota");
@@ -113,7 +135,12 @@ export async function assignTemplateToNamespaces(
   return response.data;
 }
 
-export async function getQuotaUsageByNamespaceId(quotaId: string, namespaceId: string): Promise<any> {
-  const response = await apiClient.get(`/quota/${quotaId}/usage/${namespaceId}`);
+export async function getQuotaUsageByNamespaceId(
+  quotaId: string,
+  namespaceId: string
+): Promise<any> {
+  const response = await apiClient.get(
+    `/quota/${quotaId}/usage/${namespaceId}`
+  );
   return response.data;
 }

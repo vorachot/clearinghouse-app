@@ -98,6 +98,7 @@ const OrgQuotasPage = () => {
         onClose={() => setIsOrgFormOpen(false)}
         onSubmit={handleCreateOrgQuota}
         organizations={organizations}
+        orgId={orgId}
       />
 
       <OrganizationQuotaDetail

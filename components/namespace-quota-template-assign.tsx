@@ -177,7 +177,7 @@ export default function NamespaceQuotaTemplateAssign({
             )}
 
             {/* Summary */}
-            {isFormValid && (
+            {/* {isFormValid && (
               <Card className="bg-primary-50 dark:bg-primary-950 border-primary">
                 <CardBody>
                   <div className="space-y-2">
@@ -205,7 +205,7 @@ export default function NamespaceQuotaTemplateAssign({
                   </div>
                 </CardBody>
               </Card>
-            )}
+            )} */}
           </div>
         </ModalBody>
         <ModalFooter>
