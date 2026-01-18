@@ -25,6 +25,7 @@ import { Namespace } from "@/types/namespace";
 import { useUser } from "@/context/UserContext";
 import { useState, useEffect } from "react";
 import { getQuotaUsageByNamespaceId } from "@/api/quota";
+import UsageBar from "./usagebar";
 
 type Props = {
   organizationId: string;
@@ -167,11 +168,19 @@ const NamespaceTable = ({
                       const totalAmount = r.quantity || 0;
 
                       return (
-                        <Chip key={r.id} size="sm" variant="flat">
-                          {r.resource_prop?.resource?.resource_type?.name ||
-                            "Unknown"}
-                          : {usedAmount}/{totalAmount}
-                        </Chip>
+                        // <Chip key={r.id} size="sm" variant="flat">
+                        //   {r.resource_prop?.resource?.resource_type?.name ||
+                        //     "Unknown"}
+                        //   : {usedAmount}/{totalAmount}
+                        // </Chip>
+                        <UsageBar
+                          value={usedAmount}
+                          maxValue={totalAmount}
+                          label={
+                            r.resource_prop?.resource?.resource_type?.name ||
+                            "Unknown"
+                          }
+                        />
                       );
                     })
                   )}
