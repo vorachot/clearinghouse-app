@@ -8,6 +8,7 @@ import { useParams } from "next/navigation";
 import { getResourcePoolsByOrgId } from "@/api/resource";
 import Loading from "@/app/loading";
 import { ResourcePool } from "@/types/resource";
+import { Inventory2Outlined } from "@mui/icons-material";
 
 const ResourcesPage = () => {
   const params = useParams();
@@ -18,7 +19,7 @@ const ResourcesPage = () => {
     {
       revalidateOnFocus: false,
       dedupingInterval: 5000,
-    }
+    },
   );
   if (resourcePoolsData.isLoading) return <Loading />;
   if (resourcePoolsData.error) return <div>Error loading resources</div>;
@@ -102,9 +103,12 @@ const ResourcesPage = () => {
       {/* Resource Pools Section */}
       <div>
         {resourcePools.length === 0 && (
-          <p className="text-gray-600 dark:text-gray-400">
-            No resource pools found. Create one to get started.
-          </p>
+          <div className="h-[200px] flex flex-col justify-center items-center text-center opacity-50">
+            <Inventory2Outlined className="!w-16 !h-16 mx-auto mb-4 text-gray-400" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+              No Available Resource Pools in this Organization
+            </h3>
+          </div>
         )}
         <ResourceTable resourcePools={resourcePools} />
       </div>

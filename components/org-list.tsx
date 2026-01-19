@@ -8,7 +8,13 @@ import { Organization } from "@/types/org";
 //   { id: '3', name: 'Chulalongkorn University' },
 // ]
 
-const OrganizationList = ({ orgs }: { orgs: Organization[] }) => {
+type Props = {
+  orgs: Organization[];
+  onEdit?: (orgId: string) => void;
+  onDelete?: (orgId: string) => void;
+};
+
+const OrganizationList = ({ orgs, onEdit, onDelete }: Props) => {
   if (orgs.length === 0) {
     return (
       <div className="h-[500px] flex flex-col justify-center items-center text-center opacity-50">
@@ -27,9 +33,11 @@ const OrganizationList = ({ orgs }: { orgs: Organization[] }) => {
           aria-label={`Organization ${org.name}`}
           id={org.id}
           name={org.name}
+          onEdit={onEdit}
+          onDelete={onDelete}
         />
       ))}
     </div>
   );
-}
-export default OrganizationList
+};
+export default OrganizationList;

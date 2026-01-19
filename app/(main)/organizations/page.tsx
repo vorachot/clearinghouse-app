@@ -4,6 +4,7 @@ import Loading from "@/app/loading";
 import useSWR from "swr";
 import { getOrganizations } from "@/api/org";
 import CreateOrgDialog from "@/components/create-org-dialog";
+import UpdateOrgDialog from "@/components/update-org-dialog";
 import OrganizationList from "@/components/org-list";
 import { Button } from "@heroui/button";
 import AddIcon from "@mui/icons-material/Add";
@@ -13,6 +14,8 @@ import { Organization } from "@/types/org";
 
 const OrganizationsPage = () => {
   const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [selectedOrgId, setSelectedOrgId] = useState<string | null>(null);
 
   const onOpen = () => setOpen(true);
   const onClose = () => setOpen(false);
@@ -24,13 +27,23 @@ const OrganizationsPage = () => {
       onOpen();
     }
   };
+
+  const handleEditOrg = (orgId: string) => {
+    setSelectedOrgId(orgId);
+    setEditOpen(true);
+  };
+
+  const handleCloseEdit = () => {
+    setEditOpen(false);
+    setSelectedOrgId(null);
+  };
   const { data, error, isLoading } = useSWR(
     ["orgs"],
     () => getOrganizations(),
     {
       revalidateOnFocus: false,
       dedupingInterval: 5000, // Prevent duplicate requests for 5 seconds
-    }
+    },
   );
 
   if (isLoading) return <Loading />;
@@ -82,9 +95,12 @@ const OrganizationsPage = () => {
       </div>
 
       <div className="h-full dark:text-white">
-        <OrganizationList orgs={organizations} />
+        <OrganizationList orgs={organizations} onEdit={handleEditOrg} />
       </div>
       {open && <CreateOrgDialog setOnClose={onClose} />}
+      {editOpen && selectedOrgId && (
+        <UpdateOrgDialog orgId={selectedOrgId} setOnClose={handleCloseEdit} />
+      )}
     </div>
   );
 };

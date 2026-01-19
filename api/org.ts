@@ -22,10 +22,18 @@ export async function getOrganizationById(id: string): Promise<any> {
   return response.data;
 }
 
+export async function updateOrganization(
+  id: string,
+  orgData: { name?: string; description?: string },
+): Promise<any> {
+  const response = await apiClient.put(`/organizations/${id}`, orgData);
+  return response.data;
+}
+
 export async function addMemberToOrg(memberData: {
   organization_id: string;
   members: string[];
-}) {
+}): Promise<any> {
   const response = await apiClient.post(`/organizations/members`, memberData);
 
   if (response.status !== 201) {
