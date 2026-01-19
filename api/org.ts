@@ -30,6 +30,14 @@ export async function updateOrganization(
   return response.data;
 }
 
+export async function deleteOrganization(id: string): Promise<void> {
+  const response = await apiClient.delete(`/organizations/${id}`);
+
+  if (response.status !== 200) {
+    throw new Error("Failed to delete organization");
+  }
+}
+
 export async function addMemberToOrg(memberData: {
   organization_id: string;
   members: string[];
