@@ -11,41 +11,43 @@ import {
 import { Button } from "@heroui/button";
 import { Select, SelectItem } from "@heroui/select";
 import { PersonAddRounded } from "@mui/icons-material";
-import { addMembersToOrganization, getMembers } from "@/api/member";
+import { addMembersToProject, getOrganizationMembers } from "@/api/member";
 import { mutate } from "swr";
 import useSWR from "swr";
 import Loading from "@/app/loading";
 import { User } from "@/context/UserContext";
 
-interface AddMemberDialogProps {
-  orgId?: string;
+interface AddProjectMemberDialogProps {
+  projectId: string;
+  orgId: string;
   onClose?: () => void;
   existingMembers?: User[];
 }
 
-const AddMemberDialog = ({
+const AddProjectMemberDialog = ({
+  projectId,
   orgId,
   onClose,
   existingMembers = [],
-}: AddMemberDialogProps) => {
+}: AddProjectMemberDialogProps) => {
   const [selectedMembers, setSelectedMembers] = useState<Set<string>>(
     new Set([]),
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { data: allMembers, isLoading } = useSWR<User[]>(
-    "members",
-    getMembers,
+  const { data: orgMembers, isLoading } = useSWR<User[]>(
+    ["org-members", orgId],
+    () => getOrganizationMembers(orgId),
     {
       revalidateOnFocus: false,
       dedupingInterval: 5000,
     },
   );
 
-  // Filter out members who are already in the organization
+  // Filter out members who are already in the project
   const existingMemberIds = new Set(existingMembers.map((m) => m.id));
   const availableMembers =
-    allMembers?.filter((member) => !existingMemberIds.has(member.id)) || [];
+    orgMembers?.filter((member) => !existingMemberIds.has(member.id)) || [];
 
   const handleSubmit = async () => {
     if (selectedMembers.size === 0) return;
@@ -53,18 +55,18 @@ const AddMemberDialog = ({
     setIsSubmitting(true);
 
     const data = {
-      organization_id: orgId ?? "",
+      project_id: projectId,
       members: Array.from(selectedMembers),
     };
 
     try {
-      await addMembersToOrganization(data);
+      await addMembersToProject(data);
       if (onClose) {
         onClose();
       }
-      await mutate(["orgs", orgId]);
+      await mutate(["project", projectId]);
     } catch (error) {
-      console.error("Error adding members to organization:", error);
+      console.error("Error adding members to project:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -87,13 +89,13 @@ const AddMemberDialog = ({
       <ModalContent>
         <ModalHeader className="flex gap-2 items-center">
           <PersonAddRounded className="!w-6 !h-6 text-green-600" />
-          Add Members to Organization
+          Add Members to Project
         </ModalHeader>
         <ModalBody>
           {availableMembers.length === 0 ? (
             <div className="text-center py-4">
               <p className="text-gray-500 dark:text-gray-400">
-                No available members to add
+                No available organization members to add to this project
               </p>
             </div>
           ) : (
@@ -130,7 +132,8 @@ const AddMemberDialog = ({
             </Select>
           )}
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            You can select multiple members to add at once
+            Only organization members can be added to this project. You can
+            select multiple members at once.
           </p>
         </ModalBody>
         <ModalFooter>
@@ -152,4 +155,4 @@ const AddMemberDialog = ({
     </Modal>
   );
 };
-export default AddMemberDialog;
+export default AddProjectMemberDialog;

@@ -49,7 +49,7 @@ const OrgDetailPage = () => {
     {
       revalidateOnFocus: false,
       dedupingInterval: 5000,
-    }
+    },
   );
   const projectsData = useSWR(
     ["orgs", orgId, "projects"],
@@ -57,7 +57,7 @@ const OrgDetailPage = () => {
     {
       revalidateOnFocus: false,
       dedupingInterval: 5000,
-    }
+    },
   );
   const projects: Project[] = projectsData.data || [];
 
@@ -190,7 +190,11 @@ const OrgDetailPage = () => {
 
       {open && <CreateProjDialog orgId={orgId} setOnClose={onClose} />}
       {openAddMember && (
-        <AddMemberDialog orgId={orgId} onClose={handleCloseAddMember} />
+        <AddMemberDialog
+          orgId={orgId}
+          onClose={handleCloseAddMember}
+          existingMembers={organization.members}
+        />
       )}
 
       {/* Members Modal */}
@@ -199,6 +203,7 @@ const OrgDetailPage = () => {
           isOpen={openMembersModal}
           setOpenMembersModal={setOpenMembersModal}
           members={organization.members}
+          orgId={orgId}
         />
       )}
     </div>

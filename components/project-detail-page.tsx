@@ -21,6 +21,8 @@ import MemberCard from "./member-card";
 import { getNamespaceByProjectId } from "@/api/namespace";
 import { Namespace } from "@/types/namespace";
 import NamespaceTable from "./namespace-table";
+import AddProjectMemberDialog from "./add-project-member-dialog";
+import ProjectMemberModal from "./project-member-modal";
 
 const ProjectDetailPage = () => {
   const params = useParams();
@@ -48,7 +50,7 @@ const ProjectDetailPage = () => {
     {
       revalidateOnFocus: false,
       dedupingInterval: 5000, // Prevent duplicate requests for 5 seconds
-    }
+    },
   );
   const projectData = useSWR(
     ["project", projectId],
@@ -56,7 +58,7 @@ const ProjectDetailPage = () => {
     {
       revalidateOnFocus: false,
       dedupingInterval: 5000, // Prevent duplicate requests for 5 seconds
-    }
+    },
   );
   const namespacesData = useSWR(
     ["namespaces", projectId],
@@ -64,7 +66,7 @@ const ProjectDetailPage = () => {
     {
       revalidateOnFocus: false,
       dedupingInterval: 5000, // Prevent duplicate requests for 5 seconds
-    }
+    },
   );
 
   const organization: Organization = organizationData.data || {};
@@ -197,6 +199,24 @@ const ProjectDetailPage = () => {
           orgId={orgId}
           projectId={projectId}
           setOnClose={onClose}
+        />
+      )}
+      {openAddMember && (
+        <AddProjectMemberDialog
+          projectId={projectId}
+          orgId={orgId}
+          onClose={handleCloseAddMember}
+          existingMembers={project.members}
+        />
+      )}
+
+      {/* Members Modal */}
+      {openMembersModal && (
+        <ProjectMemberModal
+          isOpen={openMembersModal}
+          setOpenMembersModal={setOpenMembersModal}
+          members={project.members}
+          projectId={projectId}
         />
       )}
     </div>

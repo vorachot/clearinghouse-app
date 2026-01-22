@@ -16,21 +16,21 @@ import {
   PersonRemoveRounded,
 } from "@mui/icons-material";
 import { useState } from "react";
-import { removeMembersFromOrganization } from "@/api/member";
+import { removeMembersFromNamespace } from "@/api/member";
 import { mutate } from "swr";
 
 type Props = {
   isOpen: boolean;
   setOpenMembersModal: (open: boolean) => void;
   members?: User[];
-  orgId?: string;
+  namespaceId?: string;
 };
 
-const MemberModal = ({
+const NamespaceMemberModal = ({
   isOpen,
   setOpenMembersModal,
   members,
-  orgId,
+  namespaceId,
 }: Props) => {
   const [selectedMembers, setSelectedMembers] = useState<Set<string>>(
     new Set([]),
@@ -48,16 +48,16 @@ const MemberModal = ({
   };
 
   const handleRemoveMembers = async () => {
-    if (selectedMembers.size === 0 || !orgId) return;
+    if (selectedMembers.size === 0 || !namespaceId) return;
 
     setIsRemoving(true);
     try {
-      await removeMembersFromOrganization({
-        organization_id: orgId,
+      await removeMembersFromNamespace({
+        namespace_id: namespaceId,
         members: Array.from(selectedMembers),
       });
       setSelectedMembers(new Set([]));
-      await mutate(["orgs", orgId]);
+      await mutate(["namespace", namespaceId]);
       setOpenMembersModal(false);
     } catch (error) {
       console.error("Error removing members:", error);
@@ -80,7 +80,7 @@ const MemberModal = ({
         <ModalHeader className="flex gap-2 items-center">
           <GroupRounded className="!w-6 !h-6 text-green-600 dark:text-green-400" />
           <span className="dark:text-white">
-            All Members ({members?.length || 0})
+            Namespace Members ({members?.length || 0})
           </span>
           {selectedMembers.size > 0 && (
             <Chip size="sm" color="primary" variant="flat">
@@ -146,4 +146,4 @@ const MemberModal = ({
     </Modal>
   );
 };
-export default MemberModal;
+export default NamespaceMemberModal;
