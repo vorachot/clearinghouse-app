@@ -9,7 +9,7 @@ import {
 } from "@heroui/modal";
 import { Button } from "@heroui/button";
 import { deleteOrganization, getOrganizationById } from "@/api/org";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { mutate } from "swr";
 import useSWR from "swr";
 import { WarningRounded } from "@mui/icons-material";

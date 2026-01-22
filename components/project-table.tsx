@@ -23,7 +23,7 @@ import {
   PeopleAltRounded,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-import EditQuotaDialog from "./edit-quota-dialog";
+import UpdateProjectDialog from "./update-project-dialog";
 import { Project } from "@/types/project";
 import { useUser } from "@/context/UserContext";
 
@@ -153,13 +153,16 @@ const ProjectTable = ({ organizationId, projects, onDelete }: Props) => {
                           <VisibilityRounded className="!w-4 !h-4" />
                         </Button>
                       </Tooltip>
-                      <Tooltip content="Edit quota" className="dark:text-white">
+                      <Tooltip
+                        content="Edit project"
+                        className="dark:text-white"
+                      >
                         <Button
                           isIconOnly
                           size="sm"
                           variant="light"
                           color="warning"
-                          aria-label="Edit quota"
+                          aria-label="Edit project"
                           onPress={() => handleEdit(project.id)}
                         >
                           <EditRounded className="!w-4 !h-4" />
@@ -193,8 +196,9 @@ const ProjectTable = ({ organizationId, projects, onDelete }: Props) => {
         </Table>
       </div>
       {editDialogOpen && (
-        <EditQuotaDialog
+        <UpdateProjectDialog
           projectId={selectedProjectId}
+          organizationId={organizationId}
           setOnClose={() => setEditDialogOpen(false)}
         />
       )}

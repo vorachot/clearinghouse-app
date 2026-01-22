@@ -22,3 +22,12 @@ export async function getProjectsByOrgId(orgId: string): Promise<any> {
   const response = await apiClient.get(`/projects/organization/${orgId}`);
   return response.data;
 }
+
+export async function updateProject(projectData: {
+  project_id: string;
+  name: string;
+  description: string;
+}): Promise<any> {
+  const response = await apiClient.put(`/projects/`, projectData);
+  return response.data;
+}
