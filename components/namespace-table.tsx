@@ -58,13 +58,13 @@ const NamespaceTable = ({
             try {
               const usage = await getQuotaUsageByNamespaceId(
                 quota.id,
-                namespace.id
+                namespace.id,
               );
               quotaUsages[quota.id] = usage;
             } catch (error) {
               console.error(
                 `Error fetching usage for quota ${quota.id}:`,
-                error
+                error,
               );
             }
           }
@@ -162,7 +162,8 @@ const NamespaceTable = ({
                       const resourceTypeId =
                         r.resource_prop?.resource?.resource_type_id;
                       const matchingUsage = usage?.type?.find(
-                        (usageType: any) => usageType.type_id === resourceTypeId
+                        (usageType: any) =>
+                          usageType.type_id === resourceTypeId,
                       );
                       const usedAmount = matchingUsage?.used || 0;
                       const totalAmount = r.quantity || 0;
@@ -174,6 +175,7 @@ const NamespaceTable = ({
                         //   : {usedAmount}/{totalAmount}
                         // </Chip>
                         <UsageBar
+                          key={r.id}
                           value={usedAmount}
                           maxValue={totalAmount}
                           label={
@@ -182,7 +184,7 @@ const NamespaceTable = ({
                           }
                         />
                       );
-                    })
+                    }),
                   )}
                 </div>
               </TableCell>
