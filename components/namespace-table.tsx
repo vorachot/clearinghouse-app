@@ -27,6 +27,7 @@ import { useState, useEffect } from "react";
 import { getQuotaUsageByNamespaceId } from "@/api/quota";
 import UsageBar from "./usagebar";
 import UpdateNamespaceDialog from "./update-ns-dialog";
+import DeleteNamespaceDialog from "./delete-ns-dialog";
 
 type Props = {
   organizationId: string;
@@ -47,6 +48,9 @@ const NamespaceTable = ({
     Record<string, Record<string, any>>
   >({});
   const [editingNamespaceId, setEditingNamespaceId] = useState<string | null>(
+    null,
+  );
+  const [deletingNamespaceId, setDeletingNamespaceId] = useState<string | null>(
     null,
   );
 
@@ -94,9 +98,7 @@ const NamespaceTable = ({
   };
 
   const handleDelete = (namespaceId: string) => {
-    if (onDelete) {
-      onDelete(namespaceId);
-    }
+    setDeletingNamespaceId(namespaceId);
   };
 
   const columns = [
@@ -268,6 +270,13 @@ const NamespaceTable = ({
           namespaceId={editingNamespaceId}
           projectId={projectId}
           setOnClose={() => setEditingNamespaceId(null)}
+        />
+      )}
+      {deletingNamespaceId && (
+        <DeleteNamespaceDialog
+          namespaceId={deletingNamespaceId}
+          projectId={projectId}
+          setOnClose={() => setDeletingNamespaceId(null)}
         />
       )}
     </div>

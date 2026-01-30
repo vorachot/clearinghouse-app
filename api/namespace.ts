@@ -38,3 +38,13 @@ export async function updateNamespace(namespaceData: {
 
   return response.data;
 }
+
+export async function deleteNamespace(id: string): Promise<any> {
+  const response = await apiClient.delete(`/namespaces/${id}`);
+
+  if (response.status !== 200) {
+    throw new Error("Failed to delete namespace");
+  }
+  
+  return response.data;
+}
