@@ -26,6 +26,7 @@ import { useUser } from "@/context/UserContext";
 import { useState, useEffect } from "react";
 import { getQuotaUsageByNamespaceId } from "@/api/quota";
 import UsageBar from "./usagebar";
+import UpdateNamespaceDialog from "./update-ns-dialog";
 
 type Props = {
   organizationId: string;
@@ -45,6 +46,9 @@ const NamespaceTable = ({
   const [namespaceUsages, setNamespaceUsages] = useState<
     Record<string, Record<string, any>>
   >({});
+  const [editingNamespaceId, setEditingNamespaceId] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
     const fetchAllUsages = async () => {
@@ -86,8 +90,7 @@ const NamespaceTable = ({
   };
 
   const handleEdit = (namespaceId: string) => {
-    // TODO: Implement edit functionality
-    console.log("Edit namespace:", namespaceId);
+    setEditingNamespaceId(namespaceId);
   };
 
   const handleDelete = (namespaceId: string) => {
@@ -260,6 +263,13 @@ const NamespaceTable = ({
           ))}
         </TableBody>
       </Table>
+      {editingNamespaceId && (
+        <UpdateNamespaceDialog
+          namespaceId={editingNamespaceId}
+          projectId={projectId}
+          setOnClose={() => setEditingNamespaceId(null)}
+        />
+      )}
     </div>
   );
 };

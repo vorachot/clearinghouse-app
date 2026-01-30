@@ -29,5 +29,10 @@ export async function updateProject(projectData: {
   description: string;
 }): Promise<any> {
   const response = await apiClient.put(`/projects/`, projectData);
+
+  if (response.status !== 200) {
+    throw new Error("Failed to update project");
+  }
+  
   return response.data;
 }
