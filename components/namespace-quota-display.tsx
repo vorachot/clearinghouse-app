@@ -59,10 +59,10 @@ export default function NamespaceQuotaDisplay({
           <p className="text-gray-500">
             No quota template has been assigned to this namespace yet.
           </p>
-          <p className="text-sm text-gray-400 mt-2">
+          {/* <p className="text-sm text-gray-400 mt-2">
             Please ask a project administrator to assign a quota template to
             this namespace.
-          </p>
+          </p> */}
         </CardBody>
       </Card>
     );

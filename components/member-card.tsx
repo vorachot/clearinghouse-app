@@ -12,14 +12,46 @@ import {
 
 type Props = {
   members?: User[];
+  admins?: User[];
   handleOpenAddMember: () => void;
   setOpenMembersModal: (open: boolean) => void;
-}
+};
 
-const MemberCard = ({ members, handleOpenAddMember, setOpenMembersModal }: Props) => {
+const MemberCard = ({
+  members,
+  admins,
+  handleOpenAddMember,
+  setOpenMembersModal,
+}: Props) => {
   const INITIAL_DISPLAY_COUNT = 1;
-  const displayedMembers = members?.slice(0, INITIAL_DISPLAY_COUNT);
-  const hasMoreMembers = (members?.length || 0) > INITIAL_DISPLAY_COUNT;
+
+  // Combine admins and members with role information
+  const allUsers = [
+    ...(admins?.map((admin) => ({ ...admin, role: "admin" as const })) || []),
+    ...(members?.map((member) => ({ ...member, role: "member" as const })) ||
+      []),
+  ];
+
+  // Deduplicate by user id, keeping admin role priority
+  const uniqueUsers = Array.from(
+    allUsers.reduce((map, user) => {
+      const existing = map.get(user.id);
+      if (!existing || user.role === "admin") {
+        map.set(user.id, user);
+      }
+      return map;
+    }, new Map<string, (typeof allUsers)[0]>()),
+  ).map(([_, user]) => user);
+
+  // Sort admins first
+  const sortedUsers = uniqueUsers.sort((a, b) => {
+    if (a.role === "admin" && b.role !== "admin") return -1;
+    if (a.role !== "admin" && b.role === "admin") return 1;
+    return 0;
+  });
+
+  const displayedMembers = sortedUsers.slice(0, INITIAL_DISPLAY_COUNT);
+  const hasMoreMembers = sortedUsers.length > INITIAL_DISPLAY_COUNT;
   return (
     <Card className="bg-white dark:bg-gray-800 shadow-md">
       <CardHeader className="flex gap-3 pb-2 justify-between">
@@ -28,8 +60,8 @@ const MemberCard = ({ members, handleOpenAddMember, setOpenMembersModal }: Props
           <div className="flex flex-col">
             <p className="text-lg font-semibold">Members</p>
             <p className="text-small text-gray-500 dark:text-gray-400">
-              {members?.length || 0} member
-              {members?.length !== 1 ? "s" : ""}
+              {sortedUsers.length} member
+              {sortedUsers.length !== 1 ? "s" : ""}
             </p>
           </div>
         </div>
@@ -61,8 +93,12 @@ const MemberCard = ({ members, handleOpenAddMember, setOpenMembersModal }: Props
                     {member.email}
                   </p>
                 </div>
-                <Chip size="sm" color="success" variant="flat">
-                  Member
+                <Chip
+                  size="sm"
+                  color={member.role === "admin" ? "primary" : "success"}
+                  variant="flat"
+                >
+                  {member.role === "admin" ? "Admin" : "Member"}
                 </Chip>
               </div>
             ))}
@@ -74,7 +110,7 @@ const MemberCard = ({ members, handleOpenAddMember, setOpenMembersModal }: Props
                 className="w-full mt-2"
                 onPress={() => setOpenMembersModal(true)}
               >
-                View All {members?.length || 0} Members
+                View All {sortedUsers.length} Members
               </Button>
             )}
           </>

@@ -22,6 +22,7 @@ interface AddNamespaceMemberDialogProps {
   projectId: string;
   onClose?: () => void;
   existingMembers?: User[];
+  admins?: User[];
 }
 
 const AddNamespaceMemberDialog = ({
@@ -29,6 +30,7 @@ const AddNamespaceMemberDialog = ({
   projectId,
   onClose,
   existingMembers = [],
+  admins = [],
 }: AddNamespaceMemberDialogProps) => {
   const [selectedMembers, setSelectedMembers] = useState<Set<string>>(
     new Set([]),
@@ -44,10 +46,13 @@ const AddNamespaceMemberDialog = ({
     },
   );
 
-  // Filter out members who are already in the namespace
+  // Filter out members who are already in the namespace and admins
   const existingMemberIds = new Set(existingMembers.map((m) => m.id));
+  const adminIds = new Set(admins.map((a) => a.id));
   const availableMembers =
-    projectMembers?.filter((member) => !existingMemberIds.has(member.id)) || [];
+    projectMembers?.filter(
+      (member) => !existingMemberIds.has(member.id) && !adminIds.has(member.id),
+    ) || [];
 
   const handleSubmit = async () => {
     if (selectedMembers.size === 0) return;
@@ -131,10 +136,9 @@ const AddNamespaceMemberDialog = ({
               ))}
             </Select>
           )}
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Only project members can be added to this namespace. You can select
-            multiple members at once.
-          </p>
+          {/* <p className="text-sm text-gray-500 dark:text-gray-400">
+            Only project members can be added to this namespace.
+          </p> */}
         </ModalBody>
         <ModalFooter>
           <Button color="danger" variant="light" onPress={onClose}>

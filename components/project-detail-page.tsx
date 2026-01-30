@@ -133,6 +133,7 @@ const ProjectDetailPage = () => {
         {/* Members Card */}
         <MemberCard
           members={project.members}
+          admins={project.admins}
           handleOpenAddMember={handleOpenAddMember}
           setOpenMembersModal={setOpenMembersModal}
         />
@@ -207,6 +208,7 @@ const ProjectDetailPage = () => {
           orgId={orgId}
           onClose={handleCloseAddMember}
           existingMembers={project.members}
+          admins={project.admins}
         />
       )}
 
@@ -216,6 +218,7 @@ const ProjectDetailPage = () => {
           isOpen={openMembersModal}
           setOpenMembersModal={setOpenMembersModal}
           members={project.members}
+          admins={project.admins}
           projectId={projectId}
         />
       )}

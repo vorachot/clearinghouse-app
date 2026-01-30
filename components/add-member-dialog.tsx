@@ -129,9 +129,9 @@ const AddMemberDialog = ({
               ))}
             </Select>
           )}
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          {/* <p className="text-sm text-gray-500 dark:text-gray-400">
             You can select multiple members to add at once
-          </p>
+          </p> */}
         </ModalBody>
         <ModalFooter>
           <Button color="danger" variant="light" onPress={onClose}>

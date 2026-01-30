@@ -22,6 +22,7 @@ interface AddProjectMemberDialogProps {
   orgId: string;
   onClose?: () => void;
   existingMembers?: User[];
+  admins?: User[];
 }
 
 const AddProjectMemberDialog = ({
@@ -29,6 +30,7 @@ const AddProjectMemberDialog = ({
   orgId,
   onClose,
   existingMembers = [],
+  admins = [],
 }: AddProjectMemberDialogProps) => {
   const [selectedMembers, setSelectedMembers] = useState<Set<string>>(
     new Set([]),
@@ -44,10 +46,13 @@ const AddProjectMemberDialog = ({
     },
   );
 
-  // Filter out members who are already in the project
+  // Filter out members who are already in the project and admins
   const existingMemberIds = new Set(existingMembers.map((m) => m.id));
+  const adminIds = new Set(admins.map((a) => a.id));
   const availableMembers =
-    orgMembers?.filter((member) => !existingMemberIds.has(member.id)) || [];
+    orgMembers?.filter(
+      (member) => !existingMemberIds.has(member.id) && !adminIds.has(member.id),
+    ) || [];
 
   const handleSubmit = async () => {
     if (selectedMembers.size === 0) return;
@@ -131,10 +136,9 @@ const AddProjectMemberDialog = ({
               ))}
             </Select>
           )}
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Only organization members can be added to this project. You can
-            select multiple members at once.
-          </p>
+          {/* <p className="text-sm text-gray-500 dark:text-gray-400">
+            Only organization members can be added to this project.
+          </p> */}
         </ModalBody>
         <ModalFooter>
           <Button color="danger" variant="light" onPress={onClose}>

@@ -23,6 +23,7 @@ type Props = {
   isOpen: boolean;
   setOpenMembersModal: (open: boolean) => void;
   members?: User[];
+  admins?: User[];
   namespaceId?: string;
 };
 
@@ -30,12 +31,38 @@ const NamespaceMemberModal = ({
   isOpen,
   setOpenMembersModal,
   members,
+  admins,
   namespaceId,
 }: Props) => {
   const [selectedMembers, setSelectedMembers] = useState<Set<string>>(
     new Set([]),
   );
   const [isRemoving, setIsRemoving] = useState(false);
+
+  // Combine admins and members with role information
+  const allUsers = [
+    ...(admins?.map((admin) => ({ ...admin, role: "admin" as const })) || []),
+    ...(members?.map((member) => ({ ...member, role: "member" as const })) ||
+      []),
+  ];
+
+  // Deduplicate by user id, keeping admin role priority
+  const uniqueUsers = Array.from(
+    allUsers.reduce((map, user) => {
+      const existing = map.get(user.id);
+      if (!existing || user.role === "admin") {
+        map.set(user.id, user);
+      }
+      return map;
+    }, new Map<string, (typeof allUsers)[0]>()),
+  ).map(([_, user]) => user);
+
+  // Sort admins first
+  const sortedUsers = uniqueUsers.sort((a, b) => {
+    if (a.role === "admin" && b.role !== "admin") return -1;
+    if (a.role !== "admin" && b.role === "admin") return 1;
+    return 0;
+  });
 
   const handleToggleMember = (memberId: string) => {
     const newSelected = new Set(selectedMembers);
@@ -80,7 +107,7 @@ const NamespaceMemberModal = ({
         <ModalHeader className="flex gap-2 items-center">
           <GroupRounded className="!w-6 !h-6 text-green-600 dark:text-green-400" />
           <span className="dark:text-white">
-            Namespace Members ({members?.length || 0})
+            Namespace Members ({sortedUsers.length})
           </span>
           {selectedMembers.size > 0 && (
             <Chip size="sm" color="primary" variant="flat">
@@ -91,15 +118,22 @@ const NamespaceMemberModal = ({
         <ModalBody className="p-0">
           <ScrollShadow className="max-h-[60vh]">
             <div className="p-4 space-y-2">
-              {members?.map((member) => (
+              {sortedUsers.map((member) => (
                 <div
                   key={member.id}
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                  onClick={() => handleToggleMember(member.id)}
+                  className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
+                    member.role === "admin"
+                      ? "opacity-75 cursor-not-allowed"
+                      : "hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                  }`}
+                  onClick={() =>
+                    member.role !== "admin" && handleToggleMember(member.id)
+                  }
                 >
                   <Checkbox
                     isSelected={selectedMembers.has(member.id)}
                     onValueChange={() => handleToggleMember(member.id)}
+                    isDisabled={member.role === "admin"}
                   />
                   <PersonRounded className="!w-5 !h-5 text-gray-600 dark:text-gray-400" />
                   <div className="flex-1 min-w-0">
@@ -110,8 +144,12 @@ const NamespaceMemberModal = ({
                       {member.email}
                     </p>
                   </div>
-                  <Chip size="sm" color="success" variant="flat">
-                    Member
+                  <Chip
+                    size="sm"
+                    color={member.role === "admin" ? "primary" : "success"}
+                    variant="flat"
+                  >
+                    {member.role === "admin" ? "Admin" : "Member"}
                   </Chip>
                 </div>
               ))}

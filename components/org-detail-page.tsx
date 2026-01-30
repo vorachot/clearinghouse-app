@@ -142,6 +142,7 @@ const OrgDetailPage = () => {
         {/* Members Card */}
         <MemberCard
           members={organization.members}
+          admins={organization.admins}
           handleOpenAddMember={handleOpenAddMember}
           setOpenMembersModal={setOpenMembersModal}
         />
@@ -203,6 +204,7 @@ const OrgDetailPage = () => {
           isOpen={openMembersModal}
           setOpenMembersModal={setOpenMembersModal}
           members={organization.members}
+          admins={organization.admins}
           orgId={orgId}
         />
       )}
