@@ -9,6 +9,7 @@ import {
   getResourcePoolsByOrgId,
   deleteResourcePool,
   deleteResourceNode,
+  deleteResource,
 } from "@/api/resource";
 import Loading from "@/app/loading";
 import { ResourcePool } from "@/types/resource";
@@ -50,6 +51,16 @@ const ResourcesPage = () => {
     }
   };
 
+  const handleDeleteResource = async (resourceId: string) => {
+    try {
+      await deleteResource(resourceId);
+      // Revalidate the resource pools data to refresh the list
+      resourcePoolsData.mutate();
+    } catch (error) {
+      console.error("Failed to delete resource:", error);
+      throw error;
+    }
+  };
   const resourcePools: ResourcePool[] = resourcePoolsData.data || [];
   return (
     <div className="container mx-auto pt-1 p-4 space-y-6">
@@ -140,6 +151,7 @@ const ResourcesPage = () => {
           resourcePools={resourcePools}
           onDelete={handleDeleteResourcePool}
           onDeleteNode={handleDeleteResourceNode}
+          onDeleteResource={handleDeleteResource}
         />
       </div>
     </div>

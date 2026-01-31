@@ -19,6 +19,7 @@ import AddResourceDialog from "./add-resource-dialog";
 import CreateNodeDialog from "./create-node-dialog";
 import DeleteResourcePoolDialog from "./delete-resource-pool-dialog";
 import DeleteResourceNodeDialog from "./delete-resource-node-dialog";
+import DeleteResourceDialog from "./delete-resource-dialog";
 import type { ResourcePool } from "@/types/resource";
 
 const resourceColumns = [
@@ -33,9 +34,15 @@ type Props = {
   resourcePools: ResourcePool[];
   onDelete?: (poolId: string) => void;
   onDeleteNode?: (nodeId: string) => void;
+  onDeleteResource?: (resourceId: string) => void;
 };
 
-const ResourceTable = ({ resourcePools, onDelete, onDeleteNode }: Props) => {
+const ResourceTable = ({
+  resourcePools,
+  onDelete,
+  onDeleteNode,
+  onDeleteResource,
+}: Props) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedPoolId, setSelectedPoolId] = useState<string>("");
   const [selectedPoolName, setSelectedPoolName] = useState<string>("");
@@ -47,6 +54,13 @@ const ResourceTable = ({ resourcePools, onDelete, onDeleteNode }: Props) => {
   const [selectedNodeName, setSelectedNodeName] = useState<string>("");
   const [isDeletingNode, setIsDeletingNode] = useState(false);
   const [nodeError, setNodeError] = useState<string | null>(null);
+
+  const [deleteResourceDialogOpen, setDeleteResourceDialogOpen] =
+    useState(false);
+  const [selectedResourceId, setSelectedResourceId] = useState<string>("");
+  const [selectedResourceName, setSelectedResourceName] = useState<string>("");
+  const [isDeletingResource, setIsDeletingResource] = useState(false);
+  const [resourceError, setResourceError] = useState<string | null>(null);
 
   const handleDelete = (poolId: string, poolName: string) => {
     setSelectedPoolId(poolId);
@@ -92,6 +106,30 @@ const ResourceTable = ({ resourcePools, onDelete, onDeleteNode }: Props) => {
         );
       } finally {
         setIsDeletingNode(false);
+      }
+    }
+  };
+
+  const handleDeleteResource = (resourceId: string, resourceName: string) => {
+    setSelectedResourceId(resourceId);
+    setSelectedResourceName(resourceName);
+    setDeleteResourceDialogOpen(true);
+    setResourceError(null);
+  };
+
+  const handleConfirmDeleteResource = async () => {
+    if (onDeleteResource && selectedResourceId) {
+      setIsDeletingResource(true);
+      try {
+        await onDeleteResource(selectedResourceId);
+        setDeleteResourceDialogOpen(false);
+      } catch (error: any) {
+        console.error("Error deleting resource:", error);
+        setResourceError(
+          error.response?.data?.error || "Failed to delete resource",
+        );
+      } finally {
+        setIsDeletingResource(false);
       }
     }
   };
@@ -239,6 +277,12 @@ const ResourceTable = ({ resourcePools, onDelete, onDeleteNode }: Props) => {
                                         variant="light"
                                         color="danger"
                                         aria-label="Delete"
+                                        onPress={() =>
+                                          handleDeleteResource(
+                                            resource.id,
+                                            resource.name,
+                                          )
+                                        }
                                       >
                                         <DeleteIcon className="!w-4 !h-4" />
                                       </Button>
@@ -287,6 +331,14 @@ const ResourceTable = ({ resourcePools, onDelete, onDeleteNode }: Props) => {
         onConfirm={handleConfirmDeleteNode}
         isDeleting={isDeletingNode}
         error={nodeError}
+      />
+      <DeleteResourceDialog
+        isOpen={deleteResourceDialogOpen}
+        resourceName={selectedResourceName}
+        onClose={() => setDeleteResourceDialogOpen(false)}
+        onConfirm={handleConfirmDeleteResource}
+        isDeleting={isDeletingResource}
+        error={resourceError}
       />
     </>
   );
