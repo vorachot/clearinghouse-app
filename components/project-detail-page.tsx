@@ -10,7 +10,7 @@ import CreateNsDialog from "./create-ns-dialog";
 import useSWR from "swr";
 import { getOrganizationById } from "@/api/org";
 import { getProjectById } from "@/api/project";
-import { Organization } from "@/types/org";
+import { OrgDetail } from "@/types/org";
 import { Project } from "@/types/project";
 import {
   ArrowForwardRounded,
@@ -22,6 +22,7 @@ import { getNamespaceByProjectId } from "@/api/namespace";
 import { Namespace } from "@/types/namespace";
 import NamespaceTable from "./namespace-table";
 import AddProjectMemberDialog from "./add-project-member-dialog";
+import AddProjectAdminDialog from "./add-project-admin-dialog";
 import ProjectMemberModal from "./project-member-modal";
 
 const ProjectDetailPage = () => {
@@ -30,6 +31,7 @@ const ProjectDetailPage = () => {
   const [open, setOpen] = useState(false);
   const [openMembersModal, setOpenMembersModal] = useState(false);
   const [openAddMember, setOpenAddMember] = useState(false);
+  const [openAddAdmin, setOpenAddAdmin] = useState(false);
 
   const onOpen = () => setOpen(true);
   const onClose = () => setOpen(false);
@@ -43,6 +45,8 @@ const ProjectDetailPage = () => {
   };
   const handleOpenAddMember = () => setOpenAddMember(true);
   const handleCloseAddMember = () => setOpenAddMember(false);
+  const handleOpenAddAdmin = () => setOpenAddAdmin(true);
+  const handleCloseAddAdmin = () => setOpenAddAdmin(false);
   const { orgId, projectId } = params as { orgId: string; projectId: string };
   const organizationData = useSWR(
     ["org", orgId],
@@ -69,7 +73,7 @@ const ProjectDetailPage = () => {
     },
   );
 
-  const organization: Organization = organizationData.data || {};
+  const organization: OrgDetail = organizationData.data || {};
   const project: Project = projectData.data || {};
   const namespaces: Namespace[] = namespacesData.data || [];
 
@@ -135,6 +139,7 @@ const ProjectDetailPage = () => {
           members={project.members}
           admins={project.admins}
           handleOpenAddMember={handleOpenAddMember}
+          handleOpenAddAdmin={handleOpenAddAdmin}
           setOpenMembersModal={setOpenMembersModal}
         />
       </div>
@@ -209,6 +214,16 @@ const ProjectDetailPage = () => {
           onClose={handleCloseAddMember}
           existingMembers={project.members}
           admins={project.admins}
+        />
+      )}
+      {openAddAdmin && (
+        <AddProjectAdminDialog
+          projectId={projectId}
+          orgId={orgId}
+          onClose={handleCloseAddAdmin}
+          existingMembers={project.members}
+          existingAdmins={project.admins}
+          orgAdmins={organization.admins}
         />
       )}
 

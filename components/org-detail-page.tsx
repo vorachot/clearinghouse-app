@@ -18,6 +18,7 @@ import {
   ArrowForwardRounded,
 } from "@mui/icons-material";
 import AddMemberDialog from "./add-member-dialog";
+import AddAdminDialog from "./add-admin-dialog";
 import ProjectTable from "./project-table";
 import MemberModal from "./member-modal";
 import MemberCard from "./member-card";
@@ -30,6 +31,7 @@ const OrgDetailPage = () => {
   const [open, setOpen] = useState(false);
   const [openMembersModal, setOpenMembersModal] = useState(false);
   const [openAddMember, setOpenAddMember] = useState(false);
+  const [openAddAdmin, setOpenAddAdmin] = useState(false);
 
   const onOpen = () => setOpen(true);
   const onClose = () => setOpen(false);
@@ -43,6 +45,8 @@ const OrgDetailPage = () => {
   };
   const handleOpenAddMember = () => setOpenAddMember(true);
   const handleCloseAddMember = () => setOpenAddMember(false);
+  const handleOpenAddAdmin = () => setOpenAddAdmin(true);
+  const handleCloseAddAdmin = () => setOpenAddAdmin(false);
 
   const handleDeleteProject = async (projectId: string) => {
     try {
@@ -156,6 +160,7 @@ const OrgDetailPage = () => {
           members={organization.members}
           admins={organization.admins}
           handleOpenAddMember={handleOpenAddMember}
+          handleOpenAddAdmin={handleOpenAddAdmin}
           setOpenMembersModal={setOpenMembersModal}
         />
       </div>
@@ -211,6 +216,14 @@ const OrgDetailPage = () => {
           orgId={orgId}
           onClose={handleCloseAddMember}
           existingMembers={organization.members}
+        />
+      )}
+      {openAddAdmin && (
+        <AddAdminDialog
+          orgId={orgId}
+          onClose={handleCloseAddAdmin}
+          existingMembers={organization.members}
+          existingAdmins={organization.admins}
         />
       )}
 

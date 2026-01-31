@@ -8,12 +8,14 @@ import {
   GroupRounded,
   PersonAddRounded,
   PersonRounded,
+  AdminPanelSettingsRounded,
 } from "@mui/icons-material";
 
 type Props = {
   members?: User[];
   admins?: User[];
   handleOpenAddMember: () => void;
+  handleOpenAddAdmin: () => void;
   setOpenMembersModal: (open: boolean) => void;
 };
 
@@ -21,6 +23,7 @@ const MemberCard = ({
   members,
   admins,
   handleOpenAddMember,
+  handleOpenAddAdmin,
   setOpenMembersModal,
 }: Props) => {
   const INITIAL_DISPLAY_COUNT = 1;
@@ -65,15 +68,26 @@ const MemberCard = ({
             </p>
           </div>
         </div>
-        <Button
-          size="sm"
-          color="success"
-          variant="flat"
-          startContent={<PersonAddRounded />}
-          onPress={handleOpenAddMember}
-        >
-          Member
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            color="success"
+            variant="flat"
+            startContent={<PersonAddRounded />}
+            onPress={handleOpenAddMember}
+          >
+            Member
+          </Button>
+          <Button
+            size="sm"
+            color="primary"
+            variant="flat"
+            startContent={<AdminPanelSettingsRounded />}
+            onPress={handleOpenAddAdmin}
+          >
+            Admin
+          </Button>
+        </div>
       </CardHeader>
       <Divider />
       <CardBody className="gap-2">

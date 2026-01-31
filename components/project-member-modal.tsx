@@ -1,4 +1,4 @@
-import { User } from "@/context/UserContext";
+import { User, useUser } from "@/context/UserContext";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import {
@@ -16,7 +16,11 @@ import {
   PersonRemoveRounded,
 } from "@mui/icons-material";
 import { useState } from "react";
-import { removeMembersFromProject } from "@/api/member";
+import {
+  removeMembersFromProject,
+  addAdminToProject,
+  removeAdminFromProject,
+} from "@/api/member";
 import { mutate } from "swr";
 
 type Props = {
@@ -34,10 +38,13 @@ const ProjectMemberModal = ({
   admins,
   projectId,
 }: Props) => {
+  const { user: currentUser } = useUser();
   const [selectedMembers, setSelectedMembers] = useState<Set<string>>(
     new Set([]),
   );
   const [isRemoving, setIsRemoving] = useState(false);
+  const [isPromoting, setIsPromoting] = useState(false);
+  const [isDemoting, setIsDemoting] = useState(false);
 
   // Combine admins and members with role information
   const allUsers = [
@@ -72,6 +79,54 @@ const ProjectMemberModal = ({
       newSelected.add(memberId);
     }
     setSelectedMembers(newSelected);
+  };
+
+  const handlePromoteToAdmin = async () => {
+    if (selectedMembers.size === 0 || !projectId) return;
+
+    setIsPromoting(true);
+    try {
+      await addAdminToProject({
+        project_id: projectId,
+        admins: Array.from(selectedMembers),
+      });
+      setSelectedMembers(new Set([]));
+      await mutate(["project", projectId]);
+      setOpenMembersModal(false);
+    } catch (error) {
+      console.error("Error promoting to admin:", error);
+    } finally {
+      setIsPromoting(false);
+    }
+  };
+
+  const handleDemoteFromAdmin = async () => {
+    if (selectedMembers.size === 0 || !projectId) return;
+
+    // Filter out current user from demotion
+    const membersToDemote = Array.from(selectedMembers).filter(
+      (id) => id !== currentUser?.id,
+    );
+
+    // If no members left after filtering, don't proceed
+    if (membersToDemote.length === 0) {
+      return;
+    }
+
+    setIsDemoting(true);
+    try {
+      await removeAdminFromProject({
+        project_id: projectId,
+        admins: membersToDemote,
+      });
+      setSelectedMembers(new Set([]));
+      await mutate(["project", projectId]);
+      setOpenMembersModal(false);
+    } catch (error) {
+      console.error("Error demoting from admin:", error);
+    } finally {
+      setIsDemoting(false);
+    }
   };
 
   const handleRemoveMembers = async () => {
@@ -121,19 +176,12 @@ const ProjectMemberModal = ({
               {sortedUsers.map((member) => (
                 <div
                   key={member.id}
-                  className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                    member.role === "admin"
-                      ? "opacity-75 cursor-not-allowed"
-                      : "hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                  }`}
-                  onClick={() =>
-                    member.role !== "admin" && handleToggleMember(member.id)
-                  }
+                  className="flex items-center gap-3 p-3 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                  onClick={() => handleToggleMember(member.id)}
                 >
                   <Checkbox
                     isSelected={selectedMembers.has(member.id)}
                     onValueChange={() => handleToggleMember(member.id)}
-                    isDisabled={member.role === "admin"}
                   />
                   <PersonRounded className="!w-5 !h-5 text-gray-600 dark:text-gray-400" />
                   <div className="flex-1 min-w-0">
@@ -158,16 +206,55 @@ const ProjectMemberModal = ({
         </ModalBody>
         <ModalFooter>
           {selectedMembers.size > 0 && (
-            <Button
-              color="danger"
-              variant="flat"
-              startContent={<PersonRemoveRounded />}
-              onPress={handleRemoveMembers}
-              isLoading={isRemoving}
-            >
-              Remove {selectedMembers.size} Member
-              {selectedMembers.size !== 1 ? "s" : ""}
-            </Button>
+            <>
+              {/* Check if selected users are members (can be promoted) */}
+              {/* {Array.from(selectedMembers).every(
+                (id) => sortedUsers.find((u) => u.id === id)?.role === "member",
+              ) && (
+                <Button
+                  color="primary"
+                  variant="flat"
+                  onPress={handlePromoteToAdmin}
+                  isLoading={isPromoting}
+                >
+                  Promote to Admin
+                </Button>
+              )} */}
+              {/* Check if selected users are admins (can be demoted) */}
+              {Array.from(selectedMembers).every(
+                (id) => sortedUsers.find((u) => u.id === id)?.role === "admin",
+              ) && (
+                <Button
+                  color="warning"
+                  variant="flat"
+                  onPress={handleDemoteFromAdmin}
+                  isLoading={isDemoting}
+                  isDisabled={
+                    (currentUser && selectedMembers.has(currentUser.id)) ||
+                    false
+                  }
+                >
+                  {currentUser && selectedMembers.has(currentUser.id)
+                    ? "Cannot Remove Yourself"
+                    : "Remove from Admins"}
+                </Button>
+              )}
+              {/* Only show remove if all selected are members */}
+              {Array.from(selectedMembers).every(
+                (id) => sortedUsers.find((u) => u.id === id)?.role === "member",
+              ) && (
+                <Button
+                  color="danger"
+                  variant="flat"
+                  startContent={<PersonRemoveRounded />}
+                  onPress={handleRemoveMembers}
+                  isLoading={isRemoving}
+                >
+                  Remove {selectedMembers.size} Member
+                  {selectedMembers.size !== 1 ? "s" : ""}
+                </Button>
+              )}
+            </>
           )}
           <Button
             color="success"

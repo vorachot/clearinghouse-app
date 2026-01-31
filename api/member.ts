@@ -80,3 +80,54 @@ export async function removeMembersFromNamespace(memberData: {
   }
   return response.data;
 }
+
+export async function addAdminToOrganization(adminData: {
+  organization_id: string;
+  admins: string[];
+}): Promise<any> {
+  const response = await apiClient.post(`organizations/admins`, adminData);
+  
+  if (response.status !== 200) {
+    throw new Error("Failed to add admin to organization");
+  }
+
+  return response.data;
+}
+
+export async function removeAdminFromOrganization(adminData: {
+  organization_id: string;
+  admins: string[];
+}): Promise<any> {
+  const response = await apiClient.post(`organizations/rm-admins`, adminData);
+
+  if (response.status !== 200) {
+    throw new Error("Failed to remove admin from organization");
+  }
+
+  return response.data;
+}
+
+export async function addAdminToProject(adminData: {
+  project_id: string;
+  admins: string[];
+}): Promise<any> {
+  const response = await apiClient.post(`projects/admins`, adminData);
+  
+  if (response.status !== 200) {
+    throw new Error("Failed to add admin to project");
+  }
+
+  return response.data;
+}
+
+export async function removeAdminFromProject(adminData: {
+  project_id: string;
+  admins: string[];
+}): Promise<any> {
+  const response = await apiClient.post(`projects/rm-admins`, adminData);
+  if (response.status !== 200) {
+    throw new Error("Failed to remove admin from project");
+  }
+
+  return response.data;
+}
