@@ -9,16 +9,20 @@ import {
 } from "@/api/quota";
 import UsageBar from "./usagebar";
 import { useState, useEffect } from "react";
-import { StyleRounded } from "@mui/icons-material";
+import { StyleRounded, LinkOffRounded } from "@mui/icons-material";
+import { Button } from "@heroui/button";
+import { Tooltip } from "@heroui/tooltip";
 
 type NamespaceQuotaDisplayProps = {
   namespaceId: string;
   namespaceTemplate?: NamespaceQuotaTemplate;
+  onUnassignTemplate?: () => void;
 };
 
 export default function NamespaceQuotaDisplay({
   namespaceId,
   namespaceTemplate,
+  onUnassignTemplate,
 }: NamespaceQuotaDisplayProps) {
   const namespaceQuotasByNamespaceId = useSWR(
     ["namespace-quotas", namespaceId],
@@ -26,7 +30,7 @@ export default function NamespaceQuotaDisplay({
     {
       revalidateOnFocus: false,
       dedupingInterval: 5000,
-    }
+    },
   );
 
   const namespaceQuotas: NamespaceQuota[] =
@@ -74,11 +78,25 @@ export default function NamespaceQuotaDisplay({
         <h2 className="text-xl font-bold">Resource Quotas</h2>
         {/* Template Info Section */}
         {namespaceTemplate && (
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
+          <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
             <StyleRounded className="!w-4 !h-4 text-indigo-600 dark:text-indigo-400" />
             <span className="text-sm font-medium text-indigo-600 dark:text-indigo-400">
               {namespaceTemplate.name}
             </span>
+            {onUnassignTemplate && (
+              <Tooltip content="Unassign template" color="warning">
+                <Button
+                  isIconOnly
+                  size="sm"
+                  color="warning"
+                  variant="light"
+                  onPress={onUnassignTemplate}
+                  className="ml-1"
+                >
+                  <LinkOffRounded className="!w-4 !h-4" />
+                </Button>
+              </Tooltip>
+            )}
           </div>
         )}
       </div>
@@ -122,7 +140,8 @@ export default function NamespaceQuotaDisplay({
 
                       // Find matching usage data by type_id
                       const matchingUsage = usage?.type?.find(
-                        (usageType: any) => usageType.type_id === resourceTypeId
+                        (usageType: any) =>
+                          usageType.type_id === resourceTypeId,
                       );
 
                       const usedAmount = matchingUsage?.used || 0;

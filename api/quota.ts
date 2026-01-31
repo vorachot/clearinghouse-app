@@ -168,11 +168,41 @@ export async function deleteProjectQuota(projectQuotaId: string): Promise<any> {
 export async function deleteNamespaceQuota(
   namespaceQuotaId: string,
 ): Promise<any> {
-  const response = await apiClient.delete(`/quota/namespace/${namespaceQuotaId}`);
+  const response = await apiClient.delete(
+    `/quota/namespace/${namespaceQuotaId}`,
+  );
 
   if (response.status !== 200) {
     throw new Error("Failed to delete namespace quota");
   }
-  
+
+  return response.data;
+}
+
+export async function deleteNamespaceQuotaTemplate(
+  templateId: string,
+): Promise<any> {
+  const response = await apiClient.delete(
+    `/quota/namespace/template/${templateId}`,
+  );
+
+  if (response.status !== 200) {
+    throw new Error("Failed to delete namespace quota template");
+  }
+
+  return response.data;
+}
+
+export async function unassignTemplateFromNamespaces(
+  namespaceId: string,
+): Promise<any> {
+  const response = await apiClient.delete(
+    `/quota/namespace/template/unassign/${namespaceId}`,
+  );
+
+  if (response.status !== 200) {
+    throw new Error("Failed to unassign namespace quota template");
+  }
+
   return response.data;
 }

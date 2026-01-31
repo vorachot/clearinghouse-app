@@ -1,6 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardBody } from "@heroui/card";
+import { Button } from "@heroui/button";
+import { Tooltip } from "@heroui/tooltip";
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
   AssignTemplateToNamespacesDTO,
   CreateNamespaceQuotaDTO,
@@ -22,6 +26,7 @@ import {
   createProjectQuotaInternal,
   deleteProjectQuota,
   deleteNamespaceQuota,
+  deleteNamespaceQuotaTemplate,
   getNamespaceQuotasByProjectId,
   getNamespaceQuotaTemplatesByProjectId,
   getOrgQuotasByOrgId,
@@ -35,9 +40,9 @@ import NamespaceQuotaList from "@/components/namespace-quota-list";
 import NamespaceQuotaForm from "@/components/namespace-quota-form";
 import NamespaceQuotaTemplateForm from "@/components/namespace-quota-template-form";
 import NamespaceQuotaTemplateAssign from "@/components/namespace-quota-template-assign";
+import DeleteNamespaceQuotaTemplateDialog from "@/components/delete-namespace-quota-template-dialog";
 import { getNamespaceByProjectId } from "@/api/namespace";
 import { Namespace } from "@/types/namespace";
-import { useState } from "react";
 
 const ProjectQuotasPage = () => {
   const params = useParams();
@@ -45,6 +50,12 @@ const ProjectQuotasPage = () => {
   const [isQuotaFormOpen, setIsQuotaFormOpen] = useState(false);
   const [isTemplateFormOpen, setIsTemplateFormOpen] = useState(false);
   const [isAssignFormOpen, setIsAssignFormOpen] = useState(false);
+  const [deleteTemplateDialogOpen, setDeleteTemplateDialogOpen] =
+    useState(false);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
+  const [selectedTemplateName, setSelectedTemplateName] = useState<string>("");
+  const [isDeletingTemplate, setIsDeletingTemplate] = useState(false);
+  const [templateError, setTemplateError] = useState<string | null>(null);
 
   const resourcePoolsData = useSWR(
     ["resource-pools", orgId],
@@ -188,6 +199,33 @@ const ProjectQuotasPage = () => {
     }
   };
 
+  const handleDeleteTemplate = (templateId: string, templateName: string) => {
+    setSelectedTemplateId(templateId);
+    setSelectedTemplateName(templateName);
+    setDeleteTemplateDialogOpen(true);
+    setTemplateError(null);
+  };
+
+  const handleConfirmDeleteTemplate = async () => {
+    if (selectedTemplateId) {
+      setIsDeletingTemplate(true);
+      try {
+        await deleteNamespaceQuotaTemplate(selectedTemplateId);
+        await mutate(["namespace-quota-templates", projectId], undefined, {
+          revalidate: true,
+        });
+        setDeleteTemplateDialogOpen(false);
+      } catch (error: any) {
+        console.error("Error deleting template:", error);
+        setTemplateError(
+          error.response?.data?.error || "Failed to delete template",
+        );
+      } finally {
+        setIsDeletingTemplate(false);
+      }
+    }
+  };
+
   return (
     <div className="container mx-auto pt-1 p-4 space-y-5">
       <div className="flex items-end justify-between gap-5">
@@ -261,7 +299,24 @@ const ProjectQuotasPage = () => {
                 {templates.map((template) => (
                   <Card key={template.id} className="border">
                     <CardBody>
-                      <h4 className="font-semibold text-lg">{template.name}</h4>
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="font-semibold text-lg">
+                          {template.name}
+                        </h4>
+                        <Tooltip content="Delete template" color="danger">
+                          <Button
+                            size="sm"
+                            variant="light"
+                            isIconOnly
+                            color="danger"
+                            onPress={() =>
+                              handleDeleteTemplate(template.id, template.name)
+                            }
+                          >
+                            <DeleteIcon className="!w-4 !h-4" />
+                          </Button>
+                        </Tooltip>
+                      </div>
                       <p className="text-sm text-gray-500 mb-3">
                         {template.description}
                       </p>
@@ -316,6 +371,14 @@ const ProjectQuotasPage = () => {
           />
         </Tab>
       </Tabs>
+      <DeleteNamespaceQuotaTemplateDialog
+        isOpen={deleteTemplateDialogOpen}
+        templateName={selectedTemplateName}
+        onClose={() => setDeleteTemplateDialogOpen(false)}
+        onConfirm={handleConfirmDeleteTemplate}
+        isDeleting={isDeletingTemplate}
+        error={templateError}
+      />
     </div>
   );
 };

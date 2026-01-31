@@ -25,11 +25,15 @@ import { getNamespaceQuotaTemplateById } from "@/api/quota";
 import { NamespaceQuotaTemplate } from "@/types/quota";
 import AddNamespaceMemberDialog from "./add-namespace-member-dialog";
 import NamespaceMemberModal from "./namespace-member-modal";
+import DeleteNamespaceTemplateAssignmentDialog from "./delete-namespace-template-assignment-dialog";
+import { unassignTemplateFromNamespaces } from "@/api/quota";
+import { mutate } from "swr";
 
 const NamespaceDetailPage = () => {
   const params = useParams();
   const [openAddMember, setOpenAddMember] = useState(false);
   const [openMembersModal, setOpenMembersModal] = useState(false);
+  const [openUnassignTemplate, setOpenUnassignTemplate] = useState(false);
 
   const handleOpenAddMember = () => setOpenAddMember(true);
   const handleCloseAddMember = () => setOpenAddMember(false);
@@ -109,6 +113,16 @@ const NamespaceDetailPage = () => {
     return 0;
   });
 
+  const handleUnassignTemplate = async () => {
+    await unassignTemplateFromNamespaces(namespaceId);
+    // Revalidate data
+    mutate(["namespace", namespaceId]);
+    mutate(["namespace-quotas", namespaceId]);
+    if (namespace.quota_template_id) {
+      mutate(["namespace-template", namespace.quota_template_id]);
+    }
+  };
+
   return (
     <div className="container mx-auto pt-1 p-4 space-y-5">
       <div className="flex justify-between items-center">
@@ -160,6 +174,11 @@ const NamespaceDetailPage = () => {
               <NamespaceQuotaDisplay
                 namespaceId={namespaceId}
                 namespaceTemplate={namespaceTemplate}
+                onUnassignTemplate={
+                  namespace.quota_template_id
+                    ? () => setOpenUnassignTemplate(true)
+                    : undefined
+                }
               />
             </CardBody>
           </Card>
@@ -296,6 +315,16 @@ const NamespaceDetailPage = () => {
           members={namespace.namespace_members}
           admins={namespace.owner ? [namespace.owner] : []}
           namespaceId={namespaceId}
+        />
+      )}
+
+      {openUnassignTemplate && (
+        <DeleteNamespaceTemplateAssignmentDialog
+          isOpen={openUnassignTemplate}
+          onClose={() => setOpenUnassignTemplate(false)}
+          onConfirm={handleUnassignTemplate}
+          templateName={namespaceTemplate?.name || "Unknown"}
+          namespaceName={namespace?.name || "Unknown"}
         />
       )}
     </div>

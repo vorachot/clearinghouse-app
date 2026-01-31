@@ -151,18 +151,17 @@ const ResourceTable = ({
                     </Chip>
                   )}
                 </div>
-                <div onClick={(e) => e.stopPropagation()}>
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(pool.id, pool.name);
+                  }}
+                  className="p-2 rounded-lg hover:bg-danger-100 dark:hover:bg-danger-900/20 cursor-pointer transition-colors"
+                  role="button"
+                  aria-label="Delete pool"
+                >
                   <Tooltip content="Delete pool" color="danger">
-                    <Button
-                      isIconOnly
-                      size="sm"
-                      variant="light"
-                      color="danger"
-                      aria-label="Delete pool"
-                      onPress={() => handleDelete(pool.id, pool.name)}
-                    >
-                      <DeleteIcon className="!w-4 !h-4" />
-                    </Button>
+                    <DeleteIcon className="!w-4 !h-4 text-danger" />
                   </Tooltip>
                 </div>
               </div>
@@ -206,20 +205,22 @@ const ResourceTable = ({
                             nodeName={node.name}
                             orgId={pool.organization_id}
                           />
-                          <Tooltip content="Delete node" color="danger">
-                            <Button
-                              isIconOnly
-                              size="sm"
-                              variant="light"
-                              color="danger"
-                              aria-label="Delete node"
-                              onPress={() =>
-                                handleDeleteNode(node.id, node.name)
-                              }
-                            >
-                              <DeleteIcon className="!w-4 !h-4" />
-                            </Button>
-                          </Tooltip>
+                          <div onClick={(e) => e.stopPropagation()}>
+                            <Tooltip content="Delete node" color="danger">
+                              <Button
+                                isIconOnly
+                                size="sm"
+                                variant="light"
+                                color="danger"
+                                aria-label="Delete node"
+                                onPress={() =>
+                                  handleDeleteNode(node.id, node.name)
+                                }
+                              >
+                                <DeleteIcon className="!w-4 !h-4" />
+                              </Button>
+                            </Tooltip>
+                          </div>
                         </div>
                       </div>
 
@@ -258,37 +259,41 @@ const ResourceTable = ({
                                 </TableCell>
                                 <TableCell>
                                   <div className="flex items-center gap-2">
-                                    <Tooltip content="Edit resource">
-                                      <Button
-                                        isIconOnly
-                                        size="sm"
-                                        variant="light"
-                                        color="primary"
-                                        aria-label="Edit"
-                                      >
-                                        <EditIcon className="!w-4 !h-4" />
-                                      </Button>
-                                    </Tooltip>
-                                    <Tooltip
-                                      content="Delete resource"
-                                      color="danger"
-                                    >
-                                      <Button
-                                        isIconOnly
-                                        size="sm"
-                                        variant="light"
+                                    <div onClick={(e) => e.stopPropagation()}>
+                                      <Tooltip content="Edit resource">
+                                        <Button
+                                          isIconOnly
+                                          size="sm"
+                                          variant="light"
+                                          color="primary"
+                                          aria-label="Edit"
+                                        >
+                                          <EditIcon className="!w-4 !h-4" />
+                                        </Button>
+                                      </Tooltip>
+                                    </div>
+                                    <div onClick={(e) => e.stopPropagation()}>
+                                      <Tooltip
+                                        content="Delete resource"
                                         color="danger"
-                                        aria-label="Delete"
-                                        onPress={() =>
-                                          handleDeleteResource(
-                                            resource.id,
-                                            resource.name,
-                                          )
-                                        }
                                       >
-                                        <DeleteIcon className="!w-4 !h-4" />
-                                      </Button>
-                                    </Tooltip>
+                                        <Button
+                                          isIconOnly
+                                          size="sm"
+                                          variant="light"
+                                          color="danger"
+                                          aria-label="Delete"
+                                          onPress={() =>
+                                            handleDeleteResource(
+                                              resource.id,
+                                              resource.name,
+                                            )
+                                          }
+                                        >
+                                          <DeleteIcon className="!w-4 !h-4" />
+                                        </Button>
+                                      </Tooltip>
+                                    </div>
                                   </div>
                                 </TableCell>
                               </TableRow>
