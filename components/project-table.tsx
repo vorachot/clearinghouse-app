@@ -24,6 +24,7 @@ import {
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import UpdateProjectDialog from "./update-project-dialog";
+import DeleteProjectDialog from "./delete-project-dialog";
 import { Project } from "@/types/project";
 import { useUser } from "@/context/UserContext";
 
@@ -37,7 +38,11 @@ const ProjectTable = ({ organizationId, projects, onDelete }: Props) => {
   const router = useRouter();
   const { user } = useUser();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
+  const [selectedProjectName, setSelectedProjectName] = useState<string>("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleView = (projectId: string) => {
     router.push(`/organizations/${organizationId}/${projectId}`);
@@ -48,9 +53,25 @@ const ProjectTable = ({ organizationId, projects, onDelete }: Props) => {
     setEditDialogOpen(true);
   };
 
-  const handleDelete = (projectId: string) => {
-    if (onDelete) {
-      onDelete(projectId);
+  const handleDelete = (projectId: string, projectName: string) => {
+    setError(null);
+    setSelectedProjectId(projectId);
+    setSelectedProjectName(projectName);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (onDelete && selectedProjectId) {
+      setIsDeleting(true);
+      try {
+        await onDelete(selectedProjectId);
+        setDeleteDialogOpen(false);
+      } catch (error: any) {
+        console.error("Error deleting project:", error);
+        setError(error.response?.data?.error || "Failed to delete project");
+      } finally {
+        setIsDeleting(false);
+      }
     }
   };
 
@@ -178,7 +199,7 @@ const ProjectTable = ({ organizationId, projects, onDelete }: Props) => {
                           variant="light"
                           color="danger"
                           aria-label="Delete project"
-                          onPress={() => handleDelete(project.id)}
+                          onPress={() => handleDelete(project.id, project.name)}
                         >
                           <DeleteRounded className="!w-4 !h-4" />
                         </Button>
@@ -202,6 +223,14 @@ const ProjectTable = ({ organizationId, projects, onDelete }: Props) => {
           setOnClose={() => setEditDialogOpen(false)}
         />
       )}
+      <DeleteProjectDialog
+        isOpen={deleteDialogOpen}
+        projectName={selectedProjectName}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
+        error={error}
+      />
     </>
   );
 };

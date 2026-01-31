@@ -33,6 +33,16 @@ export async function updateProject(projectData: {
   if (response.status !== 200) {
     throw new Error("Failed to update project");
   }
+
+  return response.data;
+}
+
+export async function deleteProject(projectId: string): Promise<any> {
+  const response = await apiClient.delete(`/projects/${projectId}`);
   
+  if (response.status !== 200) {
+    throw new Error("Failed to delete project");
+  }
+
   return response.data;
 }

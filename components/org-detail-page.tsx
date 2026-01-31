@@ -7,7 +7,7 @@ import AddIcon from "@mui/icons-material/Add";
 import CreateProjDialog from "./create-proj-dialog";
 import { useState } from "react";
 import { getOrganizationById } from "@/api/org";
-import { getProjectsByOrgId } from "@/api/project";
+import { getProjectsByOrgId, deleteProject } from "@/api/project";
 import useSWR from "swr";
 import Loading from "@/app/loading";
 import { OrgDetail } from "@/types/org";
@@ -43,6 +43,18 @@ const OrgDetailPage = () => {
   };
   const handleOpenAddMember = () => setOpenAddMember(true);
   const handleCloseAddMember = () => setOpenAddMember(false);
+
+  const handleDeleteProject = async (projectId: string) => {
+    try {
+      await deleteProject(projectId);
+      // Revalidate the projects data to refresh the list
+      projectsData.mutate();
+    } catch (error) {
+      console.error("Failed to delete project:", error);
+      throw error;
+    }
+  };
+
   const organizationData = useSWR(
     ["orgs", orgId],
     () => getOrganizationById(orgId),
@@ -185,7 +197,11 @@ const OrgDetailPage = () => {
               Project
             </Button>
           </div>
-          <ProjectTable organizationId={orgId} projects={projects} />
+          <ProjectTable
+            organizationId={orgId}
+            projects={projects}
+            onDelete={handleDeleteProject}
+          />
         </div>
       )}
 
