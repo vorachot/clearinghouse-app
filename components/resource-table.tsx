@@ -151,18 +151,20 @@ const ResourceTable = ({
                     </Chip>
                   )}
                 </div>
-                <Tooltip content="Delete pool" color="danger">
-                  <Button
-                    isIconOnly
-                    size="sm"
-                    variant="light"
-                    color="danger"
-                    aria-label="Delete pool"
-                    onPress={() => handleDelete(pool.id, pool.name)}
-                  >
-                    <DeleteIcon className="!w-4 !h-4" />
-                  </Button>
-                </Tooltip>
+                <div onClick={(e) => e.stopPropagation()}>
+                  <Tooltip content="Delete pool" color="danger">
+                    <Button
+                      isIconOnly
+                      size="sm"
+                      variant="light"
+                      color="danger"
+                      aria-label="Delete pool"
+                      onPress={() => handleDelete(pool.id, pool.name)}
+                    >
+                      <DeleteIcon className="!w-4 !h-4" />
+                    </Button>
+                  </Tooltip>
+                </div>
               </div>
             }
             // subtitle={pool.description}
