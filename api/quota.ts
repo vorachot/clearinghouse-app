@@ -144,3 +144,15 @@ export async function getQuotaUsageByNamespaceId(
   );
   return response.data;
 }
+
+export async function deleteOrgQuota(
+  orgQuotaId: string
+): Promise<any> {
+  const response = await apiClient.delete(`/quota/organization/${orgQuotaId}`);
+
+  if (response.status !== 200) {
+    throw new Error("Failed to delete organization quota");
+  }
+  
+  return response.data;
+}

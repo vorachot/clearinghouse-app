@@ -11,14 +11,18 @@ import {
   TableRow,
   TableCell,
 } from "@heroui/table";
+import { Tooltip } from "@heroui/tooltip";
 import { OrganizationQuota } from "@/types/quota";
 import AddIcon from "@mui/icons-material/Add";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteOrgQuotaDialog from "./delete-org-quota-dialog";
 
 type OrganizationQuotaListProps = {
   quotas: OrganizationQuota[];
   onCreateClick: () => void;
   onViewDetails: (quota: OrganizationQuota) => void;
+  onDelete?: (quotaId: string) => void;
   hideCreateButton?: boolean;
 };
 
@@ -26,8 +30,38 @@ export default function OrganizationQuotaList({
   quotas,
   onCreateClick,
   onViewDetails,
+  onDelete,
   hideCreateButton = false,
 }: OrganizationQuotaListProps) {
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedQuotaId, setSelectedQuotaId] = useState<string>("");
+  const [selectedQuotaName, setSelectedQuotaName] = useState<string>("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleDelete = (quotaId: string, quotaName: string) => {
+    setSelectedQuotaId(quotaId);
+    setSelectedQuotaName(quotaName);
+    setDeleteDialogOpen(true);
+    setError(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (onDelete && selectedQuotaId) {
+      setIsDeleting(true);
+      try {
+        await onDelete(selectedQuotaId);
+        setDeleteDialogOpen(false);
+      } catch (error: any) {
+        console.error("Error deleting organization quota:", error);
+        setError(
+          error.response?.data?.error || "Failed to delete organization quota",
+        );
+      } finally {
+        setIsDeleting(false);
+      }
+    }
+  };
   const formatDuration = (seconds: number) => {
     if (seconds < 3600) {
       return `${seconds / 60} min`;
@@ -80,7 +114,7 @@ export default function OrganizationQuotaList({
               <TableColumn>RESOURCE NAME</TableColumn>
               <TableColumn>QUANTITY</TableColumn>
               <TableColumn>DURATION</TableColumn>
-              {/* <TableColumn>ACTIONS</TableColumn> */}
+              <TableColumn>ACTIONS</TableColumn>
             </TableHeader>
             <TableBody emptyContent="No quotas found">
               {quotas.map((quota) => {
@@ -141,22 +175,40 @@ export default function OrganizationQuotaList({
                         {quota.resources.map((resource) => (
                           <div key={resource.id} className="text-sm">
                             {formatDuration(
-                              resource.resource_prop.max_duration
+                              resource.resource_prop.max_duration,
                             )}
                           </div>
                         ))}
                       </div>
                     </TableCell>
-                    {/* <TableCell>
-                      <Button
-                        size="sm"
-                        variant="light"
-                        isIconOnly
-                        onPress={() => onViewDetails(quota)}
-                      >
-                        <VisibilityIcon fontSize="small" />
-                      </Button>
-                    </TableCell> */}
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {/* <Tooltip content="View details">
+                          <Button
+                            size="sm"
+                            variant="light"
+                            isIconOnly
+                            color="primary"
+                            onPress={() => onViewDetails(quota)}
+                          >
+                            <VisibilityIcon className="!w-4 !h-4" />
+                          </Button>
+                        </Tooltip> */}
+                        {!hideCreateButton && onDelete && (
+                          <Tooltip content="Delete quota" color="danger">
+                            <Button
+                              size="sm"
+                              variant="light"
+                              isIconOnly
+                              color="danger"
+                              onPress={() => handleDelete(quota.id, quota.name)}
+                            >
+                              <DeleteIcon className="!w-4 !h-4" />
+                            </Button>
+                          </Tooltip>
+                        )}
+                      </div>
+                    </TableCell>
                   </TableRow>
                 );
               })}
@@ -164,6 +216,14 @@ export default function OrganizationQuotaList({
           </Table>
         </CardBody>
       </Card>
+      <DeleteOrgQuotaDialog
+        isOpen={deleteDialogOpen}
+        quotaName={selectedQuotaName}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
+        error={error}
+      />
     </div>
   );
 }

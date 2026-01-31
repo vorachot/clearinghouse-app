@@ -9,7 +9,11 @@ import { OrganizationQuota, CreateOrganizationQuotaDTO } from "@/types/quota";
 import { Organization } from "@/types/org";
 import useSWR, { mutate } from "swr";
 import { getOrganizations } from "@/api/org";
-import { createOrgQuota, getOrgQuotasByOrgId } from "@/api/quota";
+import {
+  createOrgQuota,
+  getOrgQuotasByOrgId,
+  deleteOrgQuota,
+} from "@/api/quota";
 import { useParams } from "next/navigation";
 
 const OrgQuotasPage = () => {
@@ -31,7 +35,7 @@ const OrgQuotasPage = () => {
     {
       revalidateOnFocus: false,
       dedupingInterval: 5000, // Prevent duplicate requests for 5 seconds
-    }
+    },
   );
 
   const organizations: Organization[] = organizationsData.data || [];
@@ -55,11 +59,23 @@ const OrgQuotasPage = () => {
     setIsDetailOpen(true);
   };
 
+  const handleDeleteOrgQuota = async (quotaId: string) => {
+    try {
+      await deleteOrgQuota(quotaId);
+      await mutate(["org-quotas"], undefined, {
+        revalidate: true,
+      });
+    } catch (error) {
+      console.error("Failed to delete organization quota:", error);
+      throw error;
+    }
+  };
+
   const allocatedQuotas = orgQuotas.filter(
-    (q) => q.from_organization_id === orgId
+    (q) => q.from_organization_id === orgId,
   );
   const receivedQuotas = orgQuotas.filter(
-    (q) => q.to_organization_id === orgId
+    (q) => q.to_organization_id === orgId,
   );
 
   return (
@@ -77,6 +93,7 @@ const OrgQuotasPage = () => {
             quotas={allocatedQuotas}
             onCreateClick={() => setIsOrgFormOpen(true)}
             onViewDetails={handleViewOrgQuotaDetails}
+            onDelete={handleDeleteOrgQuota}
           />
         </CardBody>
       </Card>
