@@ -6,7 +6,11 @@ import { Card, CardBody } from "@heroui/card";
 import ProjectQuotaList from "./project-quota-list";
 import ProjectQuotaExternalForm from "./project-quota-external-form";
 import ProjectQuotaInternalForm from "./project-quota-internal-form";
-import { ProjectQuota, CreateProjectQuotaDTO, CreateProjectQuotaInternalDTO } from "@/types/quota";
+import {
+  ProjectQuota,
+  CreateProjectQuotaDTO,
+  CreateProjectQuotaInternalDTO,
+} from "@/types/quota";
 import { ResourcePool } from "@/types/resource";
 import { OrganizationQuota } from "@/types/quota";
 
@@ -18,6 +22,7 @@ type ProjectQuotaManagerProps = {
   orgQuotas: OrganizationQuota[];
   onCreateQuota: (data: CreateProjectQuotaDTO) => void;
   onCreateQuotaInternal: (data: CreateProjectQuotaInternalDTO) => void;
+  onDeleteQuota?: (quotaId: string) => void;
 };
 
 export default function ProjectQuotaManager({
@@ -28,6 +33,7 @@ export default function ProjectQuotaManager({
   resourcePools,
   onCreateQuota,
   onCreateQuotaInternal,
+  onDeleteQuota,
 }: ProjectQuotaManagerProps) {
   const [isExternalFormOpen, setIsExternalFormOpen] = useState(false);
   const [isInternalFormOpen, setIsInternalFormOpen] = useState(false);
@@ -49,9 +55,10 @@ export default function ProjectQuotaManager({
             <CardBody className="p-4">
               <ProjectQuotaList
                 quotas={projectQuotas.filter(
-                  (q) => q.organization_quota_id !== null
+                  (q) => q.organization_quota_id !== null,
                 )}
                 onCreateClick={() => setIsExternalFormOpen(true)}
+                onDelete={onDeleteQuota}
                 type="external"
               />
             </CardBody>
@@ -64,8 +71,9 @@ export default function ProjectQuotaManager({
               onCreateQuota(data);
               setIsExternalFormOpen(false);
             }}
-            
-            orgQuotas={orgQuotas.filter((quota) => orgId === quota.to_organization_id)}
+            orgQuotas={orgQuotas.filter(
+              (quota) => orgId === quota.to_organization_id,
+            )}
             projectId={projectId}
           />
         </Tab>
@@ -75,9 +83,10 @@ export default function ProjectQuotaManager({
             <CardBody className="p-4">
               <ProjectQuotaList
                 quotas={projectQuotas.filter(
-                  (q) => q.organization_quota_id === null
+                  (q) => q.organization_quota_id === null,
                 )}
                 onCreateClick={() => setIsInternalFormOpen(true)}
+                onDelete={onDeleteQuota}
                 type="internal"
               />
             </CardBody>

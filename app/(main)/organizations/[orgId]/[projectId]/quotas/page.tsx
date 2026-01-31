@@ -20,6 +20,8 @@ import {
   createNamespaceQuotaTemplate,
   createProjectQuota,
   createProjectQuotaInternal,
+  deleteProjectQuota,
+  deleteNamespaceQuota,
   getNamespaceQuotasByProjectId,
   getNamespaceQuotaTemplatesByProjectId,
   getOrgQuotasByOrgId,
@@ -50,7 +52,7 @@ const ProjectQuotasPage = () => {
     {
       revalidateOnFocus: false,
       dedupingInterval: 5000,
-    }
+    },
   );
   const organizationQuotasData = useSWR(
     ["org-quotas"],
@@ -58,7 +60,7 @@ const ProjectQuotasPage = () => {
     {
       revalidateOnFocus: false,
       dedupingInterval: 5000,
-    }
+    },
   );
   const projectQuotasData = useSWR(
     ["project-quotas", projectId],
@@ -66,7 +68,7 @@ const ProjectQuotasPage = () => {
     {
       revalidateOnFocus: false,
       dedupingInterval: 5000,
-    }
+    },
   );
   const namespaceQuotasByProjectIdData = useSWR(
     ["namespace-quotas", projectId],
@@ -74,7 +76,7 @@ const ProjectQuotasPage = () => {
     {
       revalidateOnFocus: false,
       dedupingInterval: 5000,
-    }
+    },
   );
   const namespaceQuotaTemplatesByProjectIdData = useSWR(
     ["namespace-quota-templates", projectId],
@@ -82,7 +84,7 @@ const ProjectQuotasPage = () => {
     {
       revalidateOnFocus: false,
       dedupingInterval: 5000,
-    }
+    },
   );
   const namespacesData = useSWR(
     ["namespaces", projectId],
@@ -90,7 +92,7 @@ const ProjectQuotasPage = () => {
     {
       revalidateOnFocus: false,
       dedupingInterval: 5000,
-    }
+    },
   );
 
   const orgQuotas: OrganizationQuota[] = organizationQuotasData.data || [];
@@ -98,7 +100,8 @@ const ProjectQuotasPage = () => {
   const projectQuotas: ProjectQuota[] = projectQuotasData.data || [];
   const namespaceQuotasByProjectId: NamespaceQuota[] =
     namespaceQuotasByProjectIdData.data || [];
-  const templates: NamespaceQuotaTemplate[] = namespaceQuotaTemplatesByProjectIdData.data || [];
+  const templates: NamespaceQuotaTemplate[] =
+    namespaceQuotaTemplatesByProjectIdData.data || [];
   const namespaces: Namespace[] = namespacesData.data || [];
 
   const handleCreateProjectQuota = async (data: CreateProjectQuotaDTO) => {
@@ -113,7 +116,7 @@ const ProjectQuotasPage = () => {
   };
 
   const handleCreateProjectQuotaInternal = async (
-    data: CreateProjectQuotaInternalDTO
+    data: CreateProjectQuotaInternalDTO,
   ) => {
     try {
       await createProjectQuotaInternal(data);
@@ -122,6 +125,18 @@ const ProjectQuotasPage = () => {
       });
     } catch (error) {
       console.error("Error creating project quota internal:", error);
+    }
+  };
+
+  const handleDeleteProjectQuota = async (quotaId: string) => {
+    try {
+      await deleteProjectQuota(quotaId);
+      await mutate(["project-quotas", projectId], undefined, {
+        revalidate: true,
+      });
+    } catch (error) {
+      console.error("Failed to delete project quota:", error);
+      throw error;
     }
   };
 
@@ -134,6 +149,18 @@ const ProjectQuotasPage = () => {
       setIsQuotaFormOpen(false);
     } catch (error) {
       console.error("Error creating namespace quota:", error);
+    }
+  };
+
+  const handleDeleteNamespaceQuota = async (quotaId: string) => {
+    try {
+      await deleteNamespaceQuota(quotaId);
+      await mutate(["namespace-quotas", projectId], undefined, {
+        revalidate: true,
+      });
+    } catch (error) {
+      console.error("Failed to delete namespace quota:", error);
+      throw error;
     }
   };
 
@@ -181,6 +208,7 @@ const ProjectQuotasPage = () => {
                 resourcePools={resourcePools}
                 onCreateQuota={handleCreateProjectQuota}
                 onCreateQuotaInternal={handleCreateProjectQuotaInternal}
+                onDeleteQuota={handleDeleteProjectQuota}
               />
             </CardBody>
           </Card>
@@ -194,6 +222,7 @@ const ProjectQuotasPage = () => {
                 <NamespaceQuotaList
                   quotas={namespaceQuotasByProjectId}
                   onCreateClick={() => setIsQuotaFormOpen(true)}
+                  onDelete={handleDeleteNamespaceQuota}
                 />
               </div>
             </CardBody>
@@ -248,7 +277,7 @@ const ProjectQuotasPage = () => {
                                 >
                                   {r.resource_prop.resource.name}: {r.quantity}
                                 </span>
-                              ))
+                              )),
                             ) || (
                               <span className="text-gray-500 text-xs">
                                 No resources

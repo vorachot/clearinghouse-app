@@ -1,21 +1,56 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
+import { Tooltip } from "@heroui/tooltip";
 import { NamespaceQuota } from "@/types/quota";
 import AddIcon from "@mui/icons-material/Add";
 import LayersIcon from "@mui/icons-material/Layers";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteNamespaceQuotaDialog from "./delete-namespace-quota-dialog";
 
 type NamespaceQuotaListProps = {
   quotas: NamespaceQuota[];
   onCreateClick: () => void;
+  onDelete?: (quotaId: string) => void;
 };
 
 export default function NamespaceQuotaList({
   quotas,
   onCreateClick,
+  onDelete,
 }: NamespaceQuotaListProps) {
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedQuotaId, setSelectedQuotaId] = useState<string>("");
+  const [selectedQuotaName, setSelectedQuotaName] = useState<string>("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleDelete = (quotaId: string, quotaName: string) => {
+    setSelectedQuotaId(quotaId);
+    setSelectedQuotaName(quotaName);
+    setDeleteDialogOpen(true);
+    setError(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (onDelete && selectedQuotaId) {
+      setIsDeleting(true);
+      try {
+        await onDelete(selectedQuotaId);
+        setDeleteDialogOpen(false);
+      } catch (error: any) {
+        console.error("Error deleting namespace quota:", error);
+        setError(
+          error.response?.data?.error || "Failed to delete namespace quota",
+        );
+      } finally {
+        setIsDeleting(false);
+      }
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -49,9 +84,24 @@ export default function NamespaceQuotaList({
                     <LayersIcon className="text-secondary" fontSize="small" />
                     <span className="font-semibold">{quota.name}</span>
                   </div>
-                  <Chip size="sm" variant="flat" color="primary">
-                    {quota.resources.length} resources
-                  </Chip>
+                  <div className="flex items-center gap-2">
+                    <Chip size="sm" variant="flat" color="primary">
+                      {quota.resources.length} resources
+                    </Chip>
+                    {onDelete && (
+                      <Tooltip content="Delete quota" color="danger">
+                        <Button
+                          size="sm"
+                          variant="light"
+                          isIconOnly
+                          color="danger"
+                          onPress={() => handleDelete(quota.id, quota.name)}
+                        >
+                          <DeleteIcon className="!w-4 !h-4" />
+                        </Button>
+                      </Tooltip>
+                    )}
+                  </div>
                 </div>
               </CardHeader>
               <CardBody className="pt-0">
@@ -88,6 +138,14 @@ export default function NamespaceQuotaList({
           ))}
         </div>
       )}
+      <DeleteNamespaceQuotaDialog
+        isOpen={deleteDialogOpen}
+        quotaName={selectedQuotaName}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
+        error={error}
+      />
     </div>
   );
 }

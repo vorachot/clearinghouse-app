@@ -14,7 +14,7 @@ export async function getOrgQuotasByOrgId(orgId: string): Promise<any> {
 }
 
 export async function createOrgQuota(
-  orgQuotaData: CreateOrganizationQuotaDTO
+  orgQuotaData: CreateOrganizationQuotaDTO,
 ): Promise<Response> {
   const response = await apiClient.post(`/quota/organization`, orgQuotaData);
 
@@ -26,14 +26,14 @@ export async function createOrgQuota(
 }
 
 export async function getProjectQuotasByProjectId(
-  projectId: string
+  projectId: string,
 ): Promise<any> {
   const response = await apiClient.get(`/quota/project/${projectId}`);
   return response.data;
 }
 
 export async function createProjectQuota(
-  projectQuotaData: CreateProjectQuotaDTO
+  projectQuotaData: CreateProjectQuotaDTO,
 ): Promise<Response> {
   const response = await apiClient.post(`/quota/project`, projectQuotaData);
 
@@ -45,11 +45,11 @@ export async function createProjectQuota(
 }
 
 export async function createProjectQuotaInternal(
-  projectQuotaData: CreateProjectQuotaInternalDTO
+  projectQuotaData: CreateProjectQuotaInternalDTO,
 ): Promise<Response> {
   const response = await apiClient.post(
     `/quota/project/internal`,
-    projectQuotaData
+    projectQuotaData,
   );
 
   if (response.status !== 201) {
@@ -60,41 +60,41 @@ export async function createProjectQuotaInternal(
 }
 
 export async function getNamespaceQuotasByProjectId(
-  projectId: string
+  projectId: string,
 ): Promise<any> {
   const response = await apiClient.get(
-    `/quota/project/${projectId}/namespaces`
+    `/quota/project/${projectId}/namespaces`,
   );
   return response.data;
 }
 
 export async function getNamespaceQuotasByNamespaceId(
-  namespaceId: string
+  namespaceId: string,
 ): Promise<any> {
   const response = await apiClient.get(`/quota/namespace/${namespaceId}`);
   return response.data;
 }
 
 export async function getNamespaceQuotaTemplatesByProjectId(
-  projectId: string
+  projectId: string,
 ): Promise<any> {
   const response = await apiClient.get(
-    `/quota/namespace/template/project/${projectId}`
+    `/quota/namespace/template/project/${projectId}`,
   );
   return response.data;
 }
 
 export async function getNamespaceQuotaTemplateById(
-  templateId: string
+  templateId: string,
 ): Promise<any> {
   const response = await apiClient.get(
-    `/quota/namespace/template/${templateId}`
+    `/quota/namespace/template/${templateId}`,
   );
   return response.data;
 }
 
 export async function createNamespaceQuota(
-  namespaceQuotaData: CreateNamespaceQuotaDTO
+  namespaceQuotaData: CreateNamespaceQuotaDTO,
 ): Promise<Response> {
   const response = await apiClient.post(`/quota/namespace`, namespaceQuotaData);
 
@@ -106,11 +106,11 @@ export async function createNamespaceQuota(
 }
 
 export async function createNamespaceQuotaTemplate(
-  namespaceQuotaTemplateData: CreateQuotaTemplateDTO
+  namespaceQuotaTemplateData: CreateQuotaTemplateDTO,
 ): Promise<Response> {
   const response = await apiClient.post(
     `/quota/namespace/template`,
-    namespaceQuotaTemplateData
+    namespaceQuotaTemplateData,
   );
 
   if (response.status !== 201) {
@@ -121,11 +121,11 @@ export async function createNamespaceQuotaTemplate(
 }
 
 export async function assignTemplateToNamespaces(
-  assignData: AssignTemplateToNamespacesDTO
+  assignData: AssignTemplateToNamespacesDTO,
 ): Promise<Response> {
   const response = await apiClient.post(
     `/quota/namespace/template/assign`,
-    assignData
+    assignData,
   );
 
   if (response.status !== 204) {
@@ -137,21 +137,41 @@ export async function assignTemplateToNamespaces(
 
 export async function getQuotaUsageByNamespaceId(
   quotaId: string,
-  namespaceId: string
+  namespaceId: string,
 ): Promise<any> {
   const response = await apiClient.get(
-    `/quota/${quotaId}/usage/${namespaceId}`
+    `/quota/${quotaId}/usage/${namespaceId}`,
   );
   return response.data;
 }
 
-export async function deleteOrgQuota(
-  orgQuotaId: string
-): Promise<any> {
+export async function deleteOrgQuota(orgQuotaId: string): Promise<any> {
   const response = await apiClient.delete(`/quota/organization/${orgQuotaId}`);
 
   if (response.status !== 200) {
     throw new Error("Failed to delete organization quota");
+  }
+
+  return response.data;
+}
+
+export async function deleteProjectQuota(projectQuotaId: string): Promise<any> {
+  const response = await apiClient.delete(`/quota/project/${projectQuotaId}`);
+
+  if (response.status !== 200) {
+    throw new Error("Failed to delete project quota");
+  }
+
+  return response.data;
+}
+
+export async function deleteNamespaceQuota(
+  namespaceQuotaId: string,
+): Promise<any> {
+  const response = await apiClient.delete(`/quota/namespace/${namespaceQuotaId}`);
+
+  if (response.status !== 200) {
+    throw new Error("Failed to delete namespace quota");
   }
   
   return response.data;
