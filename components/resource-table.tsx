@@ -18,6 +18,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddResourceDialog from "./add-resource-dialog";
 import CreateNodeDialog from "./create-node-dialog";
 import DeleteResourcePoolDialog from "./delete-resource-pool-dialog";
+import DeleteResourceNodeDialog from "./delete-resource-node-dialog";
 import type { ResourcePool } from "@/types/resource";
 
 const resourceColumns = [
@@ -31,19 +32,27 @@ const resourceColumns = [
 type Props = {
   resourcePools: ResourcePool[];
   onDelete?: (poolId: string) => void;
+  onDeleteNode?: (nodeId: string) => void;
 };
 
-const ResourceTable = ({ resourcePools, onDelete }: Props) => {
+const ResourceTable = ({ resourcePools, onDelete, onDeleteNode }: Props) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedPoolId, setSelectedPoolId] = useState<string>("");
   const [selectedPoolName, setSelectedPoolName] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [deleteNodeDialogOpen, setDeleteNodeDialogOpen] = useState(false);
+  const [selectedNodeId, setSelectedNodeId] = useState<string>("");
+  const [selectedNodeName, setSelectedNodeName] = useState<string>("");
+  const [isDeletingNode, setIsDeletingNode] = useState(false);
+  const [nodeError, setNodeError] = useState<string | null>(null);
+
   const handleDelete = (poolId: string, poolName: string) => {
     setSelectedPoolId(poolId);
     setSelectedPoolName(poolName);
     setDeleteDialogOpen(true);
+    setError(null);
   };
 
   const handleConfirmDelete = async () => {
@@ -59,6 +68,30 @@ const ResourceTable = ({ resourcePools, onDelete }: Props) => {
         );
       } finally {
         setIsDeleting(false);
+      }
+    }
+  };
+
+  const handleDeleteNode = (nodeId: string, nodeName: string) => {
+    setSelectedNodeId(nodeId);
+    setSelectedNodeName(nodeName);
+    setDeleteNodeDialogOpen(true);
+    setNodeError(null);
+  };
+
+  const handleConfirmDeleteNode = async () => {
+    if (onDeleteNode && selectedNodeId) {
+      setIsDeletingNode(true);
+      try {
+        await onDeleteNode(selectedNodeId);
+        setDeleteNodeDialogOpen(false);
+      } catch (error: any) {
+        console.error("Error deleting resource node:", error);
+        setNodeError(
+          error.response?.data?.error || "Failed to delete resource node",
+        );
+      } finally {
+        setIsDeletingNode(false);
       }
     }
   };
@@ -127,11 +160,27 @@ const ResourceTable = ({ resourcePools, onDelete }: Props) => {
                           </p>
                         )} */}
                         </div>
-                        <AddResourceDialog
-                          nodeId={node.id}
-                          nodeName={node.name}
-                          orgId={pool.organization_id}
-                        />
+                        <div className="flex items-center gap-2">
+                          <AddResourceDialog
+                            nodeId={node.id}
+                            nodeName={node.name}
+                            orgId={pool.organization_id}
+                          />
+                          <Tooltip content="Delete node" color="danger">
+                            <Button
+                              isIconOnly
+                              size="sm"
+                              variant="light"
+                              color="danger"
+                              aria-label="Delete node"
+                              onPress={() =>
+                                handleDeleteNode(node.id, node.name)
+                              }
+                            >
+                              <DeleteIcon className="!w-4 !h-4" />
+                            </Button>
+                          </Tooltip>
+                        </div>
                       </div>
 
                       <Table
@@ -230,6 +279,14 @@ const ResourceTable = ({ resourcePools, onDelete }: Props) => {
         onConfirm={handleConfirmDelete}
         isDeleting={isDeleting}
         error={error}
+      />
+      <DeleteResourceNodeDialog
+        isOpen={deleteNodeDialogOpen}
+        nodeName={selectedNodeName}
+        onClose={() => setDeleteNodeDialogOpen(false)}
+        onConfirm={handleConfirmDeleteNode}
+        isDeleting={isDeletingNode}
+        error={nodeError}
       />
     </>
   );

@@ -86,6 +86,16 @@ export async function deleteResourcePool(resourcePoolId: string): Promise<any> {
   if (response.status !== 200) {
     throw new Error("Failed to delete resource pool");
   }
+
+  return response.data;
+}
+
+export async function deleteResourceNode(resourceNodeId: string): Promise<any> {
+  const response = await apiClient.delete(`/resources/node/${resourceNodeId}`);
+
+  if (response.status !== 200) {
+    throw new Error("Failed to delete resource node");
+  }
   
   return response.data;
 }
