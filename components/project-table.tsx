@@ -125,19 +125,19 @@ const ProjectTable = ({ organizationId, projects, onDelete }: Props) => {
                     <div className="flex items-center gap-2">
                       <CpuIcon className="!w-4 !h-4 text-blue-600 dark:text-blue-400" />
                       <span className="font-medium dark:text-blue-400">
-                        16 Cores
+                        N/A Cores
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <GpuIcon className="!w-4 !h-4 text-purple-600 dark:text-purple-400" />
                       <span className="font-medium dark:text-purple-400">
-                        32 GB
+                        N/A GB
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <RamIcon className="!w-4 !h-4 text-green-600 dark:text-green-400" />
                       <span className="font-medium dark:text-green-400">
-                        128 GB
+                        N/A GB
                       </span>
                     </div>
                   </div>

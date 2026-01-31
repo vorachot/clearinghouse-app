@@ -113,7 +113,7 @@ const OrgInfoCard = ({ id, name, onEdit, onDelete }: Props) => {
             </div>
             <div className="flex items-baseline gap-1">
               <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                16
+                N/A
               </span>
               <span className="text-xs text-gray-600 dark:text-gray-400">
                 Core
@@ -131,7 +131,7 @@ const OrgInfoCard = ({ id, name, onEdit, onDelete }: Props) => {
             </div>
             <div className="flex items-baseline gap-3">
               <span className="text-xl font-bold text-purple-600 dark:text-purple-400">
-                32
+                N/A
               </span>
               <span className="text-xs text-gray-600 dark:text-gray-400">
                 GB
@@ -149,7 +149,7 @@ const OrgInfoCard = ({ id, name, onEdit, onDelete }: Props) => {
             </div>
             <div className="flex items-baseline gap-3">
               <span className="text-xl font-bold text-green-600 dark:text-green-400">
-                128
+                N/A
               </span>
               <span className="text-xs text-gray-600 dark:text-gray-400">
                 GB
