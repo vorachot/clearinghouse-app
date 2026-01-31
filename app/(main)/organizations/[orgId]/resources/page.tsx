@@ -5,7 +5,7 @@ import CreateResourceTypeDialog from "@/components/create-resource-type-dialog";
 import CreateResourcePoolDialog from "@/components/create-resource-pool-dialog";
 import useSWR from "swr";
 import { useParams } from "next/navigation";
-import { getResourcePoolsByOrgId } from "@/api/resource";
+import { getResourcePoolsByOrgId, deleteResourcePool } from "@/api/resource";
 import Loading from "@/app/loading";
 import { ResourcePool } from "@/types/resource";
 import { Inventory2Outlined } from "@mui/icons-material";
@@ -23,6 +23,17 @@ const ResourcesPage = () => {
   );
   if (resourcePoolsData.isLoading) return <Loading />;
   if (resourcePoolsData.error) return <div>Error loading resources</div>;
+
+  const handleDeleteResourcePool = async (poolId: string) => {
+    try {
+      await deleteResourcePool(poolId);
+      // Revalidate the resource pools data to refresh the list
+      resourcePoolsData.mutate();
+    } catch (error) {
+      console.error("Failed to delete resource pool:", error);
+      throw error;
+    }
+  };
 
   const resourcePools: ResourcePool[] = resourcePoolsData.data || [];
   return (
@@ -110,7 +121,10 @@ const ResourcesPage = () => {
             </h3>
           </div>
         )}
-        <ResourceTable resourcePools={resourcePools} />
+        <ResourceTable
+          resourcePools={resourcePools}
+          onDelete={handleDeleteResourcePool}
+        />
       </div>
     </div>
   );

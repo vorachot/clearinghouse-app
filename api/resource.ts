@@ -79,3 +79,13 @@ export async function getResourceById(resourceId: string): Promise<any> {
   const response = await apiClient.get(`/resources/${resourceId}`);
   return response.data;
 }
+
+export async function deleteResourcePool(resourcePoolId: string): Promise<any> {
+  const response = await apiClient.delete(`/resources/pool/${resourcePoolId}`);
+
+  if (response.status !== 200) {
+    throw new Error("Failed to delete resource pool");
+  }
+  
+  return response.data;
+}
