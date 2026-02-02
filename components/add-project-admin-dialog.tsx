@@ -38,7 +38,9 @@ const AddProjectAdminDialog = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Filter to show only organization admins who are not already project admins
+  // Note: Members can also be promoted to admins
   const existingAdminIds = new Set(existingAdmins.map((a) => a.id));
+  const existingMemberIds = new Set(existingMembers.map((m) => m.id));
   const availableUsers =
     orgAdmins?.filter((admin) => !existingAdminIds.has(admin.id)) || [];
 

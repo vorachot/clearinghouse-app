@@ -46,13 +46,10 @@ const AddProjectMemberDialog = ({
     },
   );
 
-  // Filter out members who are already in the project and admins
+  // Filter out members who are already in the project (but allow admins)
   const existingMemberIds = new Set(existingMembers.map((m) => m.id));
-  const adminIds = new Set(admins.map((a) => a.id));
   const availableMembers =
-    orgMembers?.filter(
-      (member) => !existingMemberIds.has(member.id) && !adminIds.has(member.id),
-    ) || [];
+    orgMembers?.filter((member) => !existingMemberIds.has(member.id)) || [];
 
   const handleSubmit = async () => {
     if (selectedMembers.size === 0) return;
