@@ -86,6 +86,7 @@ export default function OrganizationQuotaList({
               color="primary"
               startContent={<AddIcon />}
               onPress={onCreateClick}
+              size="sm"
             >
               Create Quota
             </Button>
