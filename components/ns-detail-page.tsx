@@ -84,34 +84,8 @@ const NamespaceDetailPage = () => {
   const namespaceTemplate: NamespaceQuotaTemplate =
     namespaceTemplateData.data || {};
 
-  // Combine owner (as admin) and namespace_members with role information
-  const allMembers = [
-    ...(namespace.owner
-      ? [{ ...namespace.owner, role: "admin" as const }]
-      : []),
-    ...(namespace.namespace_members?.map((member) => ({
-      ...member,
-      role: "member" as const,
-    })) || []),
-  ];
-
-  // Deduplicate by user id, keeping admin role priority
-  const uniqueMembers = Array.from(
-    allMembers.reduce((map, user) => {
-      const existing = map.get(user.id);
-      if (!existing || user.role === "admin") {
-        map.set(user.id, user);
-      }
-      return map;
-    }, new Map<string, (typeof allMembers)[0]>()),
-  ).map(([_, user]) => user);
-
-  // Sort admins first
-  const sortedMembers = uniqueMembers.sort((a, b) => {
-    if (a.role === "admin" && b.role !== "admin") return -1;
-    if (a.role !== "admin" && b.role === "admin") return 1;
-    return 0;
-  });
+  // Only show namespace_members (not owner)
+  const sortedMembers = namespace.namespace_members || [];
 
   const handleUnassignTemplate = async () => {
     await unassignTemplateFromNamespaces(namespaceId);
@@ -239,20 +213,8 @@ const NamespaceDetailPage = () => {
                         >
                           <CardBody className="p-4">
                             <div className="flex items-center gap-3">
-                              <div
-                                className={`p-2 rounded-full ${
-                                  member.role === "admin"
-                                    ? "bg-primary-100 dark:bg-primary-900/30"
-                                    : "bg-success-100 dark:bg-success-900/30"
-                                }`}
-                              >
-                                <PersonRounded
-                                  className={`!w-6 !h-6 ${
-                                    member.role === "admin"
-                                      ? "text-primary-600 dark:text-primary-400"
-                                      : "text-success-600 dark:text-success-400"
-                                  }`}
-                                />
+                              <div className="p-2 rounded-full bg-success-100 dark:bg-success-900/30">
+                                <PersonRounded className="!w-6 !h-6 text-success-600 dark:text-success-400" />
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="font-semibold text-gray-900 dark:text-white truncate">
@@ -262,20 +224,6 @@ const NamespaceDetailPage = () => {
                                   {member.email}
                                 </p>
                               </div>
-                            </div>
-                            <div className="mt-3">
-                              <Chip
-                                size="sm"
-                                color={
-                                  member.role === "admin"
-                                    ? "primary"
-                                    : "success"
-                                }
-                                variant="flat"
-                                className="w-full"
-                              >
-                                {member.role === "admin" ? "Admin" : "Member"}
-                              </Chip>
                             </div>
                           </CardBody>
                         </Card>
@@ -304,7 +252,6 @@ const NamespaceDetailPage = () => {
           projectId={projectId}
           onClose={handleCloseAddMember}
           existingMembers={namespace.namespace_members}
-          admins={namespace.owner ? [namespace.owner] : []}
         />
       )}
 
@@ -313,8 +260,8 @@ const NamespaceDetailPage = () => {
           isOpen={openMembersModal}
           setOpenMembersModal={setOpenMembersModal}
           members={namespace.namespace_members}
-          admins={namespace.owner ? [namespace.owner] : []}
           namespaceId={namespaceId}
+          projectId={projectId}
         />
       )}
 

@@ -46,13 +46,10 @@ const AddNamespaceMemberDialog = ({
     },
   );
 
-  // Filter out members who are already in the namespace and admins
+  // Filter out members who are already in the namespace
   const existingMemberIds = new Set(existingMembers.map((m) => m.id));
-  const adminIds = new Set(admins.map((a) => a.id));
   const availableMembers =
-    projectMembers?.filter(
-      (member) => !existingMemberIds.has(member.id) && !adminIds.has(member.id),
-    ) || [];
+    projectMembers?.filter((member) => !existingMemberIds.has(member.id)) || [];
 
   const handleSubmit = async () => {
     if (selectedMembers.size === 0) return;
@@ -70,6 +67,7 @@ const AddNamespaceMemberDialog = ({
         onClose();
       }
       await mutate(["namespace", namespaceId]);
+      await mutate(["namespaces", projectId]);
     } catch (error) {
       console.error("Error adding members to namespace:", error);
     } finally {

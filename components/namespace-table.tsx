@@ -28,6 +28,8 @@ import { getQuotaUsageByNamespaceId } from "@/api/quota";
 import UsageBar from "./usagebar";
 import UpdateNamespaceDialog from "./update-ns-dialog";
 import DeleteNamespaceDialog from "./delete-ns-dialog";
+import NamespaceMemberModal from "./namespace-member-modal";
+import AddNamespaceMemberDialog from "./add-namespace-member-dialog";
 
 type Props = {
   organizationId: string;
@@ -53,6 +55,10 @@ const NamespaceTable = ({
   const [deletingNamespaceId, setDeletingNamespaceId] = useState<string | null>(
     null,
   );
+  const [managingMembersNamespace, setManagingMembersNamespace] =
+    useState<Namespace | null>(null);
+  const [addingMemberNamespace, setAddingMemberNamespace] =
+    useState<Namespace | null>(null);
 
   useEffect(() => {
     const fetchAllUsages = async () => {
@@ -101,9 +107,13 @@ const NamespaceTable = ({
     setDeletingNamespaceId(namespaceId);
   };
 
+  const handleManageMembers = (namespace: Namespace) => {
+    setManagingMembersNamespace(namespace);
+  };
+
   const columns = [
     { key: "name", label: "NAMESPACE NAME" },
-    { key: "description", label: "DESCRIPTION" },
+    // { key: "description", label: "DESCRIPTION" },
     { key: "template", label: "QUOTA TEMPLATE" },
     { key: "usage", label: "USAGE" },
     { key: "members", label: "MEMBERS" },
@@ -145,11 +155,11 @@ const NamespaceTable = ({
                   </span>
                 </div>
               </TableCell>
-              <TableCell>
+              {/* <TableCell>
                 <span className="text-sm text-gray-600 dark:text-gray-400">
                   {namespace.description || "No description"}
                 </span>
-              </TableCell>
+              </TableCell> */}
               <TableCell>
                 <div className="flex items-center gap-2">
                   <StyleRounded className="!w-4 !h-4 text-indigo-600 dark:text-indigo-400" />
@@ -194,7 +204,13 @@ const NamespaceTable = ({
                 </div>
               </TableCell>
               <TableCell>
-                <Chip size="sm" color="success" variant="flat" className="px-2">
+                <Chip
+                  size="sm"
+                  color="success"
+                  variant="flat"
+                  className="px-2 cursor-pointer hover:bg-success-200 dark:hover:bg-success-800 transition-colors"
+                  onClick={() => handleManageMembers(namespace)}
+                >
                   <PeopleAltRounded className="!w-4 !h-4 mr-1" />
                   <span className="font-medium dark:text-green-400">
                     {namespace.namespace_members?.length || 0}
@@ -277,6 +293,29 @@ const NamespaceTable = ({
           namespaceId={deletingNamespaceId}
           projectId={projectId}
           setOnClose={() => setDeletingNamespaceId(null)}
+        />
+      )}
+      {managingMembersNamespace && (
+        <NamespaceMemberModal
+          isOpen={true}
+          setOpenMembersModal={(open) => {
+            if (!open) setManagingMembersNamespace(null);
+          }}
+          members={managingMembersNamespace.namespace_members}
+          namespaceId={managingMembersNamespace.id}
+          projectId={projectId}
+          onAddMember={() => {
+            setAddingMemberNamespace(managingMembersNamespace);
+            setManagingMembersNamespace(null);
+          }}
+        />
+      )}
+      {addingMemberNamespace && (
+        <AddNamespaceMemberDialog
+          namespaceId={addingMemberNamespace.id}
+          projectId={projectId}
+          onClose={() => setAddingMemberNamespace(null)}
+          existingMembers={addingMemberNamespace.namespace_members}
         />
       )}
     </div>
