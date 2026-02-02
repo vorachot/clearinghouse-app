@@ -22,7 +22,7 @@ import DeleteProjectQuotaDialog from "./delete-project-quota-dialog";
 
 type ProjectQuotaListProps = {
   quotas: ProjectQuota[];
-  onCreateClick: () => void;
+  onCreateClick?: () => void;
   onDelete?: (quotaId: string) => void;
   type?: "external" | "internal";
 };
@@ -122,21 +122,6 @@ export default function ProjectQuotaList({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">
-          {type === "external"
-            ? "External Project Quotas"
-            : "Internal Project Quotas"}
-        </h3>
-        <Button
-          color="primary"
-          startContent={<AddIcon />}
-          onPress={onCreateClick}
-          size="sm"
-        >
-          Create {type === "external" ? "External" : "Internal"} Quota
-        </Button>
-      </div>
 
       <Table aria-label="Project quotas table">
         <TableHeader>

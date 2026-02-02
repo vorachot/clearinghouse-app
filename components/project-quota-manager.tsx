@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Tabs, Tab } from "@heroui/tabs";
-import { Card, CardBody } from "@heroui/card";
+import { Button } from "@heroui/button";
+import AddIcon from "@mui/icons-material/Add";
 import ProjectQuotaList from "./project-quota-list";
 import ProjectQuotaExternalForm from "./project-quota-external-form";
 import ProjectQuotaInternalForm from "./project-quota-internal-form";
@@ -37,32 +38,39 @@ export default function ProjectQuotaManager({
 }: ProjectQuotaManagerProps) {
   const [isExternalFormOpen, setIsExternalFormOpen] = useState(false);
   const [isInternalFormOpen, setIsInternalFormOpen] = useState(false);
-
-  // const externalQuotas = projectQuotas.filter(
-  //   (q) => q.source === "organization_quota"
-  // );
-  // const internalQuotas = projectQuotas.filter(
-  //   (q) => q.source === "resource_pool"
-  // );
+  const [selectedTab, setSelectedTab] = useState("external");
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold">Project Quotas</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">Project Quotas</h2>
+        <Button
+          color="primary"
+          startContent={<AddIcon />}
+          onPress={() =>
+            selectedTab === "external"
+              ? setIsExternalFormOpen(true)
+              : setIsInternalFormOpen(true)
+          }
+          size="sm"
+        >
+          Create {selectedTab === "external" ? "External" : "Internal"} Quota
+        </Button>
+      </div>
 
-      <Tabs aria-label="Project quota types">
+      <Tabs
+        aria-label="Project quota types"
+        selectedKey={selectedTab}
+        onSelectionChange={(key) => setSelectedTab(key as string)}
+      >
         <Tab key="external" title="External (from Org Quota)">
-          <Card>
-            <CardBody className="p-4">
-              <ProjectQuotaList
-                quotas={projectQuotas.filter(
-                  (q) => q.organization_quota_id !== null,
-                )}
-                onCreateClick={() => setIsExternalFormOpen(true)}
-                onDelete={onDeleteQuota}
-                type="external"
-              />
-            </CardBody>
-          </Card>
+          <ProjectQuotaList
+            quotas={projectQuotas.filter(
+              (q) => q.organization_quota_id !== null,
+            )}
+            onDelete={onDeleteQuota}
+            type="external"
+          />
 
           <ProjectQuotaExternalForm
             isOpen={isExternalFormOpen}
@@ -79,18 +87,13 @@ export default function ProjectQuotaManager({
         </Tab>
 
         <Tab key="internal" title="Internal (from Resource Pool)">
-          <Card>
-            <CardBody className="p-4">
-              <ProjectQuotaList
-                quotas={projectQuotas.filter(
-                  (q) => q.organization_quota_id === null,
-                )}
-                onCreateClick={() => setIsInternalFormOpen(true)}
-                onDelete={onDeleteQuota}
-                type="internal"
-              />
-            </CardBody>
-          </Card>
+          <ProjectQuotaList
+            quotas={projectQuotas.filter(
+              (q) => q.organization_quota_id === null,
+            )}
+            onDelete={onDeleteQuota}
+            type="internal"
+          />
 
           <ProjectQuotaInternalForm
             isOpen={isInternalFormOpen}
