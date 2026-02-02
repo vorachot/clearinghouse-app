@@ -5,6 +5,7 @@ import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Tooltip } from "@heroui/tooltip";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 import {
   AssignTemplateToNamespacesDTO,
   CreateNamespaceQuotaDTO,
@@ -256,10 +257,19 @@ const ProjectQuotasPage = () => {
           <Card>
             <CardBody className="p-4">
               <div className="space-y-4">
-                <h2 className="text-2xl font-bold">Namespace Quotas</h2>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-bold">Namespace Quotas</h2>
+                  <Button
+                    color="primary"
+                    startContent={<AddIcon />}
+                    onPress={() => setIsQuotaFormOpen(true)}
+                    size="sm"
+                  >
+                    Create Namespace Quota
+                  </Button>
+                </div>
                 <NamespaceQuotaList
                   quotas={namespaceQuotasByProjectId}
-                  onCreateClick={() => setIsQuotaFormOpen(true)}
                   onDelete={handleDeleteNamespaceQuota}
                 />
               </div>
@@ -280,18 +290,22 @@ const ProjectQuotasPage = () => {
               <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold">Quota Templates</h2>
                 <div className="flex gap-2">
-                  <button
-                    className="px-4 py-2 text-sm bg-primary text-white rounded-lg hover:bg-primary-600 hover:cursor-pointer"
-                    onClick={() => setIsTemplateFormOpen(true)}
+                  <Button
+                    color="primary"
+                    startContent={<AddIcon />}
+                    onPress={() => setIsTemplateFormOpen(true)}
+                    size="sm"
                   >
                     Create Template
-                  </button>
-                  <button
-                    className="px-4 py-2 text-sm bg-secondary text-white rounded-lg hover:bg-secondary-600 hover:cursor-pointer"
-                    onClick={() => setIsAssignFormOpen(true)}
+                  </Button>
+                  <Button
+                    color="secondary"
+                    startContent={<AddIcon />}
+                    onPress={() => setIsAssignFormOpen(true)}
+                    size="sm"
                   >
                     Assign Template
-                  </button>
+                  </Button>
                 </div>
               </div>
 

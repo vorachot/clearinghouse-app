@@ -13,7 +13,7 @@ import DeleteNamespaceQuotaDialog from "./delete-namespace-quota-dialog";
 
 type NamespaceQuotaListProps = {
   quotas: NamespaceQuota[];
-  onCreateClick: () => void;
+  onCreateClick?: () => void;
   onDelete?: (quotaId: string) => void;
 };
 
@@ -54,17 +54,6 @@ export default function NamespaceQuotaList({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Namespace Quotas</h3>
-        <Button
-          color="primary"
-          startContent={<AddIcon />}
-          onPress={onCreateClick}
-          size="sm"
-        >
-          Create Namespace Quota
-        </Button>
-      </div>
 
       {quotas.length === 0 ? (
         <Card>
