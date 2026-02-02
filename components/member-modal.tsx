@@ -197,13 +197,18 @@ const MemberModal = ({
                       {member.email}
                     </p>
                   </div>
-                  <Chip
-                    size="sm"
-                    color={member.role === "admin" ? "primary" : "success"}
-                    variant="flat"
-                  >
-                    {member.role === "admin" ? "Admin" : "Member"}
-                  </Chip>
+                  <div className="flex gap-1">
+                    {adminIds.has(member.id) && (
+                      <Chip size="sm" color="primary" variant="flat">
+                        Admin
+                      </Chip>
+                    )}
+                    {memberIds.has(member.id) && (
+                      <Chip size="sm" color="success" variant="flat">
+                        Member
+                      </Chip>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

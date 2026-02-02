@@ -28,6 +28,10 @@ const MemberCard = ({
 }: Props) => {
   const INITIAL_DISPLAY_COUNT = 1;
 
+  // Track admin and member IDs separately
+  const adminIds = new Set(admins?.map((a) => a.id) || []);
+  const memberIds = new Set(members?.map((m) => m.id) || []);
+
   // Combine admins and members with role information
   const allUsers = [
     ...(admins?.map((admin) => ({ ...admin, role: "admin" as const })) || []),
@@ -108,13 +112,18 @@ const MemberCard = ({
                     {member.email}
                   </p>
                 </div>
-                <Chip
-                  size="sm"
-                  color={member.role === "admin" ? "primary" : "success"}
-                  variant="flat"
-                >
-                  {member.role === "admin" ? "Admin" : "Member"}
-                </Chip>
+                <div className="flex gap-1">
+                  {adminIds.has(member.id) && (
+                    <Chip size="sm" color="primary" variant="flat">
+                      Admin
+                    </Chip>
+                  )}
+                  {memberIds.has(member.id) && (
+                    <Chip size="sm" color="success" variant="flat">
+                      Member
+                    </Chip>
+                  )}
+                </div>
               </div>
             ))}
             {hasMoreMembers && (
