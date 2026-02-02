@@ -20,14 +20,12 @@ import { User } from "@/context/UserContext";
 interface AddAdminDialogProps {
   orgId?: string;
   onClose?: () => void;
-  existingMembers?: User[];
   existingAdmins?: User[];
 }
 
 const AddAdminDialog = ({
   orgId,
   onClose,
-  existingMembers = [],
   existingAdmins = [],
 }: AddAdminDialogProps) => {
   const [selectedAdmins, setSelectedAdmins] = useState<Set<string>>(

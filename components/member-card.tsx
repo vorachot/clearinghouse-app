@@ -96,7 +96,8 @@ const MemberCard = ({
             {displayedMembers.map((member) => (
               <div
                 key={member.id}
-                className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                onClick={() => setOpenMembersModal(true)}
               >
                 <PersonRounded className="!w-5 !h-5 text-gray-600 dark:text-gray-400" />
                 <div className="flex-1 min-w-0">

@@ -222,7 +222,6 @@ const OrgDetailPage = () => {
         <AddAdminDialog
           orgId={orgId}
           onClose={handleCloseAddAdmin}
-          existingMembers={organization.members}
           existingAdmins={organization.admins}
         />
       )}
