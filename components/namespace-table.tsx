@@ -162,9 +162,15 @@ const NamespaceTable = ({
               </TableCell> */}
               <TableCell>
                 <div className="flex items-center gap-2">
-                  <StyleRounded className="!w-4 !h-4 text-indigo-600 dark:text-indigo-400" />
+                  {namespace.quota_template?.name ? (
+                    <StyleRounded className="!w-4 !h-4 text-indigo-600 dark:text-indigo-400" />
+                  ) : null}
                   <span className="font-medium text-indigo-600 dark:text-indigo-400">
-                    {namespace.quota_template?.name || "N/A"}
+                    {namespace.quota_template?.name || (
+                      <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                        No template
+                      </span>
+                    )}
                   </span>
                 </div>
               </TableCell>
