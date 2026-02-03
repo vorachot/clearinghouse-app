@@ -14,6 +14,7 @@ import {
 import { Checkbox, CheckboxGroup } from "@heroui/checkbox";
 import { Chip } from "@heroui/chip";
 import { CreateQuotaTemplateDTO, NamespaceQuota } from "@/types/quota";
+import LayersIcon from "@mui/icons-material/Layers";
 
 type NamespaceQuotaTemplateFormProps = {
   isOpen: boolean;
@@ -93,36 +94,39 @@ export default function NamespaceQuotaTemplateForm({
 
             {/* Quota Selection */}
             <Card>
-                <CardHeader>
-                  <h3 className="text-lg font-semibold">
-                    Source Namespace Quotas
-                  </h3>
-                </CardHeader>
-                <CardBody>
-                  {namespaceQuotas.length === 0 ? (
-                    <p className="text-gray-500 text-center py-4">
-                      No namespace quotas found for this project
-                    </p>
-                  ) : (
-                    <CheckboxGroup
-                      value={selectedQuotaIds}
-                      onValueChange={setSelectedQuotaIds}
-                      label="Select one or more quotas to use as template source"
-                      description="Resources will be aggregated from selected quotas"
-                    >
-                      {namespaceQuotas.map((quota) => (
-                        <Checkbox key={quota.id} value={quota.id}>
-                          <div className="space-y-1">
+              <CardHeader>
+                <h3 className="text-lg font-semibold">
+                  Source Namespace Quotas
+                </h3>
+              </CardHeader>
+              <CardBody>
+                {namespaceQuotas.length === 0 ? (
+                  <p className="text-gray-500 text-center py-4">
+                    No namespace quotas found for this project
+                  </p>
+                ) : (
+                  <CheckboxGroup
+                    value={selectedQuotaIds}
+                    onValueChange={setSelectedQuotaIds}
+                    label="Select one or more quotas to use as template source"
+                    description="Resources will be aggregated from selected quotas"
+                  >
+                    {namespaceQuotas.map((quota) => (
+                      <Checkbox key={quota.id} value={quota.id}>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <LayersIcon
+                              className="text-secondary"
+                              fontSize="small"
+                            />
                             <p className="font-semibold">{quota.name}</p>
+                          </div>
                           <div className="flex flex-wrap gap-1 mt-1">
                             {quota.resources.map((resource) => (
-                              <Chip
-                                key={resource.id}
-                                size="sm"
-                                variant="flat"
-                              >
-                                {resource.resource_prop.resource.resource_type?.name || "Unknown"}:
-                                {" "}{resource.quantity}
+                              <Chip key={resource.id} size="sm" variant="flat">
+                                {resource.resource_prop.resource.resource_type
+                                  ?.name || "Unknown"}
+                                : {resource.quantity}
                               </Chip>
                             ))}
                           </div>

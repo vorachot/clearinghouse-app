@@ -7,6 +7,12 @@ import { Tooltip } from "@heroui/tooltip";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import {
+  StyleRounded,
+  FolderOpenRounded,
+  VisibilityRounded,
+} from "@mui/icons-material";
+import { Chip } from "@heroui/chip";
+import {
   AssignTemplateToNamespacesDTO,
   CreateNamespaceQuotaDTO,
   CreateQuotaTemplateDTO,
@@ -42,6 +48,7 @@ import NamespaceQuotaForm from "@/components/namespace-quota-form";
 import NamespaceQuotaTemplateForm from "@/components/namespace-quota-template-form";
 import NamespaceQuotaTemplateAssign from "@/components/namespace-quota-template-assign";
 import DeleteNamespaceQuotaTemplateDialog from "@/components/delete-namespace-quota-template-dialog";
+import ViewTemplateDialog from "@/components/view-template-dialog";
 import { getNamespaceByProjectId } from "@/api/namespace";
 import { Namespace } from "@/types/namespace";
 
@@ -57,6 +64,8 @@ const ProjectQuotasPage = () => {
   const [selectedTemplateName, setSelectedTemplateName] = useState<string>("");
   const [isDeletingTemplate, setIsDeletingTemplate] = useState(false);
   const [templateError, setTemplateError] = useState<string | null>(null);
+  const [viewingTemplate, setViewingTemplate] =
+    useState<NamespaceQuotaTemplate | null>(null);
 
   const resourcePoolsData = useSWR(
     ["resource-pools", orgId],
@@ -310,54 +319,143 @@ const ProjectQuotasPage = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {templates.map((template) => (
-                  <Card key={template.id} className="border">
-                    <CardBody>
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-semibold text-lg">
-                          {template.name}
-                        </h4>
-                        <Tooltip content="Delete template" color="danger">
-                          <Button
-                            size="sm"
-                            variant="light"
-                            isIconOnly
-                            color="danger"
-                            onPress={() =>
-                              handleDeleteTemplate(template.id, template.name)
-                            }
-                          >
-                            <DeleteIcon className="!w-4 !h-4" />
-                          </Button>
-                        </Tooltip>
-                      </div>
-                      <p className="text-sm text-gray-500 mb-3">
-                        {template.description}
-                      </p>
-                      <div className="space-y-2">
-                        <div className="text-xs">
-                          <span className="text-gray-500">Resources:</span>
-                          <div className="mt-1 flex flex-wrap gap-1">
-                            {template.quotas?.flatMap((quota) =>
-                              quota.resources?.map((r) => (
-                                <span
-                                  key={r.id}
-                                  className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs"
-                                >
-                                  {r.resource_prop.resource.name}: {r.quantity}
-                                </span>
-                              )),
-                            ) || (
-                              <span className="text-gray-500 text-xs">
-                                No resources
-                              </span>
-                            )}
+                {templates.map((template) => {
+                  // Find namespaces using this template
+                  const namespacesUsingTemplate = namespaces.filter(
+                    (ns) => ns.quota_template_id === template.id,
+                  );
+
+                  return (
+                    <Card key={template.id} className="border">
+                      <CardBody>
+                        <div className="flex justify-between items-start mb-3">
+                          <div className="flex items-center gap-2">
+                            <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
+                              <StyleRounded className="!w-5 !h-5 text-indigo-600 dark:text-indigo-400" />
+                            </div>
+                            <h4 className="font-semibold text-lg">
+                              {template.name}
+                            </h4>
+                          </div>
+                          <div className="flex gap-1">
+                            <Tooltip content="View details">
+                              <Button
+                                size="sm"
+                                variant="light"
+                                isIconOnly
+                                color="primary"
+                                onPress={() => setViewingTemplate(template)}
+                              >
+                                <VisibilityRounded className="!w-4 !h-4" />
+                              </Button>
+                            </Tooltip>
+                            <Tooltip content="Delete template" color="danger">
+                              <Button
+                                size="sm"
+                                variant="light"
+                                isIconOnly
+                                color="danger"
+                                onPress={() =>
+                                  handleDeleteTemplate(
+                                    template.id,
+                                    template.name,
+                                  )
+                                }
+                              >
+                                <DeleteIcon className="!w-4 !h-4" />
+                              </Button>
+                            </Tooltip>
                           </div>
                         </div>
-                      </div>
-                    </CardBody>
-                  </Card>
-                ))}
+                        <p className="text-sm text-gray-500 mb-3">
+                          {template.description}
+                        </p>
+                        <div className="space-y-3">
+                          <div className="text-xs">
+                            <span className="text-gray-500 font-medium">
+                              Resources:
+                            </span>
+                            <div className="mt-2 flex flex-wrap gap-1">
+                              {(() => {
+                                // Group resources by resource type name and sum quantities
+                                const aggregatedResources = new Map<
+                                  string,
+                                  number
+                                >();
+
+                                template.quotas?.forEach((quota) => {
+                                  quota.resources?.forEach((r) => {
+                                    const resourceTypeName =
+                                      r.resource_prop?.resource?.resource_type
+                                        ?.name || "Unknown";
+
+                                    const current =
+                                      aggregatedResources.get(
+                                        resourceTypeName,
+                                      ) || 0;
+                                    aggregatedResources.set(
+                                      resourceTypeName,
+                                      current + r.quantity,
+                                    );
+                                  });
+                                });
+
+                                if (aggregatedResources.size === 0) {
+                                  return (
+                                    <span className="text-gray-500 text-xs">
+                                      No resources
+                                    </span>
+                                  );
+                                }
+
+                                return Array.from(
+                                  aggregatedResources.entries(),
+                                ).map(([typeName, totalQuantity]) => (
+                                  <Chip
+                                    key={typeName}
+                                    size="sm"
+                                    variant="flat"
+                                    color="primary"
+                                    className="text-xs"
+                                  >
+                                    {typeName}: {totalQuantity}
+                                  </Chip>
+                                ));
+                              })()}
+                            </div>
+                          </div>
+                          <div className="text-xs">
+                            <span className="text-gray-500 font-medium">
+                              Used by namespaces:
+                            </span>
+                            <div className="mt-1 flex flex-wrap gap-1">
+                              {namespacesUsingTemplate.length > 0 ? (
+                                namespacesUsingTemplate.map((ns) => (
+                                  <Chip
+                                    key={ns.id}
+                                    size="sm"
+                                    variant="flat"
+                                    color="success"
+                                    className="text-xs"
+                                    startContent={
+                                      <FolderOpenRounded className="!w-3 !h-3" />
+                                    }
+                                  >
+                                    {ns.name}
+                                  </Chip>
+                                ))
+                              ) : (
+                                <span className="text-gray-500 text-xs">
+                                  Not assigned to any namespace
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </CardBody>
+                    </Card>
+                  );
+                })}
                 {templates.length === 0 && (
                   <p className="text-gray-500 col-span-3 text-center py-8">
                     No templates created yet
@@ -392,6 +490,11 @@ const ProjectQuotasPage = () => {
         onConfirm={handleConfirmDeleteTemplate}
         isDeleting={isDeletingTemplate}
         error={templateError}
+      />
+      <ViewTemplateDialog
+        isOpen={!!viewingTemplate}
+        onClose={() => setViewingTemplate(null)}
+        template={viewingTemplate}
       />
     </div>
   );

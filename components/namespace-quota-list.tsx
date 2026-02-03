@@ -6,7 +6,6 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { Tooltip } from "@heroui/tooltip";
 import { NamespaceQuota } from "@/types/quota";
-import AddIcon from "@mui/icons-material/Add";
 import LayersIcon from "@mui/icons-material/Layers";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DeleteNamespaceQuotaDialog from "./delete-namespace-quota-dialog";
