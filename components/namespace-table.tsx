@@ -170,37 +170,62 @@ const NamespaceTable = ({
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2 flex-wrap">
-                  {namespace.quota_template?.quotas?.map((q) =>
-                    q.resources?.map((r) => {
-                      const quotaUsages = namespaceUsages[namespace.id];
-                      const usage = quotaUsages?.[q.id];
-                      const resourceTypeId =
-                        r.resource_prop?.resource?.resource_type_id;
-                      const matchingUsage = usage?.type?.find(
-                        (usageType: any) =>
-                          usageType.type_id === resourceTypeId,
-                      );
-                      const usedAmount = matchingUsage?.used || 0;
-                      const totalAmount = r.quantity || 0;
+                  {(() => {
+                    // Aggregate resources by resource type name
+                    const aggregatedResources = new Map<
+                      string,
+                      { used: number; total: number }
+                    >();
 
+                    namespace.quota_template?.quotas?.forEach((q) => {
+                      q.resources?.forEach((r) => {
+                        const quotaUsages = namespaceUsages[namespace.id];
+                        const usage = quotaUsages?.[q.id];
+                        const resourceTypeId =
+                          r.resource_prop?.resource?.resource_type_id;
+                        const matchingUsage = usage?.type?.find(
+                          (usageType: any) =>
+                            usageType.type_id === resourceTypeId,
+                        );
+                        const usedAmount = matchingUsage?.used || 0;
+                        const totalAmount = r.quantity || 0;
+                        const resourceTypeName =
+                          r.resource_prop?.resource?.resource_type?.name ||
+                          "Unknown";
+
+                        const existing =
+                          aggregatedResources.get(resourceTypeName);
+                        if (existing) {
+                          existing.used += usedAmount;
+                          existing.total += totalAmount;
+                        } else {
+                          aggregatedResources.set(resourceTypeName, {
+                            used: usedAmount,
+                            total: totalAmount,
+                          });
+                        }
+                      });
+                    });
+
+                    if (aggregatedResources.size === 0) {
                       return (
-                        // <Chip key={r.id} size="sm" variant="flat">
-                        //   {r.resource_prop?.resource?.resource_type?.name ||
-                        //     "Unknown"}
-                        //   : {usedAmount}/{totalAmount}
-                        // </Chip>
-                        <UsageBar
-                          key={r.id}
-                          value={usedAmount}
-                          maxValue={totalAmount}
-                          label={
-                            r.resource_prop?.resource?.resource_type?.name ||
-                            "Unknown"
-                          }
-                        />
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                          No resources
+                        </span>
                       );
-                    }),
-                  )}
+                    }
+
+                    return Array.from(aggregatedResources.entries()).map(
+                      ([name, { used, total }]) => (
+                        <UsageBar
+                          key={name}
+                          value={used}
+                          maxValue={total}
+                          label={name}
+                        />
+                      ),
+                    );
+                  })()}
                 </div>
               </TableCell>
               <TableCell>
