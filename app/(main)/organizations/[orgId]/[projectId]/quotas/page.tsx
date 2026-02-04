@@ -10,6 +10,7 @@ import {
   StyleRounded,
   FolderOpenRounded,
   VisibilityRounded,
+  EditRounded,
 } from "@mui/icons-material";
 import { Chip } from "@heroui/chip";
 import {
@@ -22,6 +23,7 @@ import {
   CreateProjectQuotaInternalDTO,
   NamespaceQuota,
   NamespaceQuotaTemplate,
+  UpdateQuotaTemplateDTO,
 } from "@/types/quota";
 import { ResourcePool } from "@/types/resource";
 import useSWR, { mutate } from "swr";
@@ -38,6 +40,7 @@ import {
   getNamespaceQuotaTemplatesByProjectId,
   getOrgQuotasByOrgId,
   getProjectQuotasByProjectId,
+  updateNamespaceQuotaTemplate,
 } from "@/api/quota";
 import { useParams } from "next/navigation";
 import ProjectQuotaManager from "@/components/project-quota-manager";
@@ -49,6 +52,7 @@ import NamespaceQuotaTemplateForm from "@/components/namespace-quota-template-fo
 import NamespaceQuotaTemplateAssign from "@/components/namespace-quota-template-assign";
 import DeleteNamespaceQuotaTemplateDialog from "@/components/delete-namespace-quota-template-dialog";
 import ViewTemplateDialog from "@/components/view-template-dialog";
+import EditQuotaTemplateDialog from "@/components/edit-quota-template-dialog";
 import { getNamespaceByProjectId } from "@/api/namespace";
 import { Namespace } from "@/types/namespace";
 
@@ -65,6 +69,8 @@ const ProjectQuotasPage = () => {
   const [isDeletingTemplate, setIsDeletingTemplate] = useState(false);
   const [templateError, setTemplateError] = useState<string | null>(null);
   const [viewingTemplate, setViewingTemplate] =
+    useState<NamespaceQuotaTemplate | null>(null);
+  const [editingTemplate, setEditingTemplate] =
     useState<NamespaceQuotaTemplate | null>(null);
 
   const resourcePoolsData = useSWR(
@@ -236,6 +242,21 @@ const ProjectQuotasPage = () => {
     }
   };
 
+  const handleUpdateTemplate = async (
+    templateId: string,
+    data: UpdateQuotaTemplateDTO,
+  ) => {
+    try {
+      await updateNamespaceQuotaTemplate(templateId, data);
+      await mutate(["namespace-quota-templates", projectId], undefined, {
+        revalidate: true,
+      });
+    } catch (error) {
+      console.error("Error updating template:", error);
+      throw error;
+    }
+  };
+
   return (
     <div className="container mx-auto pt-1 p-4 space-y-5">
       <div className="flex items-end justify-between gap-5">
@@ -347,6 +368,17 @@ const ProjectQuotasPage = () => {
                                 onPress={() => setViewingTemplate(template)}
                               >
                                 <VisibilityRounded className="!w-4 !h-4" />
+                              </Button>
+                            </Tooltip>
+                            <Tooltip content="Edit template">
+                              <Button
+                                size="sm"
+                                variant="light"
+                                isIconOnly
+                                color="warning"
+                                onPress={() => setEditingTemplate(template)}
+                              >
+                                <EditRounded className="!w-4 !h-4" />
                               </Button>
                             </Tooltip>
                             <Tooltip content="Delete template" color="danger">
@@ -495,6 +527,13 @@ const ProjectQuotasPage = () => {
         isOpen={!!viewingTemplate}
         onClose={() => setViewingTemplate(null)}
         template={viewingTemplate}
+      />
+      <EditQuotaTemplateDialog
+        isOpen={!!editingTemplate}
+        onClose={() => setEditingTemplate(null)}
+        onSubmit={handleUpdateTemplate}
+        template={editingTemplate}
+        namespaceQuotas={namespaceQuotasByProjectId}
       />
     </div>
   );

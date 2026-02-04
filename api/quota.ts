@@ -5,6 +5,7 @@ import {
   CreateProjectQuotaDTO,
   CreateProjectQuotaInternalDTO,
   CreateQuotaTemplateDTO,
+  UpdateQuotaTemplateDTO,
 } from "@/types/quota";
 import apiClient from "@/utils/apiClient";
 
@@ -202,6 +203,22 @@ export async function unassignTemplateFromNamespaces(
 
   if (response.status !== 200) {
     throw new Error("Failed to unassign namespace quota template");
+  }
+
+  return response.data;
+}
+
+export async function updateNamespaceQuotaTemplate(
+  templateId: string,
+  updateData: UpdateQuotaTemplateDTO,
+): Promise<any> {
+  const response = await apiClient.put(
+    `/quota/namespace/template/${templateId}`,
+    updateData,
+  );
+
+  if (response.status !== 200) {
+    throw new Error("Failed to update namespace quota template");
   }
 
   return response.data;

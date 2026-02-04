@@ -1,3 +1,4 @@
+import { S } from "@heroui/slider/dist/use-slider-BxNnx6bI";
 import { Organization } from "./org";
 import { Resource } from "./resource";
 
@@ -13,12 +14,12 @@ export type QuotaResource = {
 };
 
 export type ResourceProp = {
-  id:string;
-  resource_id:string;
+  id: string;
+  resource_id: string;
   resource: Resource;
   price: number;
   max_duration: number;
-}
+};
 
 // Organization Quota (External - between organizations)
 export type OrganizationQuota = {
@@ -28,8 +29,8 @@ export type OrganizationQuota = {
   node_id: string;
   from_organization_id: string;
   to_organization_id: string;
-  from_organization: Organization
-  to_organization: Organization
+  from_organization: Organization;
+  to_organization: Organization;
   resources: QuotaResource[];
 };
 
@@ -133,6 +134,12 @@ export type CreateQuotaTemplateDTO = {
   name: string;
   description: string;
   project_id: string;
+  quota_ids: string[];
+};
+
+export type UpdateQuotaTemplateDTO = {
+  name: string;
+  description: string;
   quota_ids: string[];
 };
 
