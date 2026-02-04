@@ -62,11 +62,15 @@ const MemberCard = ({
               <div className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
                 <span className="text-xs text-gray-600 dark:text-gray-400">
-                  {adminCount} admin{adminCount !== 1 ? "s" : ""} · {memberCount} member{memberCount !== 1 ? "s" : ""}
+                  {adminCount} admin{adminCount !== 1 ? "s" : ""} ·{" "}
+                  {memberCount} member{memberCount !== 1 ? "s" : ""}
                 </span>
               </div>
             </div>
-            <div className="flex gap-2 mt-4" onClick={(e) => e.stopPropagation()}>
+            <div
+              className="flex gap-2 mt-4"
+              onClick={(e) => e.stopPropagation()}
+            >
               <Button
                 size="sm"
                 color="success"
@@ -80,7 +84,9 @@ const MemberCard = ({
                 size="sm"
                 color="primary"
                 variant="flat"
-                startContent={<AdminPanelSettingsRounded className="!w-4 !h-4" />}
+                startContent={
+                  <AdminPanelSettingsRounded className="!w-4 !h-4" />
+                }
                 onPress={handleOpenAddAdmin}
               >
                 Admin
