@@ -49,7 +49,7 @@ export default function DeleteNamespaceTemplateAssignmentDialog({
         <ModalHeader className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
             <WarningRounded className="text-warning" />
-            <span>Unassign Template</span>
+            <span className="dark:text-white">Unassign Template</span>
           </div>
         </ModalHeader>
         <ModalBody>

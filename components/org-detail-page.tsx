@@ -118,12 +118,31 @@ const OrgDetailPage = () => {
                     Resources
                   </h3>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                  Manage resource pools, types, and allocations for this
-                  organization
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 mb-3">
+                  Configure and manage organization resources
                 </p>
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      Create & manage resource pools
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      Configure resource nodes
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      Set resource configurations
+                    </span>
+                  </div>
+                </div>
               </div>
-              <ArrowForwardRounded className="!w-5 !h-5 text-gray-400 ml-2" />
+              <ArrowForwardRounded className="!w-5 !h-5 text-gray-400 ml-2 mt-1" />
             </div>
           </CardBody>
         </Card>
@@ -143,14 +162,28 @@ const OrgDetailPage = () => {
                     <PieChartOutlineRounded className="!w-6 !h-6 text-purple-600 dark:text-purple-400" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Quotas
+                    Organization Quotas
                   </h3>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                  Set and monitor resource quotas and usage limits
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 mb-3">
+                  Manage resource allocation for this organization
                 </p>
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      Allocate resources to other orgs
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      View organization quota from other orgs
+                    </span>
+                  </div>
+                </div>
               </div>
-              <ArrowForwardRounded className="!w-5 !h-5 text-gray-400 ml-2" />
+              <ArrowForwardRounded className="!w-5 !h-5 text-gray-400 ml-2 mt-1" />
             </div>
           </CardBody>
         </Card>

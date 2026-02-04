@@ -63,7 +63,7 @@ export default function NamespaceQuotaTemplateForm({
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="4xl" scrollBehavior="inside">
       <ModalContent>
-        <ModalHeader>Create Quota Template</ModalHeader>
+        <ModalHeader className="dark:text-white">Create Quota Template</ModalHeader>
         <ModalBody>
           <div className="space-y-4">
             {/* Basic Info */}

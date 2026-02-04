@@ -90,8 +90,8 @@ const AddNamespaceMemberDialog = ({
   return (
     <Modal isOpen onClose={onClose} size="md" scrollBehavior="inside">
       <ModalContent>
-        <ModalHeader className="flex gap-2 items-center">
-          <PersonAddRounded className="!w-6 !h-6 text-green-600" />
+        <ModalHeader className="flex gap-2 items-center dark:text-white">
+          <PersonAddRounded className="!w-6 !h-6 text-green-600 dark:text-green-400" />
           Add Members to Namespace
         </ModalHeader>
         <ModalBody>
@@ -122,7 +122,7 @@ const AddNamespaceMemberDialog = ({
                   key={member.id}
                   textValue={`${member.first_name} ${member.last_name} (${member.email})`}
                 >
-                  <div className="flex flex-col">
+                  <div className="flex flex-col dark:text-white">
                     <span className="font-medium">
                       {member.first_name} {member.last_name}
                     </span>

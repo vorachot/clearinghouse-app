@@ -43,7 +43,7 @@ function NodeName({ nodeId }: { nodeId: string | null }) {
 
   return (
     <div>
-      <p className="font-medium text-sm">{data?.name || nodeId}</p>
+      <p className="text-sm">{data?.name || nodeId}</p>
     </div>
   );
 }
@@ -122,7 +122,6 @@ export default function ProjectQuotaList({
 
   return (
     <div className="space-y-4">
-
       <Table aria-label="Project quotas table">
         <TableHeader>
           <TableColumn>QUOTA NAME</TableColumn>
@@ -142,7 +141,9 @@ export default function ProjectQuotaList({
                 </div>
               </TableCell>
               <TableCell>
-                <NodeName nodeId={quota.node_id} />
+                <Chip size="sm" variant="flat" color="secondary">
+                  <NodeName nodeId={quota.node_id} />
+                </Chip>
               </TableCell>
               <TableCell>
                 <div>
@@ -151,7 +152,7 @@ export default function ProjectQuotaList({
               </TableCell>
               <TableCell>
                 <div>
-                  <Chip size="sm" variant="flat" color="secondary">
+                  <Chip size="sm" variant="flat" color="success">
                     {getSourceLabel(quota)}
                   </Chip>
                   {quota.organization_quota_id && (
@@ -165,13 +166,19 @@ export default function ProjectQuotaList({
               <TableCell>
                 <div className="flex flex-wrap gap-1">
                   {quota.resources.slice(0, 3).map((resource) => (
-                    <Chip key={resource.id} size="sm" variant="flat">
-                      {resource.resource_prop?.resource?.name || "Unknown"}:{" "}
-                      {resource.quantity}
+                    <Chip
+                      key={resource.id}
+                      size="sm"
+                      variant="flat"
+                      color="primary"
+                    >
+                      {resource.resource_prop.resource.resource_type.name ||
+                        "Unknown"}
+                      : {resource.quantity}
                     </Chip>
                   ))}
                   {quota.resources.length > 3 && (
-                    <Chip size="sm" variant="flat">
+                    <Chip size="sm" variant="flat" color="primary">
                       +{quota.resources.length - 3} more
                     </Chip>
                   )}

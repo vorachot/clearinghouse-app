@@ -1,14 +1,11 @@
 import { User } from "@/context/UserContext";
 import { Button } from "@heroui/button";
-import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Chip } from "@heroui/chip";
-import { Divider } from "@heroui/divider";
-
+import { Card, CardBody } from "@heroui/card";
 import {
   GroupRounded,
   PersonAddRounded,
-  PersonRounded,
   AdminPanelSettingsRounded,
+  ArrowForwardRounded,
 } from "@mui/icons-material";
 
 type Props = {
@@ -26,123 +23,72 @@ const MemberCard = ({
   handleOpenAddAdmin,
   setOpenMembersModal,
 }: Props) => {
-  const INITIAL_DISPLAY_COUNT = 1;
+  const totalMembers = new Set([
+    ...(admins?.map((a) => a.id) || []),
+    ...(members?.map((m) => m.id) || []),
+  ]).size;
 
-  // Track admin and member IDs separately
-  const adminIds = new Set(admins?.map((a) => a.id) || []);
-  const memberIds = new Set(members?.map((m) => m.id) || []);
+  const adminCount = admins?.length || 0;
+  const memberCount = members?.length || 0;
 
-  // Combine admins and members with role information
-  const allUsers = [
-    ...(admins?.map((admin) => ({ ...admin, role: "admin" as const })) || []),
-    ...(members?.map((member) => ({ ...member, role: "member" as const })) ||
-      []),
-  ];
-
-  // Deduplicate by user id, keeping admin role priority
-  const uniqueUsers = Array.from(
-    allUsers.reduce((map, user) => {
-      const existing = map.get(user.id);
-      if (!existing || user.role === "admin") {
-        map.set(user.id, user);
-      }
-      return map;
-    }, new Map<string, (typeof allUsers)[0]>()),
-  ).map(([_, user]) => user);
-
-  // Sort admins first
-  const sortedUsers = uniqueUsers.sort((a, b) => {
-    if (a.role === "admin" && b.role !== "admin") return -1;
-    if (a.role !== "admin" && b.role === "admin") return 1;
-    return 0;
-  });
-
-  const displayedMembers = sortedUsers.slice(0, INITIAL_DISPLAY_COUNT);
-  const hasMoreMembers = sortedUsers.length > INITIAL_DISPLAY_COUNT;
   return (
-    <Card className="bg-white dark:bg-gray-800 shadow-md">
-      <CardHeader className="flex gap-3 pb-2 justify-between">
-        <div className="flex gap-3">
-          <GroupRounded className="!w-6 !h-6 text-green-600 dark:text-green-400" />
-          <div className="flex flex-col">
-            <p className="text-lg font-semibold">Members</p>
-            <p className="text-small text-gray-500 dark:text-gray-400">
-              {sortedUsers.length} member
-              {sortedUsers.length !== 1 ? "s" : ""}
-            </p>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            color="success"
-            variant="flat"
-            startContent={<PersonAddRounded />}
-            onPress={handleOpenAddMember}
-          >
-            Member
-          </Button>
-          <Button
-            size="sm"
-            color="primary"
-            variant="flat"
-            startContent={<AdminPanelSettingsRounded />}
-            onPress={handleOpenAddAdmin}
-          >
-            Admin
-          </Button>
-        </div>
-      </CardHeader>
-      <Divider />
-      <CardBody className="gap-2">
-        {displayedMembers && displayedMembers.length > 0 ? (
-          <>
-            {displayedMembers.map((member) => (
-              <div
-                key={member.id}
-                className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                onClick={() => setOpenMembersModal(true)}
-              >
-                <PersonRounded className="!w-5 !h-5 text-gray-600 dark:text-gray-400" />
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-900 dark:text-white truncate">
-                    {member.first_name} {member.last_name}
-                  </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                    {member.email}
-                  </p>
-                </div>
-                <div className="flex gap-1">
-                  {adminIds.has(member.id) && (
-                    <Chip size="sm" color="primary" variant="flat">
-                      Admin
-                    </Chip>
-                  )}
-                  {memberIds.has(member.id) && (
-                    <Chip size="sm" color="success" variant="flat">
-                      Member
-                    </Chip>
-                  )}
-                </div>
+    <Card
+      isPressable
+      isHoverable
+      onPress={() => setOpenMembersModal(true)}
+      className="cursor-pointer transition-all hover:scale-[1.02]"
+    >
+      <CardBody className="p-6">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                <GroupRounded className="!w-6 !h-6 text-green-600 dark:text-green-400" />
               </div>
-            ))}
-            {hasMoreMembers && (
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Members
+              </h3>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 mb-3">
+              Manage team members and administrators
+            </p>
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                <span className="text-xs text-gray-600 dark:text-gray-400">
+                  {totalMembers} total member{totalMembers !== 1 ? "s" : ""}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                <span className="text-xs text-gray-600 dark:text-gray-400">
+                  {adminCount} admin{adminCount !== 1 ? "s" : ""} · {memberCount} member{memberCount !== 1 ? "s" : ""}
+                </span>
+              </div>
+            </div>
+            <div className="flex gap-2 mt-4" onClick={(e) => e.stopPropagation()}>
               <Button
                 size="sm"
-                variant="flat"
                 color="success"
-                className="w-full mt-2"
-                onPress={() => setOpenMembersModal(true)}
+                variant="flat"
+                startContent={<PersonAddRounded className="!w-4 !h-4" />}
+                onPress={handleOpenAddMember}
               >
-                View All {sortedUsers.length} Members
+                Member
               </Button>
-            )}
-          </>
-        ) : (
-          <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
-            No members assigned
-          </p>
-        )}
+              <Button
+                size="sm"
+                color="primary"
+                variant="flat"
+                startContent={<AdminPanelSettingsRounded className="!w-4 !h-4" />}
+                onPress={handleOpenAddAdmin}
+              >
+                Admin
+              </Button>
+            </div>
+          </div>
+          <ArrowForwardRounded className="!w-5 !h-5 text-gray-400 ml-2 mt-1" />
+        </div>
       </CardBody>
     </Card>
   );

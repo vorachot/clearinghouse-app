@@ -38,7 +38,7 @@ export default function NamespaceQuotaTemplateAssign({
 }: NamespaceQuotaTemplateAssignProps) {
   const [templateId, setTemplateId] = useState("");
   const [selectedNamespaceIds, setSelectedNamespaceIds] = useState<string[]>(
-    []
+    [],
   );
   const [selectedTemplate, setSelectedTemplate] =
     useState<NamespaceQuotaTemplate | null>(null);
@@ -74,7 +74,9 @@ export default function NamespaceQuotaTemplateAssign({
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="4xl" scrollBehavior="inside">
       <ModalContent>
-        <ModalHeader>Assign Template to Namespaces</ModalHeader>
+        <ModalHeader className="dark:text-white">
+          Assign Template to Namespaces
+        </ModalHeader>
         <ModalBody>
           <div className="space-y-4">
             {/* Template Selection */}
@@ -132,7 +134,7 @@ export default function NamespaceQuotaTemplateAssign({
                             ?.name || "Unknown"}
                           : {resource.quantity}
                         </Chip>
-                      ))
+                      )),
                     )}
                   </div>
                 </CardBody>

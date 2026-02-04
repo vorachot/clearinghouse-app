@@ -122,14 +122,40 @@ const ProjectDetailPage = () => {
                     <PieChartOutlineRounded className="!w-6 !h-6 text-purple-600 dark:text-purple-400" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Quotas
+                    Project Quotas
                   </h3>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                  Set and monitor resource quotas and usage limits
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 mb-3">
+                  Manage resource allocation for this project
                 </p>
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      External & internal project quotas
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      Namespace quota configuration
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      Create & group quota templates
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      Assign templates to namespaces
+                    </span>
+                  </div>
+                </div>
               </div>
-              <ArrowForwardRounded className="!w-5 !h-5 text-gray-400 ml-2" />
+              <ArrowForwardRounded className="!w-5 !h-5 text-gray-400 ml-2 mt-1" />
             </div>
           </CardBody>
         </Card>

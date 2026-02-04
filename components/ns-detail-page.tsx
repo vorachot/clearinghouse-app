@@ -234,9 +234,6 @@ const NamespaceDetailPage = () => {
                   <Card>
                     <CardBody className="p-8 text-center">
                       <p className="text-gray-500">No members found</p>
-                      <p className="text-sm text-gray-400 mt-2">
-                        Add members to grant them access to this namespace
-                      </p>
                     </CardBody>
                   </Card>
                 )}

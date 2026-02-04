@@ -53,7 +53,6 @@ export default function NamespaceQuotaList({
 
   return (
     <div className="space-y-4">
-
       {quotas.length === 0 ? (
         <Card>
           <CardBody>
@@ -73,9 +72,9 @@ export default function NamespaceQuotaList({
                     <span className="font-semibold">{quota.name}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Chip size="sm" variant="flat" color="primary">
+                    {/* <Chip size="sm" variant="flat" color="primary">
                       {quota.resources.length} resources
-                    </Chip>
+                    </Chip> */}
                     {onDelete && (
                       <Tooltip content="Delete quota" color="danger">
                         <Button
@@ -111,7 +110,12 @@ export default function NamespaceQuotaList({
                       <span className="text-gray-500">Resources:</span>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {quota.resources.map((resource) => (
-                          <Chip key={resource.id} size="sm" variant="flat">
+                          <Chip
+                            key={resource.id}
+                            size="sm"
+                            variant="flat"
+                            color="primary"
+                          >
                             {resource.resource_prop.resource.resource_type.name}
                             : {resource.quantity}{" "}
                             {resource.resource_prop.resource.resource_type.unit}
