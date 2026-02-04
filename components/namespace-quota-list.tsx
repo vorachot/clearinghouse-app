@@ -9,6 +9,7 @@ import { NamespaceQuota } from "@/types/quota";
 import LayersIcon from "@mui/icons-material/Layers";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DeleteNamespaceQuotaDialog from "./delete-namespace-quota-dialog";
+import { BusinessRounded } from "@mui/icons-material";
 
 type NamespaceQuotaListProps = {
   quotas: NamespaceQuota[];
@@ -94,15 +95,18 @@ export default function NamespaceQuotaList({
               <CardBody className="pt-0">
                 <div className="space-y-3">
                   <div className="space-y-2 text-sm">
-                    <div>
+                    <div className="flex items-center gap-2">
                       <span className="text-gray-500">Organization:</span>
-                      <span className="ml-2 font-medium">
-                        {quota.organization_name}
-                      </span>
+                      <div className="flex items-center gap-1">
+                        <BusinessRounded className="!w-4 !h-4 text-success" />{" "}
+                        <span className="font-medium text-success">
+                          {quota.organization_name}
+                        </span>
+                      </div>
                     </div>
-                    <div>
+                    <div className="flex items-center gap-2">
                       <span className="text-gray-500">Node:</span>
-                      <span className="ml-2 font-medium">
+                      <span className="font-medium text-secondary">
                         {quota.node_name}
                       </span>
                     </div>
