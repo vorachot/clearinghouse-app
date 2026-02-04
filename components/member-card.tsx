@@ -33,13 +33,14 @@ const MemberCard = ({
 
   return (
     <Card
-      isPressable
       isHoverable
-      onPress={() => setOpenMembersModal(true)}
       className="cursor-pointer transition-all hover:scale-[1.02]"
     >
       <CardBody className="p-6">
-        <div className="flex items-start justify-between">
+        <div
+          className="flex items-start justify-between"
+          onClick={() => setOpenMembersModal(true)}
+        >
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
@@ -67,10 +68,7 @@ const MemberCard = ({
                 </span>
               </div>
             </div>
-            <div
-              className="flex gap-2 mt-4"
-              onClick={(e) => e.stopPropagation()}
-            >
+            <div className="flex gap-2 mt-4">
               <Button
                 size="sm"
                 color="success"
