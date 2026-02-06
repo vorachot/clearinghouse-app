@@ -5,28 +5,39 @@ import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { Tooltip } from "@heroui/tooltip";
-import { NamespaceQuota } from "@/types/quota";
+import { NamespaceQuota, UpdateNamespaceQuotaDTO } from "@/types/quota";
 import LayersIcon from "@mui/icons-material/Layers";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import DeleteNamespaceQuotaDialog from "./delete-namespace-quota-dialog";
+import EditNamespaceQuotaDialog from "./edit-namespace-quota-dialog";
 import { BusinessRounded } from "@mui/icons-material";
 
 type NamespaceQuotaListProps = {
   quotas: NamespaceQuota[];
   onCreateClick?: () => void;
   onDelete?: (quotaId: string) => void;
+  onEdit?: (quotaId: string, data: UpdateNamespaceQuotaDTO) => void;
 };
 
 export default function NamespaceQuotaList({
   quotas,
   onCreateClick,
   onDelete,
+  onEdit,
 }: NamespaceQuotaListProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedQuotaId, setSelectedQuotaId] = useState<string>("");
   const [selectedQuotaName, setSelectedQuotaName] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedQuota, setSelectedQuota] = useState<NamespaceQuota | null>(
+    null,
+  );
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
 
   const handleDelete = (quotaId: string, quotaName: string) => {
     setSelectedQuotaId(quotaId);
@@ -48,6 +59,33 @@ export default function NamespaceQuotaList({
         );
       } finally {
         setIsDeleting(false);
+      }
+    }
+  };
+
+  const handleEdit = (quota: NamespaceQuota) => {
+    setSelectedQuota(quota);
+    setEditDialogOpen(true);
+    setEditError(null);
+  };
+
+  const handleConfirmEdit = async (
+    quotaId: string,
+    data: UpdateNamespaceQuotaDTO,
+  ) => {
+    if (onEdit) {
+      setIsUpdating(true);
+      try {
+        await onEdit(quotaId, data);
+        setEditDialogOpen(false);
+        setSelectedQuota(null);
+      } catch (error: any) {
+        console.error("Error updating namespace quota:", error);
+        setEditError(
+          error.response?.data?.error || "Failed to update namespace quota",
+        );
+      } finally {
+        setIsUpdating(false);
       }
     }
   };
@@ -76,6 +114,19 @@ export default function NamespaceQuotaList({
                     {/* <Chip size="sm" variant="flat" color="primary">
                       {quota.resources.length} resources
                     </Chip> */}
+                    {onEdit && (
+                      <Tooltip content="Edit quota">
+                        <Button
+                          size="sm"
+                          variant="light"
+                          isIconOnly
+                          color="warning"
+                          onPress={() => handleEdit(quota)}
+                        >
+                          <EditIcon className="!w-4 !h-4" />
+                        </Button>
+                      </Tooltip>
+                    )}
                     {onDelete && (
                       <Tooltip content="Delete quota" color="danger">
                         <Button
@@ -98,15 +149,15 @@ export default function NamespaceQuotaList({
                     <div className="flex items-center gap-2">
                       <span className="text-gray-500">Organization:</span>
                       <div className="flex items-center gap-1">
-                        <BusinessRounded className="!w-4 !h-4 text-success" />{" "}
-                        <span className="font-medium text-success">
+                        <BusinessRounded className="!w-4 !h-4 text-success-600" />{" "}
+                        <span className="font-medium text-success-600">
                           {quota.organization_name}
                         </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-gray-500">Node:</span>
-                      <span className="font-medium text-secondary">
+                      <span className="font-medium text-secondary-600">
                         {quota.node_name}
                       </span>
                     </div>
@@ -133,7 +184,18 @@ export default function NamespaceQuotaList({
             </Card>
           ))}
         </div>
-      )}
+      )}{" "}
+      <EditNamespaceQuotaDialog
+        isOpen={editDialogOpen}
+        quota={selectedQuota}
+        onClose={() => {
+          setEditDialogOpen(false);
+          setSelectedQuota(null);
+        }}
+        onConfirm={handleConfirmEdit}
+        isUpdating={isUpdating}
+        error={editError}
+      />{" "}
       <DeleteNamespaceQuotaDialog
         isOpen={deleteDialogOpen}
         quotaName={selectedQuotaName}

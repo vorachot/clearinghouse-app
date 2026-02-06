@@ -24,6 +24,7 @@ import {
   NamespaceQuota,
   NamespaceQuotaTemplate,
   UpdateQuotaTemplateDTO,
+  UpdateNamespaceQuotaDTO,
 } from "@/types/quota";
 import { ResourcePool } from "@/types/resource";
 import useSWR, { mutate } from "swr";
@@ -41,6 +42,7 @@ import {
   getOrgQuotasByOrgId,
   getProjectQuotasByProjectId,
   updateNamespaceQuotaTemplate,
+  updateNamespaceQuota,
 } from "@/api/quota";
 import { useParams } from "next/navigation";
 import ProjectQuotaManager from "@/components/project-quota-manager";
@@ -191,6 +193,21 @@ const ProjectQuotasPage = () => {
     }
   };
 
+  const handleEditNamespaceQuota = async (
+    quotaId: string,
+    data: UpdateNamespaceQuotaDTO,
+  ) => {
+    try {
+      await updateNamespaceQuota(quotaId, data);
+      await mutate(["namespace-quotas", projectId], undefined, {
+        revalidate: true,
+      });
+    } catch (error) {
+      console.error("Failed to update namespace quota:", error);
+      throw error;
+    }
+  };
+
   const handleCreateQuotaTemplate = async (data: CreateQuotaTemplateDTO) => {
     try {
       await createNamespaceQuotaTemplate(data);
@@ -301,6 +318,7 @@ const ProjectQuotasPage = () => {
                 <NamespaceQuotaList
                   quotas={namespaceQuotasByProjectId}
                   onDelete={handleDeleteNamespaceQuota}
+                  onEdit={handleEditNamespaceQuota}
                 />
               </div>
             </CardBody>

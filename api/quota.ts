@@ -5,6 +5,7 @@ import {
   CreateProjectQuotaDTO,
   CreateProjectQuotaInternalDTO,
   CreateQuotaTemplateDTO,
+  UpdateNamespaceQuotaDTO,
   UpdateQuotaTemplateDTO,
 } from "@/types/quota";
 import apiClient from "@/utils/apiClient";
@@ -219,6 +220,22 @@ export async function updateNamespaceQuotaTemplate(
 
   if (response.status !== 200) {
     throw new Error("Failed to update namespace quota template");
+  }
+
+  return response.data;
+}
+
+export async function updateNamespaceQuota(
+  namespaceQuotaId: string,
+  updateData: UpdateNamespaceQuotaDTO,
+): Promise<any> {
+  const response = await apiClient.put(
+    `/quota/namespace/${namespaceQuotaId}`,
+    updateData,
+  );
+
+  if (response.status !== 200) {
+    throw new Error("Failed to update namespace quota");
   }
 
   return response.data;

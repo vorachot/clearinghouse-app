@@ -19,6 +19,7 @@ import useSWR from "swr";
 import { getResourceNodeById } from "@/api/resource";
 import { getOrgQuotasByOrgId } from "@/api/quota";
 import DeleteProjectQuotaDialog from "./delete-project-quota-dialog";
+import { BusinessRounded } from "@mui/icons-material";
 
 type ProjectQuotaListProps = {
   quotas: ProjectQuota[];
@@ -153,14 +154,17 @@ export default function ProjectQuotaList({
               <TableCell>
                 <div>
                   <Chip size="sm" variant="flat" color="success">
-                    {getSourceLabel(quota)}
+                    <div className="flex items-center gap-1">
+                      {/* <BusinessRounded className="!w-4 !h-4 text-success" /> */}
+                      {getSourceLabel(quota)}
+                    </div>
                   </Chip>
-                  {quota.organization_quota_id && (
+                  {/* {quota.organization_quota_id && (
                     <OrgQuotaName
                       orgQuotaId={quota.organization_quota_id}
                       orgId={quota.organization_id}
                     />
-                  )}
+                  )} */}
                 </div>
               </TableCell>
               <TableCell>

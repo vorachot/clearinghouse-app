@@ -143,6 +143,15 @@ export type UpdateQuotaTemplateDTO = {
   quota_ids: string[];
 };
 
+export type UpdateNamespaceQuotaDTO = {
+  name: string;
+  description: string;
+  resources: {
+    resource_id: string;
+    quantity: number;
+  }[];
+};
+
 export type AssignTemplateToNamespacesDTO = {
   namespaces: string[];
   project_id: string;
