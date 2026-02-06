@@ -227,7 +227,7 @@ const EditNamespaceQuotaDialog = ({
                                 className="max-w-md"
                               />
                               <span className="text-xs text-default-500">
-                                {resource.quantity} {resource.unit}
+                                {resource.quantity} / {resource.maxQuantity} {resource.unit}
                               </span>
                             </div>
                           </TableCell>

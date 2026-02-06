@@ -37,6 +37,7 @@ type ResourceFormItem = {
   resourceTypeName: string;
   quantity: number;
   maxQuantity: number;
+  unit: string;
   price: number;
   duration: number;
 };
@@ -72,9 +73,10 @@ export default function NamespaceQuotaForm({
               r.resource_prop.resource.resource_type?.name || "Unknown",
             quantity: 0,
             maxQuantity: r.quantity,
+            unit: r.resource_prop.resource.resource_type?.unit || "",
             price: r.resource_prop.price,
             duration: r.resource_prop.max_duration / 3600, // Convert seconds to hours
-          }))
+          })),
         );
       }
     } else {
@@ -86,12 +88,12 @@ export default function NamespaceQuotaForm({
   const handleResourceChange = (
     resourceId: string,
     field: keyof ResourceFormItem,
-    value: string | number
+    value: string | number,
   ) => {
     setResources(
       resources.map((r) =>
-        r.resourceId === resourceId ? { ...r, [field]: value } : r
-      )
+        r.resourceId === resourceId ? { ...r, [field]: value } : r,
+      ),
     );
   };
 
@@ -236,7 +238,7 @@ export default function NamespaceQuotaForm({
                     <TableHeader>
                       <TableColumn>RESOURCE TYPE</TableColumn>
                       <TableColumn>NAME</TableColumn>
-                      <TableColumn>AVAILABLE</TableColumn>
+                      <TableColumn>UNIT</TableColumn>
                       <TableColumn>QUANTITY</TableColumn>
                     </TableHeader>
                     <TableBody>
@@ -254,7 +256,7 @@ export default function NamespaceQuotaForm({
                           </TableCell>
                           <TableCell>
                             <span className="text-sm text-gray-600 dark:text-gray-400">
-                              {resource.maxQuantity}
+                              {resource.unit}
                             </span>
                           </TableCell>
                           <TableCell>
@@ -269,13 +271,14 @@ export default function NamespaceQuotaForm({
                                   handleResourceChange(
                                     resource.resourceId,
                                     "quantity",
-                                    value as number
+                                    value as number,
                                   )
                                 }
                                 className="max-w-md"
                               />
                               <span className="text-xs text-default-500">
-                                {resource.quantity} / {resource.maxQuantity}
+                                {resource.quantity} / {resource.maxQuantity}{" "}
+                                {resource.unit}
                               </span>
                             </div>
                           </TableCell>

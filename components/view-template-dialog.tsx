@@ -83,7 +83,7 @@ export default function ViewTemplateDialog({
                             <Chip key={resource.id} size="sm" variant="flat">
                               {resource.resource_prop?.resource?.resource_type
                                 ?.name || "Unknown"}
-                              : {resource.quantity}
+                              : {resource.quantity} {resource.resource_prop?.resource?.resource_type.unit}
                             </Chip>
                           ))}
                         </div>

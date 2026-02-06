@@ -178,7 +178,7 @@ export default function ProjectQuotaList({
                     >
                       {resource.resource_prop.resource.resource_type.name ||
                         "Unknown"}
-                      : {resource.quantity}
+                      : {resource.quantity} {resource.resource_prop.resource.resource_type.unit}
                     </Chip>
                   ))}
                   {quota.resources.length > 3 && (

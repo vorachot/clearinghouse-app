@@ -430,7 +430,7 @@ const ProjectQuotasPage = () => {
                                 // Group resources by resource type name and sum quantities
                                 const aggregatedResources = new Map<
                                   string,
-                                  number
+                                  { quantity: number; unit: string }
                                 >();
 
                                 template.quotas?.forEach((quota) => {
@@ -438,15 +438,17 @@ const ProjectQuotasPage = () => {
                                     const resourceTypeName =
                                       r.resource_prop?.resource?.resource_type
                                         ?.name || "Unknown";
+                                    const unit =
+                                      r.resource_prop?.resource?.resource_type
+                                        ?.unit || "";
 
                                     const current =
-                                      aggregatedResources.get(
-                                        resourceTypeName,
-                                      ) || 0;
-                                    aggregatedResources.set(
-                                      resourceTypeName,
-                                      current + r.quantity,
-                                    );
+                                      aggregatedResources.get(resourceTypeName);
+                                    aggregatedResources.set(resourceTypeName, {
+                                      quantity:
+                                        (current?.quantity || 0) + r.quantity,
+                                      unit: unit,
+                                    });
                                   });
                                 });
 
@@ -460,7 +462,7 @@ const ProjectQuotasPage = () => {
 
                                 return Array.from(
                                   aggregatedResources.entries(),
-                                ).map(([typeName, totalQuantity]) => (
+                                ).map(([typeName, { quantity, unit }]) => (
                                   <Chip
                                     key={typeName}
                                     size="sm"
@@ -468,7 +470,7 @@ const ProjectQuotasPage = () => {
                                     color="primary"
                                     className="text-xs"
                                   >
-                                    {typeName}: {totalQuantity}
+                                    {typeName}: {quantity} {unit}
                                   </Chip>
                                 ));
                               })()}

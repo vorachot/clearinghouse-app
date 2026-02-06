@@ -158,7 +158,7 @@ const EditQuotaTemplateDialog = ({
                                   resource.resource_prop?.resource
                                     ?.resource_type?.name
                                 }
-                                : {resource.quantity}
+                                : {resource.quantity} {resource.resource_prop?.resource?.resource_type.unit}
                               </Chip>
                             ))}
                           </div>
