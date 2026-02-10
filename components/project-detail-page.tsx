@@ -24,10 +24,12 @@ import NamespaceTable from "./namespace-table";
 import AddProjectMemberDialog from "./add-project-member-dialog";
 import AddProjectAdminDialog from "./add-project-admin-dialog";
 import ProjectMemberModal from "./project-member-modal";
+import { useUser } from "@/context/UserContext";
 
 const ProjectDetailPage = () => {
   const params = useParams();
   const router = useRouter();
+  const { user } = useUser();
   const [open, setOpen] = useState(false);
   const [openMembersModal, setOpenMembersModal] = useState(false);
   const [openAddMember, setOpenAddMember] = useState(false);
@@ -164,6 +166,7 @@ const ProjectDetailPage = () => {
         <MemberCard
           members={project.members}
           admins={project.admins}
+          currentUser={user}
           handleOpenAddMember={handleOpenAddMember}
           handleOpenAddAdmin={handleOpenAddAdmin}
           setOpenMembersModal={setOpenMembersModal}
@@ -212,6 +215,7 @@ const ProjectDetailPage = () => {
             organizationId={orgId}
             projectId={projectId}
             namespaces={namespaces}
+            projectAdmins={project.admins}
           />
         </div>
       )}

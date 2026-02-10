@@ -1,4 +1,4 @@
-import { User } from "@/context/UserContext";
+import { User, useUser } from "@/context/UserContext";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import {
@@ -39,10 +39,15 @@ const NamespaceMemberModal = ({
   projectId,
   onAddMember,
 }: Props) => {
+  const { user: currentUser } = useUser();
   const [selectedMembers, setSelectedMembers] = useState<Set<string>>(
     new Set([]),
   );
   const [isRemoving, setIsRemoving] = useState(false);
+
+  // Check if current user is a project admin
+  const adminIds = new Set(admins?.map((a) => a.id) || []);
+  const isCurrentUserAdmin = currentUser && adminIds.has(currentUser.id);
 
   // Only show namespace members
   const sortedUsers = members || [];
@@ -108,13 +113,23 @@ const NamespaceMemberModal = ({
                 sortedUsers.map((member) => (
                   <div
                     key={member.id}
-                    className="flex items-center gap-3 p-3 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                    onClick={() => handleToggleMember(member.id)}
+                    className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
+                      isCurrentUserAdmin
+                        ? "hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                        : ""
+                    }`}
+                    onClick={
+                      isCurrentUserAdmin
+                        ? () => handleToggleMember(member.id)
+                        : undefined
+                    }
                   >
-                    <Checkbox
-                      isSelected={selectedMembers.has(member.id)}
-                      onValueChange={() => handleToggleMember(member.id)}
-                    />
+                    {isCurrentUserAdmin && (
+                      <Checkbox
+                        isSelected={selectedMembers.has(member.id)}
+                        onValueChange={() => handleToggleMember(member.id)}
+                      />
+                    )}
                     <PersonRounded className="!w-5 !h-5 text-gray-600 dark:text-gray-400" />
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-gray-900 dark:text-white truncate">
@@ -138,7 +153,7 @@ const NamespaceMemberModal = ({
           </ScrollShadow>
         </ModalBody>
         <ModalFooter>
-          {onAddMember && (
+          {isCurrentUserAdmin && onAddMember && (
             <Button
               color="success"
               variant="flat"
@@ -151,7 +166,7 @@ const NamespaceMemberModal = ({
               Add Member
             </Button>
           )}
-          {selectedMembers.size > 0 && (
+          {isCurrentUserAdmin && selectedMembers.size > 0 && (
             <Button
               color="danger"
               variant="flat"

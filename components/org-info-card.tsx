@@ -12,16 +12,31 @@ import {
   VisibilityRounded,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+import { useUser, User } from "@/context/UserContext";
 
 type Props = {
   id?: string;
   name?: string;
+  admins?: User[];
+  members?: User[];
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
 };
 
-const OrgInfoCard = ({ id, name, onEdit, onDelete }: Props) => {
+const OrgInfoCard = ({
+  id,
+  name,
+  admins = [],
+  members = [],
+  onEdit,
+  onDelete,
+}: Props) => {
   const router = useRouter();
+  const { user } = useUser();
+
+  const isAdmin = user && admins.some((admin) => admin.id === user.id);
+  const canViewDetails =
+    user && (isAdmin || members.some((member) => member.id === user.id));
 
   const handleEdit = () => {
     if (id && onEdit) {
@@ -63,41 +78,47 @@ const OrgInfoCard = ({ id, name, onEdit, onDelete }: Props) => {
               </p>
             </Tooltip>
           </div>
-          <div
-            className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Tooltip content="Edit" placement="top" className="dark:text-white">
-              <Button
-                isIconOnly
-                size="sm"
-                variant="flat"
-                color="primary"
-                aria-label="Edit organization"
-                onPress={handleEdit}
-                className="min-w-unit-8 w-8 h-8"
-              >
-                <EditRounded className="!w-4 !h-4" />
-              </Button>
-            </Tooltip>
-            <Tooltip
-              content="Delete"
-              placement="top"
-              className="dark:text-white"
+          {isAdmin && (
+            <div
+              className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              onClick={(e) => e.stopPropagation()}
             >
-              <Button
-                isIconOnly
-                size="sm"
-                variant="flat"
-                color="danger"
-                aria-label="Delete organization"
-                onPress={handleDelete}
-                className="min-w-unit-8 w-8 h-8"
+              <Tooltip
+                content="Edit"
+                placement="top"
+                className="dark:text-white"
               >
-                <DeleteRounded className="!w-4 !h-4" />
-              </Button>
-            </Tooltip>
-          </div>
+                <Button
+                  isIconOnly
+                  size="sm"
+                  variant="flat"
+                  color="primary"
+                  aria-label="Edit organization"
+                  onPress={handleEdit}
+                  className="min-w-unit-8 w-8 h-8"
+                >
+                  <EditRounded className="!w-4 !h-4" />
+                </Button>
+              </Tooltip>
+              <Tooltip
+                content="Delete"
+                placement="top"
+                className="dark:text-white"
+              >
+                <Button
+                  isIconOnly
+                  size="sm"
+                  variant="flat"
+                  color="danger"
+                  aria-label="Delete organization"
+                  onPress={handleDelete}
+                  className="min-w-unit-8 w-8 h-8"
+                >
+                  <DeleteRounded className="!w-4 !h-4" />
+                </Button>
+              </Tooltip>
+            </div>
+          )}
         </div>
       </CardHeader>
       <Divider className="bg-gray-200 dark:bg-gray-700" />
@@ -160,16 +181,22 @@ const OrgInfoCard = ({ id, name, onEdit, onDelete }: Props) => {
       </CardBody>
       <Divider className="bg-gray-200 dark:bg-gray-700" />
       <CardFooter className="pt-3 pb-3">
-        <Button
-          fullWidth
-          size="sm"
-          color="primary"
-          variant="flat"
-          startContent={<VisibilityRounded className="!w-4 !h-4" />}
-          onPress={handleView}
-        >
-          View Details
-        </Button>
+        {canViewDetails ? (
+          <Button
+            fullWidth
+            size="sm"
+            color="primary"
+            variant="flat"
+            startContent={<VisibilityRounded className="!w-4 !h-4" />}
+            onPress={handleView}
+          >
+            View Details
+          </Button>
+        ) : (
+          <Button fullWidth size="sm" color="default" variant="flat" isDisabled>
+            Access Restricted
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Modal,
   ModalContent,
@@ -37,6 +37,11 @@ const AddProjectMemberDialog = ({
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Reset selected members when dialog opens for a new project
+  useEffect(() => {
+    setSelectedMembers(new Set([]));
+  }, [projectId]);
+
   const { data: orgMembers, isLoading } = useSWR<User[]>(
     ["org-members", orgId],
     () => getOrganizationMembers(orgId),
@@ -63,10 +68,11 @@ const AddProjectMemberDialog = ({
 
     try {
       await addMembersToProject(data);
+      await mutate(["project", projectId]);
+      await mutate(["orgs", orgId, "projects"]);
       if (onClose) {
         onClose();
       }
-      await mutate(["project", projectId]);
     } catch (error) {
       console.error("Error adding members to project:", error);
     } finally {

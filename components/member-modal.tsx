@@ -49,6 +49,7 @@ const MemberModal = ({
 
   // Track admin and member IDs separately
   const adminIds = new Set(admins?.map((a) => a.id) || []);
+  const isCurrentUserAdmin = currentUser && adminIds.has(currentUser.id);
   const memberIds = new Set(members?.map((m) => m.id) || []);
 
   // Combine admins and members with role information
@@ -181,13 +182,23 @@ const MemberModal = ({
               {sortedUsers.map((member) => (
                 <div
                   key={member.id}
-                  className="flex items-center gap-3 p-3 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                  onClick={() => handleToggleMember(member.id)}
+                  className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
+                    isCurrentUserAdmin
+                      ? "hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                      : ""
+                  }`}
+                  onClick={
+                    isCurrentUserAdmin
+                      ? () => handleToggleMember(member.id)
+                      : undefined
+                  }
                 >
-                  <Checkbox
-                    isSelected={selectedMembers.has(member.id)}
-                    onValueChange={() => handleToggleMember(member.id)}
-                  />
+                  {isCurrentUserAdmin && (
+                    <Checkbox
+                      isSelected={selectedMembers.has(member.id)}
+                      onValueChange={() => handleToggleMember(member.id)}
+                    />
+                  )}
                   <PersonRounded className="!w-5 !h-5 text-gray-600 dark:text-gray-400" />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-900 dark:text-white truncate">
@@ -215,7 +226,7 @@ const MemberModal = ({
           </ScrollShadow>
         </ModalBody>
         <ModalFooter>
-          {selectedMembers.size > 0 && (
+          {isCurrentUserAdmin && selectedMembers.size > 0 && (
             <>
               {/* Check if selected users are members (can be promoted) */}
               {/* {Array.from(selectedMembers).every(

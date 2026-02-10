@@ -11,7 +11,7 @@ import { Button } from "@heroui/button";
 import AddIcon from "@mui/icons-material/Add";
 import { useState } from "react";
 import { HomeWorkRounded } from "@mui/icons-material";
-import { Organization } from "@/types/org";
+import { OrgDetail } from "@/types/org";
 
 const OrganizationsPage = () => {
   const [open, setOpen] = useState(false);
@@ -61,7 +61,7 @@ const OrganizationsPage = () => {
   if (isLoading) return <Loading />;
   if (error) return <div>Error loading organizations</div>;
 
-  const organizations: Organization[] = data || [];
+  const organizations: OrgDetail[] = data || [];
 
   if (organizations.length === 0) {
     return (

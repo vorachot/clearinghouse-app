@@ -21,20 +21,31 @@ import {
   StorageRounded as RamIcon,
   VisibilityRounded,
   PeopleAltRounded,
+  AdminPanelSettingsRounded,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import UpdateProjectDialog from "./update-project-dialog";
 import DeleteProjectDialog from "./delete-project-dialog";
 import { Project } from "@/types/project";
-import { useUser } from "@/context/UserContext";
+import { useUser, User } from "@/context/UserContext";
+import ProjectMembersOnlyModal from "./project-members-only-modal";
+import ProjectAdminModal from "./project-admin-modal";
+import AddProjectMemberDialog from "./add-project-member-dialog";
+import AddProjectAdminDialog from "./add-project-admin-dialog";
 
 type Props = {
   organizationId: string;
   projects: Project[];
+  orgAdmins?: User[];
   onDelete?: (projectId: string) => void;
 };
 
-const ProjectTable = ({ organizationId, projects, onDelete }: Props) => {
+const ProjectTable = ({
+  organizationId,
+  projects,
+  orgAdmins,
+  onDelete,
+}: Props) => {
   const router = useRouter();
   const { user } = useUser();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -43,6 +54,15 @@ const ProjectTable = ({ organizationId, projects, onDelete }: Props) => {
   const [selectedProjectName, setSelectedProjectName] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [managingMembersProject, setManagingMembersProject] =
+    useState<Project | null>(null);
+  const [managingAdminsProject, setManagingAdminsProject] =
+    useState<Project | null>(null);
+  const [addingMemberProject, setAddingMemberProject] =
+    useState<Project | null>(null);
+  const [addingAdminProject, setAddingAdminProject] = useState<Project | null>(
+    null,
+  );
 
   const handleView = (projectId: string) => {
     router.push(`/organizations/${organizationId}/${projectId}`);
@@ -75,6 +95,14 @@ const ProjectTable = ({ organizationId, projects, onDelete }: Props) => {
     }
   };
 
+  const handleManageMembers = (project: Project) => {
+    setManagingMembersProject(project);
+  };
+
+  const handleManageAdmins = (project: Project) => {
+    setManagingAdminsProject(project);
+  };
+
   const columns = [
     { key: "name", label: "PROJECT NAME" },
     // { key: "cpu", label: "CPU" },
@@ -82,6 +110,7 @@ const ProjectTable = ({ organizationId, projects, onDelete }: Props) => {
     // { key: "ram", label: "RAM" },
     { key: "quotas", label: "QUOTAS" },
     { key: "members", label: "MEMBERS" },
+    { key: "admins", label: "ADMINS" },
     { key: "actions", label: "ACTIONS" },
   ];
 
@@ -147,7 +176,8 @@ const ProjectTable = ({ organizationId, projects, onDelete }: Props) => {
                     size="sm"
                     color="success"
                     variant="flat"
-                    className="px-2"
+                    className="px-2 cursor-pointer hover:bg-success-200 dark:hover:bg-success-800 transition-colors"
+                    onClick={() => handleManageMembers(project)}
                   >
                     <PeopleAltRounded className="!w-4 !h-4 mr-1" />
                     <span className="font-medium dark:text-green-400">
@@ -156,8 +186,23 @@ const ProjectTable = ({ organizationId, projects, onDelete }: Props) => {
                   </Chip>
                 </TableCell>
                 <TableCell>
+                  <Chip
+                    size="sm"
+                    color="primary"
+                    variant="flat"
+                    className="px-2 cursor-pointer hover:bg-primary-200 dark:hover:bg-primary-800 transition-colors"
+                    onClick={() => handleManageAdmins(project)}
+                  >
+                    <AdminPanelSettingsRounded className="!w-4 !h-4" />
+                    <span className="font-medium dark:text-primary-400">
+                      {project.admins.length}
+                    </span>
+                  </Chip>
+                </TableCell>
+                <TableCell>
                   {user &&
                   project.admins.some((admin) => admin.id === user.id) ? (
+                    // Admin: can view, edit, and delete
                     <div className="flex items-center gap-2">
                       <Tooltip
                         content="View details"
@@ -205,6 +250,21 @@ const ProjectTable = ({ organizationId, projects, onDelete }: Props) => {
                         </Button>
                       </Tooltip>
                     </div>
+                  ) : user &&
+                    project.members.some((member) => member.id === user.id) ? (
+                    // Member: can only view
+                    <Tooltip content="View details" className="dark:text-white">
+                      <Button
+                        isIconOnly
+                        size="sm"
+                        variant="light"
+                        color="primary"
+                        aria-label="View project"
+                        onPress={() => handleView(project.id)}
+                      >
+                        <VisibilityRounded className="!w-4 !h-4" />
+                      </Button>
+                    </Tooltip>
                   ) : (
                     <span className="text-sm text-gray-500 dark:text-gray-400">
                       No actions available
@@ -231,6 +291,63 @@ const ProjectTable = ({ organizationId, projects, onDelete }: Props) => {
         isDeleting={isDeleting}
         error={error}
       />
+      {managingMembersProject && (
+        <ProjectMembersOnlyModal
+          isOpen={true}
+          setOpenModal={(open) => {
+            if (!open) setManagingMembersProject(null);
+          }}
+          members={managingMembersProject.members}
+          admins={managingMembersProject.admins}
+          projectId={managingMembersProject.id}
+          orgId={organizationId}
+          onAddMember={() => {
+            setAddingMemberProject(managingMembersProject);
+            setManagingMembersProject(null);
+          }}
+        />
+      )}
+      {managingAdminsProject && (
+        <ProjectAdminModal
+          isOpen={true}
+          setOpenModal={(open) => {
+            if (!open) setManagingAdminsProject(null);
+          }}
+          admins={managingAdminsProject.admins}
+          projectId={managingAdminsProject.id}
+          orgId={organizationId}
+          onAddAdmin={() => {
+            setAddingAdminProject(managingAdminsProject);
+            setManagingAdminsProject(null);
+          }}
+        />
+      )}
+      {addingMemberProject && (
+        <AddProjectMemberDialog
+          key={`add-member-${addingMemberProject.id}`}
+          projectId={addingMemberProject.id}
+          orgId={organizationId}
+          onClose={() => {
+            setManagingMembersProject(addingMemberProject);
+            setAddingMemberProject(null);
+          }}
+          existingMembers={addingMemberProject.members}
+          admins={addingMemberProject.admins}
+        />
+      )}
+      {addingAdminProject && (
+        <AddProjectAdminDialog
+          key={`add-admin-${addingAdminProject.id}`}
+          projectId={addingAdminProject.id}
+          orgId={organizationId}
+          onClose={() => {
+            setManagingAdminsProject(addingAdminProject);
+            setAddingAdminProject(null);
+          }}
+          existingAdmins={addingAdminProject.admins}
+          orgAdmins={orgAdmins}
+        />
+      )}
     </>
   );
 };

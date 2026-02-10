@@ -23,10 +23,12 @@ import ProjectTable from "./project-table";
 import MemberModal from "./member-modal";
 import MemberCard from "./member-card";
 import { Project } from "@/types/project";
+import { useUser } from "@/context/UserContext";
 
 const OrgDetailPage = () => {
   const params = useParams();
   const router = useRouter();
+  const { user } = useUser();
   const { orgId } = params as { orgId: string };
   const [open, setOpen] = useState(false);
   const [openMembersModal, setOpenMembersModal] = useState(false);
@@ -192,6 +194,7 @@ const OrgDetailPage = () => {
         <MemberCard
           members={organization.members}
           admins={organization.admins}
+          currentUser={user}
           handleOpenAddMember={handleOpenAddMember}
           handleOpenAddAdmin={handleOpenAddAdmin}
           setOpenMembersModal={setOpenMembersModal}
@@ -238,6 +241,7 @@ const OrgDetailPage = () => {
           <ProjectTable
             organizationId={orgId}
             projects={projects}
+            orgAdmins={organization.admins}
             onDelete={handleDeleteProject}
           />
         </div>

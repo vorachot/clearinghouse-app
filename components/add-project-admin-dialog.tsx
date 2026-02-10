@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Modal,
   ModalContent,
@@ -37,6 +37,11 @@ const AddProjectAdminDialog = ({
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Reset selected admins when dialog opens for a new project
+  useEffect(() => {
+    setSelectedAdmins(new Set([]));
+  }, [projectId]);
+
   // Filter to show only organization admins who are not already project admins
   // Note: Members can also be promoted to admins
   const existingAdminIds = new Set(existingAdmins.map((a) => a.id));
@@ -56,10 +61,11 @@ const AddProjectAdminDialog = ({
 
     try {
       await addAdminToProject(data);
+      await mutate(["project", projectId]);
+      await mutate(["orgs", orgId, "projects"]);
       if (onClose) {
         onClose();
       }
-      await mutate(["project", projectId]);
     } catch (error) {
       console.error("Error adding admins to project:", error);
     } finally {

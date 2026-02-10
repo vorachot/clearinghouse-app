@@ -22,7 +22,7 @@ import {
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { Namespace } from "@/types/namespace";
-import { useUser } from "@/context/UserContext";
+import { useUser, User } from "@/context/UserContext";
 import { useState, useEffect } from "react";
 import { getQuotaUsageByNamespaceId } from "@/api/quota";
 import UsageBar from "./usagebar";
@@ -35,6 +35,7 @@ type Props = {
   organizationId: string;
   projectId: string;
   namespaces: Namespace[];
+  projectAdmins?: User[];
   onDelete?: (namespaceId: string) => void;
 };
 
@@ -42,6 +43,7 @@ const NamespaceTable = ({
   organizationId,
   projectId,
   namespaces,
+  projectAdmins = [],
   onDelete,
 }: Props) => {
   const router = useRouter();
@@ -257,7 +259,8 @@ const NamespaceTable = ({
                 </Chip>
               </TableCell>
               <TableCell>
-                {user && namespace.owner_id === user.id ? (
+                {user && projectAdmins.some((admin) => admin.id === user.id) ? (
+                  // Project admin: can view, edit, and delete
                   <div className="flex items-center gap-2">
                     <Tooltip content="View details" className="dark:text-white">
                       <Button
@@ -302,6 +305,23 @@ const NamespaceTable = ({
                       </Button>
                     </Tooltip>
                   </div>
+                ) : user &&
+                  namespace.namespace_members?.some(
+                    (member) => member.id === user.id,
+                  ) ? (
+                  // Namespace member: can only view
+                  <Tooltip content="View details" className="dark:text-white">
+                    <Button
+                      isIconOnly
+                      size="sm"
+                      variant="light"
+                      color="primary"
+                      aria-label="View namespace"
+                      onPress={() => handleView(namespace.id)}
+                    >
+                      <VisibilityRounded className="!w-4 !h-4" />
+                    </Button>
+                  </Tooltip>
                 ) : (
                   <span className="text-sm text-gray-500 dark:text-gray-400">
                     No actions available
@@ -333,6 +353,7 @@ const NamespaceTable = ({
             if (!open) setManagingMembersNamespace(null);
           }}
           members={managingMembersNamespace.namespace_members}
+          admins={projectAdmins}
           namespaceId={managingMembersNamespace.id}
           projectId={projectId}
           onAddMember={() => {

@@ -1,6 +1,6 @@
 import { HomeWorkRounded } from "@mui/icons-material";
 import OrgInfoCard from "./org-info-card";
-import { Organization } from "@/types/org";
+import { OrgDetail } from "@/types/org";
 
 // const orgs = [
 //   { id: '1', name: 'King Mongkut\'s Institute of Technology Ladkrabang' },
@@ -9,7 +9,7 @@ import { Organization } from "@/types/org";
 // ]
 
 type Props = {
-  orgs: Organization[];
+  orgs: OrgDetail[];
   onEdit?: (orgId: string) => void;
   onDelete?: (orgId: string) => void;
 };
@@ -33,6 +33,8 @@ const OrganizationList = ({ orgs, onEdit, onDelete }: Props) => {
           aria-label={`Organization ${org.name}`}
           id={org.id}
           name={org.name}
+          admins={org.admins}
+          members={org.members}
           onEdit={onEdit}
           onDelete={onDelete}
         />
