@@ -7,6 +7,7 @@ import useSWR from "swr";
 import { getOrganizationById } from "@/api/org";
 import { getProjectById } from "@/api/project";
 import { Organization } from "@/types/org";
+import { useUser } from "@/context/UserContext";
 import { Project } from "@/types/project";
 import { getNamespaceById } from "@/api/namespace";
 import { Namespace } from "@/types/namespace";
@@ -31,6 +32,7 @@ import { mutate } from "swr";
 
 const NamespaceDetailPage = () => {
   const params = useParams();
+  const { user } = useUser();
   const [openAddMember, setOpenAddMember] = useState(false);
   const [openMembersModal, setOpenMembersModal] = useState(false);
   const [openUnassignTemplate, setOpenUnassignTemplate] = useState(false);
@@ -83,6 +85,9 @@ const NamespaceDetailPage = () => {
   );
   const namespaceTemplate: NamespaceQuotaTemplate =
     namespaceTemplateData.data || {};
+
+  // Check if current user is a project admin
+  const isProjectAdmin = project.admins?.some((admin) => admin.id === user?.id);
 
   // Only show namespace_members (not owner)
   const sortedMembers = namespace.namespace_members || [];
@@ -149,7 +154,7 @@ const NamespaceDetailPage = () => {
                 namespaceId={namespaceId}
                 namespaceTemplate={namespaceTemplate}
                 onUnassignTemplate={
-                  namespace.quota_template_id
+                  namespace.quota_template_id && isProjectAdmin
                     ? () => setOpenUnassignTemplate(true)
                     : undefined
                 }
@@ -181,25 +186,29 @@ const NamespaceDetailPage = () => {
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      color="primary"
-                      variant="flat"
-                      startContent={<PeopleAltRounded />}
-                      onPress={() => setOpenMembersModal(true)}
-                      isDisabled={sortedMembers.length === 0}
-                    >
-                      Manage Members
-                    </Button>
-                    <Button
-                      size="sm"
-                      color="success"
-                      variant="flat"
-                      startContent={<PersonAddRounded />}
-                      onPress={handleOpenAddMember}
-                    >
-                      Add Member
-                    </Button>
+                    {isProjectAdmin && (
+                      <>
+                        <Button
+                          size="sm"
+                          color="primary"
+                          variant="flat"
+                          startContent={<PeopleAltRounded />}
+                          onPress={() => setOpenMembersModal(true)}
+                          isDisabled={sortedMembers.length === 0}
+                        >
+                          Manage Members
+                        </Button>
+                        <Button
+                          size="sm"
+                          color="success"
+                          variant="flat"
+                          startContent={<PersonAddRounded />}
+                          onPress={handleOpenAddMember}
+                        >
+                          Add Member
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
                 <Divider />
@@ -257,6 +266,7 @@ const NamespaceDetailPage = () => {
           isOpen={openMembersModal}
           setOpenMembersModal={setOpenMembersModal}
           members={namespace.namespace_members}
+          admins={project.admins}
           namespaceId={namespaceId}
           projectId={projectId}
         />

@@ -79,6 +79,9 @@ const ProjectDetailPage = () => {
   const project: Project = projectData.data || {};
   const namespaces: Namespace[] = namespacesData.data || [];
 
+  // Check if current user is a project admin
+  const isProjectAdmin = project.admins?.some((admin) => admin.id === user?.id);
+
   return (
     <div className="container mx-auto pt-1 p-4 space-y-5">
       <div>
@@ -178,15 +181,17 @@ const ProjectDetailPage = () => {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               Namespaces List
             </h2>
-            <Button
-              size="sm"
-              color="primary"
-              className="gap-0"
-              startContent={<AddIcon />}
-              onPress={handleOpenCreateNs}
-            >
-              Namespace
-            </Button>
+            {isProjectAdmin && (
+              <Button
+                size="sm"
+                color="primary"
+                className="gap-0"
+                startContent={<AddIcon />}
+                onPress={handleOpenCreateNs}
+              >
+                Namespace
+              </Button>
+            )}
           </div>
           <div className="h-[200px] flex flex-col justify-center items-center text-center opacity-50">
             <FolderCopyRounded className="!w-16 !h-16 mx-auto mb-4 text-gray-400" />
@@ -201,15 +206,17 @@ const ProjectDetailPage = () => {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               Namespaces List
             </h2>
-            <Button
-              size="sm"
-              color="primary"
-              className="gap-0"
-              startContent={<AddIcon />}
-              onPress={handleOpenCreateNs}
-            >
-              Namespace
-            </Button>
+            {isProjectAdmin && (
+              <Button
+                size="sm"
+                color="primary"
+                className="gap-0"
+                startContent={<AddIcon />}
+                onPress={handleOpenCreateNs}
+              >
+                Namespace
+              </Button>
+            )}
           </div>
           <NamespaceTable
             organizationId={orgId}

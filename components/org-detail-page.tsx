@@ -83,6 +83,11 @@ const OrgDetailPage = () => {
   if (organizationData.error) return <div>Error loading organization</div>;
 
   const organization: OrgDetail = organizationData.data || {};
+
+  // Check if current user is an org admin
+  const isOrgAdmin = organization.admins?.some(
+    (admin) => admin.id === user?.id,
+  );
   return (
     <div className="container mx-auto pt-1 p-4 space-y-5">
       <div>
@@ -205,15 +210,17 @@ const OrgDetailPage = () => {
       {projects.length === 0 ? (
         <div>
           <div className="flex items-center justify-end mb-4">
-            <Button
-              size="sm"
-              color="primary"
-              className="gap-0"
-              startContent={<AddIcon />}
-              onPress={handleOpenCreateProject}
-            >
-              Project
-            </Button>
+            {isOrgAdmin && (
+              <Button
+                size="sm"
+                color="primary"
+                className="gap-0"
+                startContent={<AddIcon />}
+                onPress={handleOpenCreateProject}
+              >
+                Project
+              </Button>
+            )}
           </div>
           <div className="h-[200px] flex flex-col justify-center items-center text-center opacity-50">
             <FolderCopyRounded className="!w-16 !h-16 mx-auto mb-4 text-gray-400" />
@@ -228,15 +235,17 @@ const OrgDetailPage = () => {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               Projects List
             </h2>
-            <Button
-              size="sm"
-              color="primary"
-              className="gap-0"
-              startContent={<AddIcon />}
-              onPress={handleOpenCreateProject}
-            >
-              Project
-            </Button>
+            {isOrgAdmin && (
+              <Button
+                size="sm"
+                color="primary"
+                className="gap-0"
+                startContent={<AddIcon />}
+                onPress={handleOpenCreateProject}
+              >
+                Project
+              </Button>
+            )}
           </div>
           <ProjectTable
             organizationId={orgId}
