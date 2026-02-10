@@ -34,16 +34,16 @@ export default function AddResourceDialog({
   const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const resourceTypesData = useSWR(
-    ["resourceTypes"],
-    () => getResourceType(),
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 5000,
-    }
-  );
+  const resourceTypesData = useSWR(["resourceTypes"], () => getResourceType(), {
+    revalidateOnFocus: false,
+    dedupingInterval: 5000,
+  });
 
   const resourceTypes: ResourceType[] = resourceTypesData.data || [];
+
+  const selectedResourceType = resourceTypes.find(
+    (type) => type.id === resourceType,
+  );
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
@@ -101,7 +101,9 @@ export default function AddResourceDialog({
                     isRequired
                   >
                     {resourceTypes.map((type) => (
-                      <SelectItem key={type.id} className="dark:text-white">{type.name}</SelectItem>
+                      <SelectItem key={type.id} className="dark:text-white">
+                        {type.name}
+                      </SelectItem>
                     ))}
                   </Select>
 
@@ -119,6 +121,13 @@ export default function AddResourceDialog({
                     placeholder="e.g., 100"
                     value={quantity}
                     onValueChange={setQuantity}
+                    endContent={
+                      selectedResourceType && (
+                        <div className="text-small text-default-400">
+                          {selectedResourceType.unit}
+                        </div>
+                      )
+                    }
                     isRequired
                   />
                 </div>

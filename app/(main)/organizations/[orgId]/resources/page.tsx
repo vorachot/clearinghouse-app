@@ -76,7 +76,7 @@ const ResourcesPage = () => {
           </p>
         </div>
         <div className="flex gap-2">
-          <CreateResourceTypeDialog />
+          {/* <CreateResourceTypeDialog /> */}
           <CreateResourcePoolDialog orgId={orgId} />
         </div>
       </div>

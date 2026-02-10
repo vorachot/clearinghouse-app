@@ -254,7 +254,7 @@ export default function ProjectQuotaInternalForm({
                       <TableColumn>NAME</TableColumn>
                       <TableColumn>AVAILABLE</TableColumn>
                       <TableColumn>QUANTITY</TableColumn>
-                      <TableColumn>PRICE (credits)</TableColumn>
+                      <TableColumn>PRICE (credits/unit/hr)</TableColumn>
                       <TableColumn>DURATION (hrs)</TableColumn>
                       {/* <TableColumn>TOTAL</TableColumn> */}
                     </TableHeader>
@@ -288,7 +288,7 @@ export default function ProjectQuotaInternalForm({
                                   handleResourceChange(
                                     resource.resourceId,
                                     "quantity",
-                                    value as number
+                                    value as number,
                                   )
                                 }
                                 className="max-w-md"
@@ -308,7 +308,7 @@ export default function ProjectQuotaInternalForm({
                                 handleResourceChange(
                                   resource.resourceId,
                                   "price",
-                                  parseFloat(value) || 0
+                                  parseFloat(value) || 0,
                                 )
                               }
                               size="sm"
@@ -325,7 +325,7 @@ export default function ProjectQuotaInternalForm({
                                 handleResourceChange(
                                   resource.resourceId,
                                   "duration",
-                                  parseFloat(value) || 1
+                                  parseFloat(value) || 1,
                                 )
                               }
                               size="sm"

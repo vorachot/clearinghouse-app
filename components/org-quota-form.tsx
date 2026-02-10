@@ -309,7 +309,7 @@ export default function OrganizationQuotaForm({
                       <TableColumn>NAME</TableColumn>
                       <TableColumn>AVAILABLE</TableColumn>
                       <TableColumn>QUANTITY</TableColumn>
-                      <TableColumn>PRICE (credits)</TableColumn>
+                      <TableColumn>PRICE (credits/unit/hr)</TableColumn>
                       <TableColumn>DURATION (hrs)</TableColumn>
                       {/* <TableColumn>TOTAL</TableColumn> */}
                     </TableHeader>
