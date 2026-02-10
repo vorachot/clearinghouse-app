@@ -109,3 +109,42 @@ export async function deleteResource(resourceId: string): Promise<any> {
 
   return response.data;
 }
+
+export async function updateResource(
+  resourceId: string,
+  resourceData: { name?: string; quantity?: number },
+): Promise<any> {
+  const response = await apiClient.patch(`/resources/${resourceId}`, resourceData);
+
+  if (response.status !== 200) {
+    throw new Error("Failed to update resource");
+  }
+
+  return response.data;
+}
+
+export async function updateResourcePool(
+  resourcePoolId: string,
+  resourceData: { name?: string, glidelet_urn?: string },
+): Promise<any> {
+  const response = await apiClient.patch(`/resources/pool/${resourcePoolId}`, resourceData);
+
+  if (response.status !== 200) {
+    throw new Error("Failed to update resource pool");
+  }
+
+  return response.data;
+}
+
+export async function updateResourceNode(
+  resourceNodeId: string,
+  resourceData: { name?: string },
+): Promise<any> {
+  const response = await apiClient.patch(`/resources/node/${resourceNodeId}`, resourceData);
+
+  if (response.status !== 200) {
+    throw new Error("Failed to update resource node");
+  }
+
+  return response.data;
+}

@@ -20,6 +20,14 @@ import CreateNodeDialog from "./create-node-dialog";
 import DeleteResourcePoolDialog from "./delete-resource-pool-dialog";
 import DeleteResourceNodeDialog from "./delete-resource-node-dialog";
 import DeleteResourceDialog from "./delete-resource-dialog";
+import EditResourcePoolDialog from "./edit-resource-pool-dialog";
+import EditResourceNodeDialog from "./edit-resource-node-dialog";
+import EditResourceDialog from "./edit-resource-dialog";
+import {
+  updateResourcePool,
+  updateResourceNode,
+  updateResource,
+} from "@/api/resource";
 import type { ResourcePool } from "@/types/resource";
 
 const resourceColumns = [
@@ -61,6 +69,37 @@ const ResourceTable = ({
   const [selectedResourceName, setSelectedResourceName] = useState<string>("");
   const [isDeletingResource, setIsDeletingResource] = useState(false);
   const [resourceError, setResourceError] = useState<string | null>(null);
+
+  // Edit pool state
+  const [editPoolDialogOpen, setEditPoolDialogOpen] = useState(false);
+  const [editPoolData, setEditPoolData] = useState<{
+    id: string;
+    name: string;
+    glidelet_urn: string;
+  } | null>(null);
+  const [isUpdatingPool, setIsUpdatingPool] = useState(false);
+  const [editPoolError, setEditPoolError] = useState<string | null>(null);
+
+  // Edit node state
+  const [editNodeDialogOpen, setEditNodeDialogOpen] = useState(false);
+  const [editNodeData, setEditNodeData] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  const [isUpdatingNode, setIsUpdatingNode] = useState(false);
+  const [editNodeError, setEditNodeError] = useState<string | null>(null);
+
+  // Edit resource state
+  const [editResourceDialogOpen, setEditResourceDialogOpen] = useState(false);
+  const [editResourceData, setEditResourceData] = useState<{
+    id: string;
+    name: string;
+    quantity: number;
+  } | null>(null);
+  const [isUpdatingResource, setIsUpdatingResource] = useState(false);
+  const [editResourceError, setEditResourceError] = useState<string | null>(
+    null,
+  );
 
   const handleDelete = (poolId: string, poolName: string) => {
     setSelectedPoolId(poolId);
@@ -133,6 +172,97 @@ const ResourceTable = ({
       }
     }
   };
+
+  // Edit handlers
+  const handleEditPool = (pool: ResourcePool) => {
+    setEditPoolData({
+      id: pool.id,
+      name: pool.name,
+      glidelet_urn: pool.glidelet_urn,
+    });
+    setEditPoolDialogOpen(true);
+    setEditPoolError(null);
+  };
+
+  const handleConfirmEditPool = async (
+    poolId: string,
+    data: { name: string; glidelet_urn: string },
+  ) => {
+    setIsUpdatingPool(true);
+    try {
+      await updateResourcePool(poolId, data);
+      setEditPoolDialogOpen(false);
+      window.location.reload(); // Refresh to show updated data
+    } catch (error: any) {
+      console.error("Error updating resource pool:", error);
+      setEditPoolError(
+        error.response?.data?.error || "Failed to update resource pool",
+      );
+    } finally {
+      setIsUpdatingPool(false);
+    }
+  };
+
+  const handleEditNode = (nodeId: string, nodeName: string) => {
+    setEditNodeData({
+      id: nodeId,
+      name: nodeName,
+    });
+    setEditNodeDialogOpen(true);
+    setEditNodeError(null);
+  };
+
+  const handleConfirmEditNode = async (
+    nodeId: string,
+    data: { name: string },
+  ) => {
+    setIsUpdatingNode(true);
+    try {
+      await updateResourceNode(nodeId, data);
+      setEditNodeDialogOpen(false);
+      window.location.reload(); // Refresh to show updated data
+    } catch (error: any) {
+      console.error("Error updating resource node:", error);
+      setEditNodeError(
+        error.response?.data?.error || "Failed to update resource node",
+      );
+    } finally {
+      setIsUpdatingNode(false);
+    }
+  };
+
+  const handleEditResource = (
+    resourceId: string,
+    resourceName: string,
+    resourceQuantity: number,
+  ) => {
+    setEditResourceData({
+      id: resourceId,
+      name: resourceName,
+      quantity: resourceQuantity,
+    });
+    setEditResourceDialogOpen(true);
+    setEditResourceError(null);
+  };
+
+  const handleConfirmEditResource = async (
+    resourceId: string,
+    data: { name: string; quantity: number },
+  ) => {
+    setIsUpdatingResource(true);
+    try {
+      await updateResource(resourceId, data);
+      setEditResourceDialogOpen(false);
+      window.location.reload(); // Refresh to show updated data
+    } catch (error: any) {
+      console.error("Error updating resource:", error);
+      setEditResourceError(
+        error.response?.data?.error || "Failed to update resource",
+      );
+    } finally {
+      setIsUpdatingResource(false);
+    }
+  };
   return (
     <>
       <Accordion variant="splitted" selectionMode="multiple">
@@ -151,18 +281,33 @@ const ResourceTable = ({
                     </Chip>
                   )}
                 </div>
-                <div
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(pool.id, pool.name);
-                  }}
-                  className="p-2 rounded-lg hover:bg-danger-100 dark:hover:bg-danger-900/20 cursor-pointer transition-colors"
-                  role="button"
-                  aria-label="Delete pool"
-                >
-                  <Tooltip content="Delete pool" color="danger">
-                    <DeleteIcon className="!w-4 !h-4 text-danger" />
-                  </Tooltip>
+                <div className="flex items-center gap-1">
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEditPool(pool);
+                    }}
+                    className="p-2 rounded-lg hover:bg-warning-100 dark:hover:bg-warning-900/20 cursor-pointer transition-colors"
+                    role="button"
+                    aria-label="Edit pool"
+                  >
+                    <Tooltip content="Edit pool" color="warning">
+                      <EditIcon className="!w-4 !h-4 text-warning" />
+                    </Tooltip>
+                  </div>
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(pool.id, pool.name);
+                    }}
+                    className="p-2 rounded-lg hover:bg-danger-100 dark:hover:bg-danger-900/20 cursor-pointer transition-colors"
+                    role="button"
+                    aria-label="Delete pool"
+                  >
+                    <Tooltip content="Delete pool" color="danger">
+                      <DeleteIcon className="!w-4 !h-4 text-danger" />
+                    </Tooltip>
+                  </div>
                 </div>
               </div>
             }
@@ -205,6 +350,22 @@ const ResourceTable = ({
                             nodeName={node.name}
                             orgId={pool.organization_id}
                           />
+                          <div onClick={(e) => e.stopPropagation()}>
+                            <Tooltip content="Edit node" color="warning">
+                              <Button
+                                isIconOnly
+                                size="sm"
+                                variant="light"
+                                color="warning"
+                                aria-label="Edit node"
+                                onPress={() =>
+                                  handleEditNode(node.id, node.name)
+                                }
+                              >
+                                <EditIcon className="!w-4 !h-4" />
+                              </Button>
+                            </Tooltip>
+                          </div>
                           <div onClick={(e) => e.stopPropagation()}>
                             <Tooltip content="Delete node" color="danger">
                               <Button
@@ -265,8 +426,15 @@ const ResourceTable = ({
                                           isIconOnly
                                           size="sm"
                                           variant="light"
-                                          color="primary"
+                                          color="warning"
                                           aria-label="Edit"
+                                          onPress={() =>
+                                            handleEditResource(
+                                              resource.id,
+                                              resource.name,
+                                              resource.quantity,
+                                            )
+                                          }
                                         >
                                           <EditIcon className="!w-4 !h-4" />
                                         </Button>
@@ -347,6 +515,41 @@ const ResourceTable = ({
         isDeleting={isDeletingResource}
         error={resourceError}
       />
+      {editPoolData && (
+        <EditResourcePoolDialog
+          isOpen={editPoolDialogOpen}
+          poolId={editPoolData.id}
+          poolName={editPoolData.name}
+          glideLetUrn={editPoolData.glidelet_urn}
+          onClose={() => setEditPoolDialogOpen(false)}
+          onConfirm={handleConfirmEditPool}
+          isUpdating={isUpdatingPool}
+          error={editPoolError}
+        />
+      )}
+      {editNodeData && (
+        <EditResourceNodeDialog
+          isOpen={editNodeDialogOpen}
+          nodeId={editNodeData.id}
+          nodeName={editNodeData.name}
+          onClose={() => setEditNodeDialogOpen(false)}
+          onConfirm={handleConfirmEditNode}
+          isUpdating={isUpdatingNode}
+          error={editNodeError}
+        />
+      )}
+      {editResourceData && (
+        <EditResourceDialog
+          isOpen={editResourceDialogOpen}
+          resourceId={editResourceData.id}
+          resourceName={editResourceData.name}
+          resourceQuantity={editResourceData.quantity}
+          onClose={() => setEditResourceDialogOpen(false)}
+          onConfirm={handleConfirmEditResource}
+          isUpdating={isUpdatingResource}
+          error={editResourceError}
+        />
+      )}
     </>
   );
 };
