@@ -173,7 +173,9 @@ const ProjectTable = ({
                             variant="flat"
                             className="font-medium"
                           >
-                            CPU: {getQuotaByType(project, "CPU")} Core
+                            <span className="font-medium">
+                              CPU: {getQuotaByType(project, "CPU")} Core
+                            </span>
                           </Chip>
                         )}
                         {getQuotaByType(project, "GPU") !== null && (
@@ -183,7 +185,9 @@ const ProjectTable = ({
                             variant="flat"
                             className="font-medium"
                           >
-                            GPU: {getQuotaByType(project, "GPU")} GiB
+                            <span className="font-medium">
+                              GPU: {getQuotaByType(project, "GPU")} Core
+                            </span>
                           </Chip>
                         )}
                         {getQuotaByType(project, "RAM") !== null && (
@@ -193,7 +197,9 @@ const ProjectTable = ({
                             variant="flat"
                             className="font-medium"
                           >
-                            RAM: {getQuotaByType(project, "RAM")} GiB
+                            <span className="font-medium">
+                              RAM: {getQuotaByType(project, "RAM")} GiB
+                            </span>
                           </Chip>
                         )}
                       </>
