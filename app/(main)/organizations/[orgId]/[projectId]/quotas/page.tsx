@@ -226,6 +226,9 @@ const ProjectQuotasPage = () => {
       await mutate(["namespace-quota-templates", projectId], undefined, {
         revalidate: true,
       });
+      await mutate(["namespaces", projectId], undefined, {
+        revalidate: true,
+      });
       setIsAssignFormOpen(false);
     } catch (error) {
       console.error("Error assigning template to namespaces:", error);
