@@ -16,9 +16,6 @@ import {
   FolderOpenRounded,
   EditRounded,
   DeleteRounded,
-  MemoryRounded as CpuIcon,
-  GraphicEqRounded as GpuIcon,
-  StorageRounded as RamIcon,
   VisibilityRounded,
   PeopleAltRounded,
   AdminPanelSettingsRounded,
@@ -103,6 +100,17 @@ const ProjectTable = ({
     setManagingAdminsProject(project);
   };
 
+  // Helper function to get quota value by resource type
+  const getQuotaByType = (project: Project, type: string): number | null => {
+    if (!project.resource_quotas || project.resource_quotas.length === 0) {
+      return null;
+    }
+    const quota = project.resource_quotas.find(
+      (q) => q.type.toUpperCase() === type.toUpperCase(),
+    );
+    return quota ? quota.quota : null;
+  };
+
   const columns = [
     { key: "name", label: "PROJECT NAME" },
     // { key: "cpu", label: "CPU" },
@@ -150,25 +158,46 @@ const ProjectTable = ({
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="flex gap-2">
-                    <div className="flex items-center gap-2">
-                      <CpuIcon className="!w-4 !h-4 text-blue-600 dark:text-blue-400" />
-                      <span className="font-medium dark:text-blue-400">
-                        N/A Cores
+                  <div className="flex gap-2 flex-wrap">
+                    {!project.resource_quotas ||
+                    project.resource_quotas.length === 0 ? (
+                      <span className="text-sm text-gray-400 dark:text-gray-500">
+                        No quotas assigned
                       </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <GpuIcon className="!w-4 !h-4 text-purple-600 dark:text-purple-400" />
-                      <span className="font-medium dark:text-purple-400">
-                        N/A GB
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <RamIcon className="!w-4 !h-4 text-green-600 dark:text-green-400" />
-                      <span className="font-medium dark:text-green-400">
-                        N/A GB
-                      </span>
-                    </div>
+                    ) : (
+                      <>
+                        {getQuotaByType(project, "CPU") !== null && (
+                          <Chip
+                            size="sm"
+                            color="primary"
+                            variant="flat"
+                            className="font-medium"
+                          >
+                            CPU: {getQuotaByType(project, "CPU")} Core
+                          </Chip>
+                        )}
+                        {getQuotaByType(project, "GPU") !== null && (
+                          <Chip
+                            size="sm"
+                            color="secondary"
+                            variant="flat"
+                            className="font-medium"
+                          >
+                            GPU: {getQuotaByType(project, "GPU")} GiB
+                          </Chip>
+                        )}
+                        {getQuotaByType(project, "RAM") !== null && (
+                          <Chip
+                            size="sm"
+                            color="success"
+                            variant="flat"
+                            className="font-medium"
+                          >
+                            RAM: {getQuotaByType(project, "RAM")} GiB
+                          </Chip>
+                        )}
+                      </>
+                    )}
                   </div>
                 </TableCell>
                 <TableCell>
@@ -180,7 +209,7 @@ const ProjectTable = ({
                     onClick={() => handleManageMembers(project)}
                   >
                     <PeopleAltRounded className="!w-4 !h-4 mr-1" />
-                    <span className="font-medium dark:text-green-400">
+                    <span className="font-medium dark:text-green-600">
                       {project.members.length}
                     </span>
                   </Chip>
@@ -194,7 +223,7 @@ const ProjectTable = ({
                     onClick={() => handleManageAdmins(project)}
                   >
                     <AdminPanelSettingsRounded className="!w-4 !h-4" />
-                    <span className="font-medium dark:text-primary-400">
+                    <span className="font-medium dark:text-primary-600">
                       {project.admins.length}
                     </span>
                   </Chip>

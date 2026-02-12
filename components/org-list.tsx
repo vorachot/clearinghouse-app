@@ -35,6 +35,7 @@ const OrganizationList = ({ orgs, onEdit, onDelete }: Props) => {
           name={org.name}
           admins={org.admins}
           members={org.members}
+          resource_quotas={org.resource_quotas}
           onEdit={onEdit}
           onDelete={onDelete}
         />

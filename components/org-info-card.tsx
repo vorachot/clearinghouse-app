@@ -14,11 +14,18 @@ import {
 import { useRouter } from "next/navigation";
 import { useUser, User } from "@/context/UserContext";
 
+type ResourceQuota = {
+  type_id: string;
+  type: string;
+  quota: number;
+};
+
 type Props = {
   id?: string;
   name?: string;
   admins?: User[];
   members?: User[];
+  resource_quotas?: ResourceQuota[];
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
 };
@@ -28,6 +35,7 @@ const OrgInfoCard = ({
   name,
   admins = [],
   members = [],
+  resource_quotas,
   onEdit,
   onDelete,
 }: Props) => {
@@ -54,6 +62,17 @@ const OrgInfoCard = ({
     if (id) {
       router.push(`/organizations/${id}`);
     }
+  };
+
+  // Helper function to get quota value by resource type
+  const getQuotaByType = (type: string): number | null => {
+    if (!resource_quotas || resource_quotas.length === 0) {
+      return null;
+    }
+    const quota = resource_quotas.find(
+      (q) => q.type.toUpperCase() === type.toUpperCase(),
+    );
+    return quota ? quota.quota : null;
   };
 
   return (
@@ -123,61 +142,75 @@ const OrgInfoCard = ({
       </CardHeader>
       <Divider className="bg-gray-200 dark:bg-gray-700" />
       <CardBody className="pt-4 pb-4">
-        <div className="space-y-3">
-          {/* CPU Resource */}
-          <div className="flex items-center justify-between p-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 transition-colors">
-            <div className="flex items-center gap-2">
-              <CpuIcon className="!w-5 !h-5 text-blue-600 dark:text-blue-400" />
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                CPU
-              </span>
-            </div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                N/A
-              </span>
-              <span className="text-xs text-gray-600 dark:text-gray-400">
-                Core
-              </span>
-            </div>
+        {!resource_quotas || resource_quotas.length === 0 ? (
+          <div className="flex items-center justify-center py-6">
+            <span className="text-sm text-gray-400 dark:text-gray-500">
+              No quotas assigned
+            </span>
           </div>
+        ) : (
+          <div className="space-y-3">
+            {/* CPU Resource */}
+            {getQuotaByType("CPU") !== null && (
+              <div className="flex items-center justify-between p-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 transition-colors">
+                <div className="flex items-center gap-2">
+                  <CpuIcon className="!w-5 !h-5 text-blue-600 dark:text-blue-400" />
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    CPU
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                    {getQuotaByType("CPU")}
+                  </span>
+                  <span className="text-xs text-gray-600 dark:text-gray-400">
+                    Core
+                  </span>
+                </div>
+              </div>
+            )}
 
-          {/* GPU Resource */}
-          <div className="flex items-center justify-between p-2 rounded-lg bg-purple-50 dark:bg-purple-900/20 transition-colors">
-            <div className="flex items-center gap-2">
-              <GpuIcon className="!w-5 !h-5 text-purple-600 dark:text-purple-400" />
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                GPU
-              </span>
-            </div>
-            <div className="flex items-baseline gap-3">
-              <span className="text-xl font-bold text-purple-600 dark:text-purple-400">
-                N/A
-              </span>
-              <span className="text-xs text-gray-600 dark:text-gray-400">
-                GB
-              </span>
-            </div>
-          </div>
+            {/* GPU Resource */}
+            {getQuotaByType("GPU") !== null && (
+              <div className="flex items-center justify-between p-2 rounded-lg bg-purple-50 dark:bg-purple-900/20 transition-colors">
+                <div className="flex items-center gap-2">
+                  <GpuIcon className="!w-5 !h-5 text-purple-600 dark:text-purple-400" />
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    GPU
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-3">
+                  <span className="text-xl font-bold text-purple-600 dark:text-purple-400">
+                    {getQuotaByType("GPU")}
+                  </span>
+                  <span className="text-xs text-gray-600 dark:text-gray-400">
+                    GB
+                  </span>
+                </div>
+              </div>
+            )}
 
-          {/* RAM Resource */}
-          <div className="flex items-center justify-between p-2 rounded-lg bg-green-50 dark:bg-green-900/20 transition-colors">
-            <div className="flex items-center gap-2">
-              <RamIcon className="!w-5 !h-5 text-green-600 dark:text-green-400" />
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                RAM
-              </span>
-            </div>
-            <div className="flex items-baseline gap-3">
-              <span className="text-xl font-bold text-green-600 dark:text-green-400">
-                N/A
-              </span>
-              <span className="text-xs text-gray-600 dark:text-gray-400">
-                GB
-              </span>
-            </div>
+            {/* RAM Resource */}
+            {getQuotaByType("RAM") !== null && (
+              <div className="flex items-center justify-between p-2 rounded-lg bg-green-50 dark:bg-green-900/20 transition-colors">
+                <div className="flex items-center gap-2">
+                  <RamIcon className="!w-5 !h-5 text-green-600 dark:text-green-400" />
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    RAM
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-3">
+                  <span className="text-xl font-bold text-green-600 dark:text-green-400">
+                    {getQuotaByType("RAM")}
+                  </span>
+                  <span className="text-xs text-gray-600 dark:text-gray-400">
+                    GB
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
+        )}
       </CardBody>
       <Divider className="bg-gray-200 dark:bg-gray-700" />
       <CardFooter className="pt-3 pb-3">
