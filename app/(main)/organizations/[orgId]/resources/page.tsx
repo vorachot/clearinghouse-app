@@ -14,10 +14,15 @@ import {
 import Loading from "@/app/loading";
 import { ResourcePool } from "@/types/resource";
 import { Inventory2Outlined } from "@mui/icons-material";
+import { useState } from "react";
 
 const ResourcesPage = () => {
   const params = useParams();
   const { orgId } = params as { orgId: string };
+
+  // Accordion state management - lifted to parent
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set([]));
+
   const resourcePoolsData = useSWR(
     ["resourcePools", orgId],
     () => getResourcePoolsByOrgId(orgId),
@@ -62,6 +67,11 @@ const ResourcesPage = () => {
     }
   };
   const resourcePools: ResourcePool[] = resourcePoolsData.data || [];
+
+  const handleRefresh = () => {
+    resourcePoolsData.mutate();
+  };
+
   return (
     <div className="container mx-auto pt-1 p-4 space-y-6">
       {/* Header Section */}
@@ -152,6 +162,9 @@ const ResourcesPage = () => {
           onDelete={handleDeleteResourcePool}
           onDeleteNode={handleDeleteResourceNode}
           onDeleteResource={handleDeleteResource}
+          onRefresh={handleRefresh}
+          selectedKeys={selectedKeys}
+          onSelectionChange={setSelectedKeys}
         />
       </div>
     </div>

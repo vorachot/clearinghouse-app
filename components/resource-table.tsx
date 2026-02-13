@@ -43,6 +43,9 @@ type Props = {
   onDelete?: (poolId: string) => void;
   onDeleteNode?: (nodeId: string) => void;
   onDeleteResource?: (resourceId: string) => void;
+  onRefresh?: () => void;
+  selectedKeys: Set<string>;
+  onSelectionChange: (keys: Set<string>) => void;
 };
 
 const ResourceTable = ({
@@ -50,6 +53,9 @@ const ResourceTable = ({
   onDelete,
   onDeleteNode,
   onDeleteResource,
+  onRefresh,
+  selectedKeys,
+  onSelectionChange,
 }: Props) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedPoolId, setSelectedPoolId] = useState<string>("");
@@ -192,7 +198,7 @@ const ResourceTable = ({
     try {
       await updateResourcePool(poolId, data);
       setEditPoolDialogOpen(false);
-      window.location.reload(); // Refresh to show updated data
+      onRefresh?.(); // Refresh to show updated data
     } catch (error: any) {
       console.error("Error updating resource pool:", error);
       setEditPoolError(
@@ -220,7 +226,7 @@ const ResourceTable = ({
     try {
       await updateResourceNode(nodeId, data);
       setEditNodeDialogOpen(false);
-      window.location.reload(); // Refresh to show updated data
+      onRefresh?.(); // Refresh to show updated data
     } catch (error: any) {
       console.error("Error updating resource node:", error);
       setEditNodeError(
@@ -253,7 +259,7 @@ const ResourceTable = ({
     try {
       await updateResource(resourceId, data);
       setEditResourceDialogOpen(false);
-      window.location.reload(); // Refresh to show updated data
+      onRefresh?.(); // Refresh to show updated data
     } catch (error: any) {
       console.error("Error updating resource:", error);
       setEditResourceError(
@@ -265,7 +271,12 @@ const ResourceTable = ({
   };
   return (
     <>
-      <Accordion variant="splitted" selectionMode="multiple">
+      <Accordion
+        variant="splitted"
+        selectionMode="multiple"
+        selectedKeys={selectedKeys}
+        onSelectionChange={(keys) => onSelectionChange(keys as Set<string>)}
+      >
         {resourcePools.map((pool) => (
           <AccordionItem
             key={pool.id}
