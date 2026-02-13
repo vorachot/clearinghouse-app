@@ -41,7 +41,7 @@ const Sidebar = () => {
   return (
     <aside
       aria-label="Sidebar navigation"
-      className="hidden md:flex w-[260px] px-4 py-4 bg-blue-300 dark:bg-blue-950 fixed top-16 left-0 h-[calc(100vh-4rem)] flex-col dark:border-gray-700 z-30 overflow-y-auto"
+      className="hidden md:flex w-[220px] px-4 py-4 bg-blue-300 dark:bg-blue-950 fixed top-16 left-0 h-[calc(100vh-4rem)] flex-col dark:border-gray-700 z-30 overflow-y-auto"
     >
       <div className="flex-1 flex flex-col gap-1">
         {navigationItems.map((item, index) => (

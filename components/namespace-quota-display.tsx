@@ -121,12 +121,12 @@ export default function NamespaceQuotaDisplay({
           const resources = quota.resources || [];
 
           return (
-            <Card key={quota.id} className="border">
-              <CardBody className="p-6">
-                <div className="space-y-6">
+            <Card key={quota.id} className="border border-gray-200 dark:border-gray-700">
+              <CardBody className="p-3">
+                <div className="space-y-4">
                   {/* Quota Header */}
-                  <div className="border-b pb-4">
-                    <div className="flex items-center gap-2 mb-3">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
                       <LayersIcon
                         className="text-secondary"
                         fontSize="medium"
@@ -175,8 +175,6 @@ export default function NamespaceQuotaDisplay({
                       const unit =
                         resource?.resource_prop?.resource?.resource_type
                           ?.unit || "units";
-                      const nodeName =
-                        resource?.resource_prop?.resource?.node?.name;
 
                       const resourceTypeColor =
                         getResourceTypeColor(resourceTypeName);
@@ -196,31 +194,22 @@ export default function NamespaceQuotaDisplay({
                                 <Chip
                                   color={resourceTypeColor}
                                   variant="flat"
-                                  size="lg"
+                                  size="md"
                                   className="font-semibold text-base"
                                 >
                                   {resourceTypeName}
                                 </Chip>
-                                {nodeName && (
-                                  <Chip
-                                    size="sm"
-                                    variant="bordered"
-                                    color="default"
-                                  >
-                                    {nodeName}
-                                  </Chip>
-                                )}
                               </div>
                             </div>
                             <div className="flex flex-col items-end">
                               <div className="flex items-baseline gap-2">
-                                <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
                                   {usedAmount}
                                 </span>
-                                <span className="text-2xl text-gray-400 font-light">
+                                <span className="text-lg text-gray-400 font-light">
                                   /
                                 </span>
-                                <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
                                   {totalAmount}
                                 </span>
                               </div>

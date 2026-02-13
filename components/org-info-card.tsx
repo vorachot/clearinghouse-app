@@ -10,6 +10,7 @@ import {
   EditRounded,
   DeleteRounded,
   VisibilityRounded,
+  CalendarTodayRounded,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { useUser, User } from "@/context/UserContext";
@@ -26,6 +27,8 @@ type Props = {
   admins?: User[];
   members?: User[];
   resource_quotas?: ResourceQuota[];
+  created_at?: string;
+  updated_at?: string;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
 };
@@ -36,6 +39,8 @@ const OrgInfoCard = ({
   admins = [],
   members = [],
   resource_quotas,
+  created_at,
+  updated_at,
   onEdit,
   onDelete,
 }: Props) => {
@@ -73,6 +78,16 @@ const OrgInfoCard = ({
       (q) => q.type.toUpperCase() === type.toUpperCase(),
     );
     return quota ? quota.quota : null;
+  };
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   };
 
   return (
@@ -142,6 +157,32 @@ const OrgInfoCard = ({
       </CardHeader>
       <Divider className="bg-gray-200 dark:bg-gray-700" />
       <CardBody className="pt-4 pb-4">
+        {/* Timestamps */}
+        {/* <div className="space-y-2 mb-3 pb-3 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-2">
+            <CalendarTodayRounded className="!w-4 !h-4 text-gray-500 dark:text-gray-400" />
+            <div className="flex-1">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Created:{" "}
+              </span>
+              <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                {formatDate(created_at)}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <CalendarTodayRounded className="!w-4 !h-4 text-gray-500 dark:text-gray-400" />
+            <div className="flex-1">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Updated:{" "}
+              </span>
+              <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                {formatDate(updated_at)}
+              </span>
+            </div>
+          </div>
+        </div> */}
+
         {!resource_quotas || resource_quotas.length === 0 ? (
           <div className="flex items-center justify-center py-6">
             <span className="text-sm text-gray-400 dark:text-gray-500">

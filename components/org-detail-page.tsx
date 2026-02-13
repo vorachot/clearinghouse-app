@@ -22,6 +22,7 @@ import AddAdminDialog from "./add-admin-dialog";
 import ProjectTable from "./project-table";
 import MemberModal from "./member-modal";
 import MemberCard from "./member-card";
+import OrgInfoDisplayCard from "./org-info-display-card";
 import { Project } from "@/types/project";
 import { useUser } from "@/context/UserContext";
 
@@ -88,6 +89,12 @@ const OrgDetailPage = () => {
   const isOrgAdmin = organization.admins?.some(
     (admin) => admin.id === user?.id,
   );
+
+  // Check if user is only a member (not an admin)
+  const isMemberOnly =
+    !isOrgAdmin &&
+    organization.members?.some((member) => member.id === user?.id);
+
   return (
     <div className="container mx-auto pt-1 p-4 space-y-5">
       <div>
@@ -105,161 +112,217 @@ const OrgDetailPage = () => {
         </h1>
       </div>
 
-      {/* Feature Navigation Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Resources Card */}
-        <Card
-          isPressable
-          isHoverable
-          onPress={() => router.push(`/organizations/${orgId}/resources`)}
-          className="cursor-pointer transition-all hover:scale-[1.02]"
-        >
-          <CardBody className="p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                    <Inventory2Outlined className="!w-6 !h-6 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Resources
-                  </h3>
-                </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 mb-3">
-                  Configure and manage organization resources
-                </p>
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      Create & manage resource pools
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      Configure resource nodes
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      Set resource configurations
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <ArrowForwardRounded className="!w-5 !h-5 text-gray-400 ml-2 mt-1" />
-            </div>
-          </CardBody>
-        </Card>
+      {/* For members only: Show limited view with 2 columns */}
+      {isMemberOnly ? (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <OrgInfoDisplayCard
+              name={organization.name}
+              // description={organization.description}
+              created_at={organization.created_at}
+              updated_at={organization.updated_at}
+            />
+            <MemberCard
+              members={organization.members}
+              admins={organization.admins}
+              currentUser={user}
+              handleOpenAddMember={handleOpenAddMember}
+              handleOpenAddAdmin={handleOpenAddAdmin}
+              setOpenMembersModal={setOpenMembersModal}
+            />
+          </div>
 
-        {/* Inter-Org Quota Sharing Card */}
-        <Card
-          isPressable
-          isHoverable
-          onPress={() => router.push(`/organizations/${orgId}/quotas`)}
-          className="cursor-pointer transition-all hover:scale-[1.02]"
-        >
-          <CardBody className="p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
-                    <PieChartOutlineRounded className="!w-6 !h-6 text-amber-600 dark:text-amber-400" />
+          {/* Projects Section for Members */}
+          {projects.length === 0 ? (
+            <div className="h-[200px] flex flex-col justify-center items-center text-center opacity-50">
+              <FolderCopyRounded className="!w-16 !h-16 mx-auto mb-4 text-gray-400" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                No Available Projects in this Organization
+              </h3>
+            </div>
+          ) : (
+            <div className="mt-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Projects List
+                </h2>
+              </div>
+              <ProjectTable
+                organizationId={orgId}
+                projects={projects}
+                orgAdmins={organization.admins}
+                onDelete={handleDeleteProject}
+              />
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          {/* Organization Info Card */}
+          <OrgInfoDisplayCard
+            name={organization.name}
+            description={organization.description}
+            created_at={organization.created_at}
+            updated_at={organization.updated_at}
+          />
+
+          {/* Feature Navigation Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Resources Card */}
+            <Card
+              isPressable
+              isHoverable
+              onPress={() => router.push(`/organizations/${orgId}/resources`)}
+              className="cursor-pointer transition-all hover:scale-[1.02]"
+            >
+              <CardBody className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                        <Inventory2Outlined className="!w-6 !h-6 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Resources
+                      </h3>
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 mb-3">
+                      Configure and manage organization resources
+                    </p>
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                        <span className="text-xs text-gray-600 dark:text-gray-400">
+                          Create & manage resource pools
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                        <span className="text-xs text-gray-600 dark:text-gray-400">
+                          Configure resource nodes
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                        <span className="text-xs text-gray-600 dark:text-gray-400">
+                          Set resource configurations
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Inter-Org Quota Sharing
-                  </h3>
+                  <ArrowForwardRounded className="!w-5 !h-5 text-gray-400 ml-2 mt-1" />
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 mb-3">
-                  Share resources with other organizations
-                </p>
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      Allocate resources to other orgs
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      View quota received from other orgs
-                    </span>
-                  </div>
-                </div>
-                <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+              </CardBody>
+            </Card>
+
+            {/* Inter-Org Quota Sharing Card */}
+            <Card
+              isPressable
+              isHoverable
+              onPress={() => router.push(`/organizations/${orgId}/quotas`)}
+              className="cursor-pointer transition-all hover:scale-[1.02]"
+            >
+              <CardBody className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+                        <PieChartOutlineRounded className="!w-6 !h-6 text-amber-600 dark:text-amber-400" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Inter-Org Quota Sharing
+                      </h3>
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 mb-3">
+                      Share resources with other organizations
+                    </p>
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                        <span className="text-xs text-gray-600 dark:text-gray-400">
+                          Allocate resources to other orgs
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                        <span className="text-xs text-gray-600 dark:text-gray-400">
+                          View quota received from other orgs
+                        </span>
+                      </div>
+                    </div>
+                    {/* <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
                   <p className="text-xs text-blue-600 dark:text-blue-400">
                     💡 To manage project quotas, navigate to individual projects
                     below
                   </p>
+                </div> */}
+                  </div>
+                  <ArrowForwardRounded className="!w-5 !h-5 text-gray-400 ml-2 mt-1" />
                 </div>
+              </CardBody>
+            </Card>
+
+            {/* Members Card */}
+            <MemberCard
+              members={organization.members}
+              admins={organization.admins}
+              currentUser={user}
+              handleOpenAddMember={handleOpenAddMember}
+              handleOpenAddAdmin={handleOpenAddAdmin}
+              setOpenMembersModal={setOpenMembersModal}
+            />
+          </div>
+
+          {/* Projects Section - Conditional Rendering */}
+          {projects.length === 0 ? (
+            <div>
+              <div className="flex items-center justify-end mb-4">
+                {isOrgAdmin && (
+                  <Button
+                    size="sm"
+                    color="primary"
+                    className="gap-0"
+                    startContent={<AddIcon />}
+                    onPress={handleOpenCreateProject}
+                  >
+                    Project
+                  </Button>
+                )}
               </div>
-              <ArrowForwardRounded className="!w-5 !h-5 text-gray-400 ml-2 mt-1" />
+              <div className="h-[200px] flex flex-col justify-center items-center text-center opacity-50">
+                <FolderCopyRounded className="!w-16 !h-16 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                  No Available Projects in this Organization
+                </h3>
+              </div>
             </div>
-          </CardBody>
-        </Card>
-
-        {/* Members Card */}
-        <MemberCard
-          members={organization.members}
-          admins={organization.admins}
-          currentUser={user}
-          handleOpenAddMember={handleOpenAddMember}
-          handleOpenAddAdmin={handleOpenAddAdmin}
-          setOpenMembersModal={setOpenMembersModal}
-        />
-      </div>
-
-      {/* Projects Section - Conditional Rendering */}
-      {projects.length === 0 ? (
-        <div>
-          <div className="flex items-center justify-end mb-4">
-            {isOrgAdmin && (
-              <Button
-                size="sm"
-                color="primary"
-                className="gap-0"
-                startContent={<AddIcon />}
-                onPress={handleOpenCreateProject}
-              >
-                Project
-              </Button>
-            )}
-          </div>
-          <div className="h-[200px] flex flex-col justify-center items-center text-center opacity-50">
-            <FolderCopyRounded className="!w-16 !h-16 mx-auto mb-4 text-gray-400" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-              No Available Projects in this Organization
-            </h3>
-          </div>
-        </div>
-      ) : (
-        <div className="mt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Projects List
-            </h2>
-            {isOrgAdmin && (
-              <Button
-                size="sm"
-                color="primary"
-                className="gap-0"
-                startContent={<AddIcon />}
-                onPress={handleOpenCreateProject}
-              >
-                Project
-              </Button>
-            )}
-          </div>
-          <ProjectTable
-            organizationId={orgId}
-            projects={projects}
-            orgAdmins={organization.admins}
-            onDelete={handleDeleteProject}
-          />
-        </div>
+          ) : (
+            <div className="mt-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Projects List
+                </h2>
+                {isOrgAdmin && (
+                  <Button
+                    size="sm"
+                    color="primary"
+                    className="gap-0"
+                    startContent={<AddIcon />}
+                    onPress={handleOpenCreateProject}
+                  >
+                    Project
+                  </Button>
+                )}
+              </div>
+              <ProjectTable
+                organizationId={orgId}
+                projects={projects}
+                orgAdmins={organization.admins}
+                onDelete={handleDeleteProject}
+              />
+            </div>
+          )}
+        </>
       )}
 
       {open && <CreateProjDialog orgId={orgId} setOnClose={onClose} />}

@@ -8,7 +8,7 @@ const Loading: React.FC<LoadingProps> = ({ children }) => {
   return (
     <div className="relative">
       {children}
-      <div className="ml-[260px] mt-16 fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/60 dark:bg-black/30">
+      <div className="ml-[220px] mt-16 fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/60 dark:bg-black/30">
         <svg
           className="animate-spin h-24 w-24 text-blue-500"
           viewBox="0 0 24 24"

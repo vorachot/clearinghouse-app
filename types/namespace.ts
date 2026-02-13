@@ -3,6 +3,8 @@ import { NamespaceQuotaTemplate } from "./quota";
 
 export type Namespace = {
   id: string;
+  created_at: string;
+  updated_at: string;
   name: string;
   description: string;
   credit: number;

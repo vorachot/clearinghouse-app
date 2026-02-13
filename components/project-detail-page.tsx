@@ -24,6 +24,7 @@ import NamespaceTable from "./namespace-table";
 import AddProjectMemberDialog from "./add-project-member-dialog";
 import AddProjectAdminDialog from "./add-project-admin-dialog";
 import ProjectMemberModal from "./project-member-modal";
+import ProjectInfoCard from "./project-info-card";
 import { useUser } from "@/context/UserContext";
 
 const ProjectDetailPage = () => {
@@ -82,6 +83,11 @@ const ProjectDetailPage = () => {
   // Check if current user is a project admin
   const isProjectAdmin = project.admins?.some((admin) => admin.id === user?.id);
 
+  // Check if user is only a member (not an admin)
+  const isMemberOnly =
+    !isProjectAdmin &&
+    project.members?.some((member) => member.id === user?.id);
+
   return (
     <div className="container mx-auto pt-1 p-4 space-y-5">
       <div>
@@ -109,127 +115,184 @@ const ProjectDetailPage = () => {
           </span>
         </h1>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-        {/* Quotas Card */}
-        <Card
-          isPressable
-          isHoverable
-          onPress={() =>
-            router.push(`/organizations/${orgId}/${projectId}/quotas`)
-          }
-          className="cursor-pointer transition-all hover:scale-[1.02]"
-        >
-          <CardBody className="p-6">
-            {/* <div className="absolute top-2 right-2">
+
+      {/* For members only: Show limited view with 2 columns */}
+      {isMemberOnly ? (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ProjectInfoCard
+              name={project.name}
+              // description={project.description}
+              created_at={project.created_at}
+              updated_at={project.updated_at}
+            />
+            <MemberCard
+              members={project.members}
+              admins={project.admins}
+              currentUser={user}
+              handleOpenAddMember={handleOpenAddMember}
+              handleOpenAddAdmin={handleOpenAddAdmin}
+              setOpenMembersModal={setOpenMembersModal}
+            />
+          </div>
+
+          {/* Namespaces Section for Members */}
+          {namespaces.length === 0 ? (
+            <div className="h-[200px] flex flex-col justify-center items-center text-center opacity-50">
+              <FolderCopyRounded className="!w-16 !h-16 mx-auto mb-4 text-gray-400" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                No Available Namespace in this Project
+              </h3>
+            </div>
+          ) : (
+            <div className="mt-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Namespaces List
+                </h2>
+              </div>
+              <NamespaceTable
+                organizationId={orgId}
+                projectId={projectId}
+                namespaces={namespaces}
+                projectAdmins={project.admins}
+              />
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          {/* Project Info Card */}
+          <ProjectInfoCard
+            name={project.name}
+            description={project.description}
+            created_at={project.created_at}
+            updated_at={project.updated_at}
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+            {/* Quotas Card */}
+            <Card
+              isPressable
+              isHoverable
+              onPress={() =>
+                router.push(`/organizations/${orgId}/${projectId}/quotas`)
+              }
+              className="cursor-pointer transition-all hover:scale-[1.02]"
+            >
+              <CardBody className="p-6">
+                {/* <div className="absolute top-2 right-2">
               <span className="text-xs px-2 py-1 bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full font-medium">
                 Main Feature
               </span>
             </div> */}
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                    <PieChartOutlineRounded className="!w-6 !h-6 text-purple-600 dark:text-purple-400" />
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                        <PieChartOutlineRounded className="!w-6 !h-6 text-purple-600 dark:text-purple-400" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Project & Namespace Quotas
+                      </h3>
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 mb-3 font-medium">
+                      Manage resource quotas for THIS project
+                    </p>
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                        <span className="text-xs text-gray-600 dark:text-gray-400">
+                          External & internal project quotas
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                        <span className="text-xs text-gray-600 dark:text-gray-400">
+                          Namespace quota configuration
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                        <span className="text-xs text-gray-600 dark:text-gray-400">
+                          Create & group quota templates
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                        <span className="text-xs text-gray-600 dark:text-gray-400">
+                          Assign templates to namespaces
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Project & Namespace Quotas
-                  </h3>
+                  <ArrowForwardRounded className="!w-5 !h-5 text-gray-400 ml-2 mt-1" />
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 mb-3 font-medium">
-                  Manage resource quotas for THIS project
-                </p>
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      External & internal project quotas
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      Namespace quota configuration
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      Create & group quota templates
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      Assign templates to namespaces
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <ArrowForwardRounded className="!w-5 !h-5 text-gray-400 ml-2 mt-1" />
-            </div>
-          </CardBody>
-        </Card>
+              </CardBody>
+            </Card>
 
-        {/* Members Card */}
-        <MemberCard
-          members={project.members}
-          admins={project.admins}
-          currentUser={user}
-          handleOpenAddMember={handleOpenAddMember}
-          handleOpenAddAdmin={handleOpenAddAdmin}
-          setOpenMembersModal={setOpenMembersModal}
-        />
-      </div>
-      {namespaces.length === 0 ? (
-        <div className="mt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Namespaces List
-            </h2>
-            {isProjectAdmin && (
-              <Button
-                size="sm"
-                color="primary"
-                className="gap-0"
-                startContent={<AddIcon />}
-                onPress={handleOpenCreateNs}
-              >
-                Namespace
-              </Button>
-            )}
+            {/* Members Card */}
+            <MemberCard
+              members={project.members}
+              admins={project.admins}
+              currentUser={user}
+              handleOpenAddMember={handleOpenAddMember}
+              handleOpenAddAdmin={handleOpenAddAdmin}
+              setOpenMembersModal={setOpenMembersModal}
+            />
           </div>
-          <div className="h-[200px] flex flex-col justify-center items-center text-center opacity-50">
-            <FolderCopyRounded className="!w-16 !h-16 mx-auto mb-4 text-gray-400" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-              No Available Namespace in this Project
-            </h3>
-          </div>
-        </div>
-      ) : (
-        <div className="mt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Namespaces List
-            </h2>
-            {isProjectAdmin && (
-              <Button
-                size="sm"
-                color="primary"
-                className="gap-0"
-                startContent={<AddIcon />}
-                onPress={handleOpenCreateNs}
-              >
-                Namespace
-              </Button>
-            )}
-          </div>
-          <NamespaceTable
-            organizationId={orgId}
-            projectId={projectId}
-            namespaces={namespaces}
-            projectAdmins={project.admins}
-          />
-        </div>
+          {namespaces.length === 0 ? (
+            <div className="mt-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Namespaces List
+                </h2>
+                {isProjectAdmin && (
+                  <Button
+                    size="sm"
+                    color="primary"
+                    className="gap-0"
+                    startContent={<AddIcon />}
+                    onPress={handleOpenCreateNs}
+                  >
+                    Namespace
+                  </Button>
+                )}
+              </div>
+              <div className="h-[200px] flex flex-col justify-center items-center text-center opacity-50">
+                <FolderCopyRounded className="!w-16 !h-16 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                  No Available Namespace in this Project
+                </h3>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Namespaces List
+                </h2>
+                {isProjectAdmin && (
+                  <Button
+                    size="sm"
+                    color="primary"
+                    className="gap-0"
+                    startContent={<AddIcon />}
+                    onPress={handleOpenCreateNs}
+                  >
+                    Namespace
+                  </Button>
+                )}
+              </div>
+              <NamespaceTable
+                organizationId={orgId}
+                projectId={projectId}
+                namespaces={namespaces}
+                projectAdmins={project.admins}
+              />
+            </div>
+          )}
+        </>
       )}
       {/* <div className="flex gap-4 flex-wrap">
         {namespaces.map((namespace) => (
