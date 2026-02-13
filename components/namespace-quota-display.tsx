@@ -12,11 +12,23 @@ import { useState, useEffect } from "react";
 import { StyleRounded, LinkOffRounded } from "@mui/icons-material";
 import { Button } from "@heroui/button";
 import { Tooltip } from "@heroui/tooltip";
+import { Chip } from "@heroui/chip";
+import LayersIcon from "@mui/icons-material/Layers";
 
 type NamespaceQuotaDisplayProps = {
   namespaceId: string;
   namespaceTemplate?: NamespaceQuotaTemplate;
   onUnassignTemplate?: () => void;
+};
+
+// Helper function to get color based on resource type
+const getResourceTypeColor = (resourceTypeName: string) => {
+  const lowerTypeName = resourceTypeName.toLowerCase();
+  if (lowerTypeName.includes("cpu")) return "primary";
+  if (lowerTypeName.includes("gpu")) return "secondary";
+  if (lowerTypeName.includes("ram") || lowerTypeName.includes("memory"))
+    return "success";
+  return "default";
 };
 
 export default function NamespaceQuotaDisplay({
@@ -84,11 +96,11 @@ export default function NamespaceQuotaDisplay({
               {namespaceTemplate.name}
             </span>
             {onUnassignTemplate && (
-              <Tooltip content="Unassign template" color="warning">
+              <Tooltip content="Unassign template" color="secondary">
                 <Button
                   isIconOnly
                   size="sm"
-                  color="warning"
+                  color="secondary"
                   variant="light"
                   onPress={onUnassignTemplate}
                   className="ml-1"
@@ -108,28 +120,39 @@ export default function NamespaceQuotaDisplay({
           // Get resources from quota
           const resources = quota.resources || [];
 
-          // Build quota source info
-          const quotaSourceParts = [];
-          if (quota?.node_name)
-            quotaSourceParts.push(`Node: ${quota.node_name}`);
-          if (quota?.organization_name)
-            quotaSourceParts.push(`Org: ${quota.organization_name}`);
-
-          const quotaSource =
-            quotaSourceParts.length > 0
-              ? quotaSourceParts.join(" • ")
-              : "Namespace Quota";
-
           return (
             <Card key={quota.id} className="border">
               <CardBody className="p-6">
                 <div className="space-y-6">
                   {/* Quota Header */}
-                  <div className="border-b pb-3">
-                    <h3 className="text-lg font-semibold mb-1">
-                      {quota.name || "Namespace Quota"}
-                    </h3>
-                    <p className="text-sm text-gray-500">{quotaSource}</p>
+                  <div className="border-b pb-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <LayersIcon
+                        className="text-secondary"
+                        fontSize="medium"
+                      />
+                      <h3 className="text-lg font-semibold">
+                        {quota.name || "Namespace Quota"}
+                      </h3>
+                    </div>
+
+                    <div className="flex gap-2 flex-wrap">
+                      {quota?.node_name && (
+                        <Chip size="sm" variant="flat" color="primary">
+                          {quota.node_name}
+                        </Chip>
+                      )}
+                      {quota?.organization_name && (
+                        <Chip size="sm" variant="flat" color="secondary">
+                          {quota.organization_name}
+                        </Chip>
+                      )}
+                      {!quota?.node_name && !quota?.organization_name && (
+                        <Chip size="sm" variant="flat" color="default">
+                          Namespace Quota
+                        </Chip>
+                      )}
+                    </div>
                   </div>
 
                   {/* Resources */}
@@ -146,9 +169,6 @@ export default function NamespaceQuotaDisplay({
 
                       const usedAmount = matchingUsage?.used || 0;
                       const totalAmount = resource.quantity || 0;
-                      const resourceName =
-                        resource?.resource_prop?.resource?.name ||
-                        "Unknown Resource";
                       const resourceTypeName =
                         resource?.resource_prop?.resource?.resource_type
                           ?.name || "";
@@ -158,42 +178,63 @@ export default function NamespaceQuotaDisplay({
                       const nodeName =
                         resource?.resource_prop?.resource?.node?.name;
 
+                      const resourceTypeColor =
+                        getResourceTypeColor(resourceTypeName);
+                      const usagePercentage =
+                        totalAmount > 0
+                          ? ((usedAmount / totalAmount) * 100).toFixed(1)
+                          : 0;
+
                       return (
                         <div
                           key={`${quota.id}-${resourceTypeId}`}
-                          className="space-y-2"
+                          className="p-5 rounded-lg border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
                         >
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h4 className="font-semibold">
-                                {resourceName}
-                                {resourceTypeName && (
-                                  <span className="text-sm font-normal text-gray-500 ml-2">
-                                    ({resourceTypeName})
-                                  </span>
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                            <div className="flex flex-col gap-2">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <Chip
+                                  color={resourceTypeColor}
+                                  variant="flat"
+                                  size="lg"
+                                  className="font-semibold text-base"
+                                >
+                                  {resourceTypeName}
+                                </Chip>
+                                {nodeName && (
+                                  <Chip
+                                    size="sm"
+                                    variant="bordered"
+                                    color="default"
+                                  >
+                                    {nodeName}
+                                  </Chip>
                                 )}
-                              </h4>
-                              {nodeName && (
-                                <p className="text-xs text-gray-500">
-                                  Node: {nodeName}
-                                </p>
-                              )}
-                            </div>
-                            <div className="text-right">
-                              <div className="text-xl font-bold">
-                                {usedAmount} / {totalAmount}
                               </div>
-                              <div className="text-xs text-gray-500">
-                                {unit}
+                            </div>
+                            <div className="flex flex-col items-end">
+                              <div className="flex items-baseline gap-2">
+                                <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                  {usedAmount}
+                                </span>
+                                <span className="text-2xl text-gray-400 font-light">
+                                  /
+                                </span>
+                                <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                  {totalAmount}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 mt-1">
+                                <span className="text-sm font-medium text-gray-500">
+                                  {unit}
+                                </span>
+                                {/* <span className="text-gray-400">•</span>
+                                <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+                                  {usagePercentage}% used
+                                </span> */}
                               </div>
                             </div>
                           </div>
-
-                          {/* <UsageBar
-                            value={usedAmount}
-                            maxValue={totalAmount}
-                            label={resourceName}
-                          /> */}
                         </div>
                       );
                     })}
