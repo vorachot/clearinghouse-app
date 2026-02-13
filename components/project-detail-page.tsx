@@ -120,6 +120,11 @@ const ProjectDetailPage = () => {
           className="cursor-pointer transition-all hover:scale-[1.02]"
         >
           <CardBody className="p-6">
+            {/* <div className="absolute top-2 right-2">
+              <span className="text-xs px-2 py-1 bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full font-medium">
+                Main Feature
+              </span>
+            </div> */}
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
@@ -130,8 +135,8 @@ const ProjectDetailPage = () => {
                     Project & Namespace Quotas
                   </h3>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 mb-3">
-                  Manage resource allocation for this project
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 mb-3 font-medium">
+                  Manage resource quotas for THIS project
                 </p>
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2">

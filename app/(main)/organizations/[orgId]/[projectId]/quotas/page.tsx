@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Tooltip } from "@heroui/tooltip";
@@ -48,6 +48,7 @@ import { useParams } from "next/navigation";
 import ProjectQuotaManager from "@/components/project-quota-manager";
 import { getResourcePoolsByOrgId } from "@/api/resource";
 import { Tabs, Tab } from "@heroui/tabs";
+import { useSearchParams } from "next/navigation";
 import NamespaceQuotaList from "@/components/namespace-quota-list";
 import NamespaceQuotaForm from "@/components/namespace-quota-form";
 import NamespaceQuotaTemplateForm from "@/components/namespace-quota-template-form";
@@ -60,7 +61,9 @@ import { Namespace } from "@/types/namespace";
 
 const ProjectQuotasPage = () => {
   const params = useParams();
+  const searchParams = useSearchParams();
   const { orgId, projectId } = params as { orgId: string; projectId: string };
+  const [selectedTab, setSelectedTab] = useState("project");
   const [isQuotaFormOpen, setIsQuotaFormOpen] = useState(false);
   const [isTemplateFormOpen, setIsTemplateFormOpen] = useState(false);
   const [isAssignFormOpen, setIsAssignFormOpen] = useState(false);
@@ -132,6 +135,14 @@ const ProjectQuotasPage = () => {
   const templates: NamespaceQuotaTemplate[] =
     namespaceQuotaTemplatesByProjectIdData.data || [];
   const namespaces: Namespace[] = namespacesData.data || [];
+
+  // Handle tab selection from URL query parameter
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab && ["project", "namespace", "templates"].includes(tab)) {
+      setSelectedTab(tab);
+    }
+  }, [searchParams]);
 
   const handleCreateProjectQuota = async (data: CreateProjectQuotaDTO) => {
     try {
@@ -285,7 +296,12 @@ const ProjectQuotasPage = () => {
         </h1>
       </div>
 
-      <Tabs aria-label="Quota management sections" size="lg">
+      <Tabs
+        aria-label="Quota management sections"
+        size="lg"
+        selectedKey={selectedTab}
+        onSelectionChange={(key) => setSelectedTab(key as string)}
+      >
         <Tab key="project" title="Project Quotas">
           <Card>
             <CardBody className="p-4">

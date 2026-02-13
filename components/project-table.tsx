@@ -161,9 +161,21 @@ const ProjectTable = ({
                   <div className="flex gap-2 flex-wrap">
                     {!project.resource_quotas ||
                     project.resource_quotas.length === 0 ? (
-                      <span className="text-sm text-gray-400 dark:text-gray-500">
-                        No quotas assigned
-                      </span>
+                      <Chip
+                        size="sm"
+                        color="warning"
+                        variant="flat"
+                        className="cursor-pointer hover:bg-warning-200 dark:hover:bg-warning-800 transition-colors font-medium"
+                        onClick={() =>
+                          router.push(
+                            `/organizations/${organizationId}/${project.id}/quotas`,
+                          )
+                        }
+                      >
+                        <span className="font-medium">
+                          No quotas - Click to set
+                        </span>
+                      </Chip>
                     ) : (
                       <>
                         {getQuotaByType(project, "CPU") !== null && (
@@ -186,7 +198,7 @@ const ProjectTable = ({
                             className="font-medium"
                           >
                             <span className="font-medium">
-                              GPU: {getQuotaByType(project, "GPU")} Core
+                              GPU: {getQuotaByType(project, "GPU")} GiB
                             </span>
                           </Chip>
                         )}

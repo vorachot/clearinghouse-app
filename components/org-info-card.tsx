@@ -184,7 +184,7 @@ const OrgInfoCard = ({
                     {getQuotaByType("GPU")}
                   </span>
                   <span className="text-xs text-gray-600 dark:text-gray-400">
-                    GB
+                    GiB
                   </span>
                 </div>
               </div>
@@ -204,7 +204,7 @@ const OrgInfoCard = ({
                     {getQuotaByType("RAM")}
                   </span>
                   <span className="text-xs text-gray-600 dark:text-gray-400">
-                    GB
+                    GiB
                   </span>
                 </div>
               </div>

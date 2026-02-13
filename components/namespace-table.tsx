@@ -163,18 +163,30 @@ const NamespaceTable = ({
                 </span>
               </TableCell> */}
               <TableCell>
-                <div className="flex items-center gap-2">
-                  {namespace.quota_template?.name ? (
+                {namespace.quota_template?.name ? (
+                  <div className="flex items-center gap-2">
                     <StyleRounded className="!w-4 !h-4 text-indigo-600 dark:text-indigo-400" />
-                  ) : null}
-                  <span className="font-medium text-indigo-600 dark:text-indigo-400">
-                    {namespace.quota_template?.name || (
-                      <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                        No template
-                      </span>
-                    )}
-                  </span>
-                </div>
+                    <span className="font-medium text-indigo-600 dark:text-indigo-400">
+                      {namespace.quota_template.name}
+                    </span>
+                  </div>
+                ) : (
+                  <Chip
+                    size="sm"
+                    color="warning"
+                    variant="flat"
+                    className="cursor-pointer hover:bg-warning-200 dark:hover:bg-warning-800 transition-colors font-medium"
+                    onClick={() =>
+                      router.push(
+                        `/organizations/${organizationId}/${projectId}/quotas?tab=templates`,
+                      )
+                    }
+                  >
+                    <span className="font-medium">
+                      No template - Click to assign
+                    </span>
+                  </Chip>
+                )}
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2 flex-wrap">
@@ -254,7 +266,7 @@ const NamespaceTable = ({
                 <Chip size="sm" color="primary" variant="flat" className="px-2">
                   <TollRounded className="!w-4 !h-4 mr-1" />
                   <span className="font-medium">
-                    {namespace.credit || 0} credits
+                    {(namespace.credit || 0).toLocaleString()} credits
                   </span>
                 </Chip>
               </TableCell>
