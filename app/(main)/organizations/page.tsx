@@ -12,8 +12,10 @@ import AddIcon from "@mui/icons-material/Add";
 import { useState } from "react";
 import { HomeWorkRounded } from "@mui/icons-material";
 import { OrgDetail } from "@/types/org";
+import { useUser } from "@/context/UserContext";
 
 const OrganizationsPage = () => {
+  const { user } = useUser();
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -67,16 +69,18 @@ const OrganizationsPage = () => {
     return (
       <div className="container mx-auto pt-1 p-4 space-y-5">
         <div className="flex items-end justify-end gap-5">
-          <Button
-            size="sm"
-            color="primary"
-            className="gap-0"
-            startContent={<AddIcon />}
-            onPress={handleOpenCreateOrg}
-          >
-            {" "}
-            Organization
-          </Button>
+          {user?.is_super_admin && (
+            <Button
+              size="sm"
+              color="primary"
+              className="gap-0"
+              startContent={<AddIcon />}
+              onPress={handleOpenCreateOrg}
+            >
+              {" "}
+              Organization
+            </Button>
+          )}
         </div>
         <div className="h-[400px] flex flex-col justify-center items-center text-center opacity-50">
           <HomeWorkRounded className="!w-16 !h-16 mx-auto mb-4 text-gray-400" />
@@ -95,15 +99,17 @@ const OrganizationsPage = () => {
         <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">
           Organizations
         </h1>
-        <Button
-          size="sm"
-          color="primary"
-          className="gap-0"
-          startContent={<AddIcon />}
-          onPress={handleOpenCreateOrg}
-        >
-          Organization
-        </Button>
+        {user?.is_super_admin && (
+          <Button
+            size="sm"
+            color="primary"
+            className="gap-0"
+            startContent={<AddIcon />}
+            onPress={handleOpenCreateOrg}
+          >
+            Organization
+          </Button>
+        )}
       </div>
 
       <div className="h-full dark:text-white">

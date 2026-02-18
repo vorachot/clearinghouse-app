@@ -102,6 +102,7 @@ const OrgInfoCard = ({
     fetchAndAggregateResources();
   }, [id]);
 
+  const isSuperAdmin = user?.is_super_admin || false;
   const isAdmin = user && admins.some((admin) => admin.id === user.id);
   const canViewDetails =
     user && (isAdmin || members.some((member) => member.id === user.id));
@@ -181,7 +182,7 @@ const OrgInfoCard = ({
               </p>
             </Tooltip>
           </div>
-          {isAdmin && (
+          {isSuperAdmin && (
             <div
               className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
               onClick={(e) => e.stopPropagation()}
@@ -226,7 +227,6 @@ const OrgInfoCard = ({
       </CardHeader>
       <Divider className="bg-gray-200 dark:bg-gray-700" />
       <CardBody className="pt-4 pb-4">
-
         {isLoadingResources ? (
           <div className="flex items-center justify-center py-6">
             <span className="text-sm text-gray-400 dark:text-gray-500">
@@ -272,7 +272,7 @@ const OrgInfoCard = ({
       </CardBody>
       <Divider className="bg-gray-200 dark:bg-gray-700" />
       <CardFooter className="pt-3 pb-3">
-        {canViewDetails ? (
+        {isSuperAdmin ? null : canViewDetails ? (
           <Button
             fullWidth
             size="sm"
