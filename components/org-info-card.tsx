@@ -10,15 +10,22 @@ import {
   EditRounded,
   DeleteRounded,
   VisibilityRounded,
-  CalendarTodayRounded,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { useUser, User } from "@/context/UserContext";
+import { useEffect, useState } from "react";
+import { getResourcePoolsByOrgId } from "@/api/resource";
 
 type ResourceQuota = {
   type_id: string;
   type: string;
   quota: number;
+};
+
+type AggregatedResource = {
+  type_name: string;
+  total_quantity: number;
+  unit: string;
 };
 
 type Props = {
@@ -38,14 +45,62 @@ const OrgInfoCard = ({
   name,
   admins = [],
   members = [],
-  resource_quotas,
-  created_at,
-  updated_at,
   onEdit,
   onDelete,
 }: Props) => {
   const router = useRouter();
   const { user } = useUser();
+  const [aggregatedResources, setAggregatedResources] = useState<
+    AggregatedResource[]
+  >([]);
+  const [isLoadingResources, setIsLoadingResources] = useState(false);
+
+  useEffect(() => {
+    const fetchAndAggregateResources = async () => {
+      if (!id) return;
+
+      setIsLoadingResources(true);
+      try {
+        const resourcePools = await getResourcePoolsByOrgId(id);
+
+        // Aggregate resources by resource type name
+        const aggregated: { [key: string]: { total: number; unit: string } } =
+          {};
+
+        resourcePools.forEach((pool: any) => {
+          pool.nodes?.forEach((node: any) => {
+            node.resources?.forEach((resource: any) => {
+              const typeName = resource.resource_type.name;
+              const unit = resource.resource_type.unit;
+
+              if (!aggregated[typeName]) {
+                aggregated[typeName] = { total: 0, unit };
+              }
+              aggregated[typeName].total += resource.quantity;
+            });
+          });
+        });
+
+        // Convert to array
+        const aggregatedArray = Object.entries(aggregated).map(
+          ([type_name, data]) => ({
+            type_name,
+            total_quantity: data.total,
+            unit: data.unit,
+          }),
+        );
+
+        setAggregatedResources(aggregatedArray);
+      } catch (error) {
+        console.error("Error fetching resource pools:", error);
+        setAggregatedResources([]);
+      } finally {
+        setIsLoadingResources(false);
+      }
+    };
+
+    fetchAndAggregateResources();
+  }, [id]);
 
   const isAdmin = user && admins.some((admin) => admin.id === user.id);
   const canViewDetails =
@@ -69,25 +124,39 @@ const OrgInfoCard = ({
     }
   };
 
-  // Helper function to get quota value by resource type
-  const getQuotaByType = (type: string): number | null => {
-    if (!resource_quotas || resource_quotas.length === 0) {
-      return null;
+  // Helper function to get icon and styling based on resource type
+  const getResourceStyle = (type: string) => {
+    const typeUpper = type.toUpperCase();
+    switch (typeUpper) {
+      case "CPU":
+        return {
+          icon: CpuIcon,
+          bgColor: "bg-blue-50 dark:bg-blue-900/20",
+          iconColor: "text-blue-600 dark:text-blue-400",
+          valueColor: "text-blue-600 dark:text-blue-400",
+        };
+      case "GPU":
+        return {
+          icon: GpuIcon,
+          bgColor: "bg-purple-50 dark:bg-purple-900/20",
+          iconColor: "text-purple-600 dark:text-purple-400",
+          valueColor: "text-purple-600 dark:text-purple-400",
+        };
+      case "RAM":
+        return {
+          icon: RamIcon,
+          bgColor: "bg-green-50 dark:bg-green-900/20",
+          iconColor: "text-green-600 dark:text-green-400",
+          valueColor: "text-green-600 dark:text-green-400",
+        };
+      default:
+        return {
+          icon: RamIcon,
+          bgColor: "bg-gray-50 dark:bg-gray-900/20",
+          iconColor: "text-gray-600 dark:text-gray-400",
+          valueColor: "text-gray-600 dark:text-gray-400",
+        };
     }
-    const quota = resource_quotas.find(
-      (q) => q.type.toUpperCase() === type.toUpperCase(),
-    );
-    return quota ? quota.quota : null;
-  };
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return "N/A";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
   };
 
   return (
@@ -157,99 +226,47 @@ const OrgInfoCard = ({
       </CardHeader>
       <Divider className="bg-gray-200 dark:bg-gray-700" />
       <CardBody className="pt-4 pb-4">
-        {/* Timestamps */}
-        {/* <div className="space-y-2 mb-3 pb-3 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-2">
-            <CalendarTodayRounded className="!w-4 !h-4 text-gray-500 dark:text-gray-400" />
-            <div className="flex-1">
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                Created:{" "}
-              </span>
-              <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
-                {formatDate(created_at)}
-              </span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <CalendarTodayRounded className="!w-4 !h-4 text-gray-500 dark:text-gray-400" />
-            <div className="flex-1">
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                Updated:{" "}
-              </span>
-              <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
-                {formatDate(updated_at)}
-              </span>
-            </div>
-          </div>
-        </div> */}
 
-        {!resource_quotas || resource_quotas.length === 0 ? (
+        {isLoadingResources ? (
           <div className="flex items-center justify-center py-6">
             <span className="text-sm text-gray-400 dark:text-gray-500">
-              No quotas assigned
+              Loading resources...
+            </span>
+          </div>
+        ) : aggregatedResources.length === 0 ? (
+          <div className="flex items-center justify-center py-6">
+            <span className="text-sm text-gray-400 dark:text-gray-500">
+              No resources found
             </span>
           </div>
         ) : (
           <div className="space-y-3">
-            {/* CPU Resource */}
-            {getQuotaByType("CPU") !== null && (
-              <div className="flex items-center justify-between p-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 transition-colors">
-                <div className="flex items-center gap-2">
-                  <CpuIcon className="!w-5 !h-5 text-blue-600 dark:text-blue-400" />
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    CPU
-                  </span>
-                </div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                    {getQuotaByType("CPU")}
-                  </span>
-                  <span className="text-xs text-gray-600 dark:text-gray-400">
-                    Core
-                  </span>
-                </div>
-              </div>
-            )}
+            {aggregatedResources.map((resource, index) => {
+              const style = getResourceStyle(resource.type_name);
+              const Icon = style.icon;
 
-            {/* GPU Resource */}
-            {getQuotaByType("GPU") !== null && (
-              <div className="flex items-center justify-between p-2 rounded-lg bg-purple-50 dark:bg-purple-900/20 transition-colors">
-                <div className="flex items-center gap-2">
-                  <GpuIcon className="!w-5 !h-5 text-purple-600 dark:text-purple-400" />
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    GPU
-                  </span>
+              return (
+                <div
+                  key={index}
+                  className={`flex items-center justify-between p-2 rounded-lg ${style.bgColor} transition-colors`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Icon className={`!w-5 !h-5 ${style.iconColor}`} />
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {resource.type_name}
+                    </span>
+                  </div>
+                  <div className="flex items-baseline gap-1">
+                    <span className={`text-xl font-bold ${style.valueColor}`}>
+                      {resource.total_quantity}
+                    </span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      {resource.unit}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-baseline gap-3">
-                  <span className="text-xl font-bold text-purple-600 dark:text-purple-400">
-                    {getQuotaByType("GPU")}
-                  </span>
-                  <span className="text-xs text-gray-600 dark:text-gray-400">
-                    GiB
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* RAM Resource */}
-            {getQuotaByType("RAM") !== null && (
-              <div className="flex items-center justify-between p-2 rounded-lg bg-green-50 dark:bg-green-900/20 transition-colors">
-                <div className="flex items-center gap-2">
-                  <RamIcon className="!w-5 !h-5 text-green-600 dark:text-green-400" />
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    RAM
-                  </span>
-                </div>
-                <div className="flex items-baseline gap-3">
-                  <span className="text-xl font-bold text-green-600 dark:text-green-400">
-                    {getQuotaByType("RAM")}
-                  </span>
-                  <span className="text-xs text-gray-600 dark:text-gray-400">
-                    GiB
-                  </span>
-                </div>
-              </div>
-            )}
+              );
+            })}
           </div>
         )}
       </CardBody>
