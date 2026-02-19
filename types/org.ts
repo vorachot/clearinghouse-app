@@ -6,6 +6,7 @@ export type Organization = {
   updated_at: string;
   name: string;
   description: string;
+  domain: string;
   admins: string[];
   members: string[];
   resource_quotas?: {
@@ -21,6 +22,7 @@ export type OrgDetail = {
   updated_at: string;
   name: string;
   description: string;
+  domain: string;
   admins: User[];
   members: User[];
   resource_quotas?: {

@@ -2,6 +2,7 @@ import apiClient from "@/utils/apiClient";
 
 export async function createOrganization(orgData: {
   name: string;
+  domain?: string;
 }): Promise<Response> {
   const response = await apiClient.post(`/organizations/`, orgData);
 
@@ -24,7 +25,7 @@ export async function getOrganizationById(id: string): Promise<any> {
 
 export async function updateOrganization(
   id: string,
-  orgData: { name?: string; description?: string },
+  orgData: { name?: string; description?: string, domain?: string },
 ): Promise<any> {
   const response = await apiClient.put(`/organizations/${id}`, orgData);
   return response.data;

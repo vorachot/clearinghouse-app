@@ -33,6 +33,7 @@ const OrganizationList = ({ orgs, onEdit, onDelete }: Props) => {
           aria-label={`Organization ${org.name}`}
           id={org.id}
           name={org.name}
+          domain={org.domain}
           admins={org.admins}
           members={org.members}
           resource_quotas={org.resource_quotas}

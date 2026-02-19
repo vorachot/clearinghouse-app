@@ -19,6 +19,7 @@ const OrgForm = ({ setOnClose }: Props) => {
     const formData = new FormData(e.currentTarget);
     const data = {
       name: formData.get("name") as string,
+      domain: (formData.get("domain") as string) || undefined,
     };
 
     try {
@@ -47,6 +48,14 @@ const OrgForm = ({ setOnClose }: Props) => {
               placeholder="e.g., KMITL"
               name="name"
               isRequired
+            />
+          </div>
+          <div className="w-full flex flex-col">
+            <Input
+              type="text"
+              label="Domain"
+              placeholder="e.g., kmitl.ac.th"
+              name="domain"
             />
           </div>
         </div>

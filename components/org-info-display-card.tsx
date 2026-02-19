@@ -5,11 +5,13 @@ import {
   DescriptionRounded,
   CalendarTodayRounded,
   UpdateRounded,
+  LanguageRounded,
 } from "@mui/icons-material";
 
 type Props = {
   name: string;
   description?: string;
+  domain?: string;
   created_at?: string;
   updated_at?: string;
 };
@@ -17,6 +19,7 @@ type Props = {
 const OrgInfoDisplayCard = ({
   name,
   description,
+  domain,
   created_at,
   updated_at,
 }: Props) => {
@@ -43,7 +46,7 @@ const OrgInfoDisplayCard = ({
       </CardHeader>
       <Divider />
       <CardBody className="gap-4">
-        {description && (
+        {/* {description && (
           <div className="flex gap-3">
             <DescriptionRounded className="!w-5 !h-5 text-gray-600 dark:text-gray-400 mt-0.5" />
             <div>
@@ -55,7 +58,20 @@ const OrgInfoDisplayCard = ({
               </p>
             </div>
           </div>
-        )}
+        )} */}
+        {/* {domain && (
+          <div className="flex gap-3">
+            <LanguageRounded className="!w-5 !h-5 text-gray-600 dark:text-gray-400 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Domain
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                {domain}
+              </p>
+            </div>
+          </div>
+        )} */}
         <div className="flex gap-3">
           <CalendarTodayRounded className="!w-5 !h-5 text-gray-600 dark:text-gray-400 mt-0.5" />
           <div>

@@ -31,6 +31,7 @@ type AggregatedResource = {
 type Props = {
   id?: string;
   name?: string;
+  domain?: string;
   admins?: User[];
   members?: User[];
   resource_quotas?: ResourceQuota[];
@@ -43,6 +44,7 @@ type Props = {
 const OrgInfoCard = ({
   id,
   name,
+  domain,
   admins = [],
   members = [],
   onEdit,
@@ -173,14 +175,21 @@ const OrgInfoCard = ({
             <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
               <CorporateFareRounded className="!w-6 !h-6 text-blue-600 dark:text-blue-400" />
             </div>
-            <Tooltip content={name} className="dark:text-white">
-              <p
-                className="text-lg font-bold truncate text-gray-900 dark:text-white"
-                title={name}
-              >
-                {name}
-              </p>
-            </Tooltip>
+            <div className="flex flex-col flex-1 min-w-0">
+              <Tooltip content={name} className="dark:text-white">
+                <p
+                  className="text-lg font-bold truncate text-gray-900 dark:text-white"
+                  title={name}
+                >
+                  {name}
+                </p>
+              </Tooltip>
+              {domain && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                  {domain}
+                </p>
+              )}
+            </div>
           </div>
           {isSuperAdmin && (
             <div

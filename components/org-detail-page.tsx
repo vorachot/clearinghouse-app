@@ -119,6 +119,7 @@ const OrgDetailPage = () => {
             <OrgInfoDisplayCard
               name={organization.name}
               // description={organization.description}
+              domain={organization.domain}
               created_at={organization.created_at}
               updated_at={organization.updated_at}
             />
@@ -162,6 +163,7 @@ const OrgDetailPage = () => {
           <OrgInfoDisplayCard
             name={organization.name}
             description={organization.description}
+            domain={organization.domain}
             created_at={organization.created_at}
             updated_at={organization.updated_at}
           />

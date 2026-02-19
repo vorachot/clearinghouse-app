@@ -16,6 +16,7 @@ type Props = {
 const UpdateOrgForm = ({ orgId, setOnClose }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orgName, setOrgName] = useState("");
+  const [orgDomain, setOrgDomain] = useState("");
 
   // Fetch the organization data
   const { data: organization, isLoading } = useSWR(
@@ -30,6 +31,7 @@ const UpdateOrgForm = ({ orgId, setOnClose }: Props) => {
   useEffect(() => {
     if (organization) {
       setOrgName(organization.name || "");
+      setOrgDomain(organization.domain || "");
     }
   }, [organization]);
 
@@ -41,6 +43,7 @@ const UpdateOrgForm = ({ orgId, setOnClose }: Props) => {
     const data = {
       name: formData.get("name") as string,
       description: "-",
+      domain: (formData.get("domain") as string) || undefined,
     };
 
     try {
@@ -85,6 +88,16 @@ const UpdateOrgForm = ({ orgId, setOnClose }: Props) => {
               value={orgName}
               onValueChange={setOrgName}
               isRequired
+            />
+          </div>
+          <div className="w-full flex flex-col">
+            <Input
+              type="text"
+              label="Domain"
+              placeholder="e.g., kmitl.ac.th"
+              name="domain"
+              value={orgDomain}
+              onValueChange={setOrgDomain}
             />
           </div>
         </div>
