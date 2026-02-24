@@ -13,7 +13,6 @@ type Props = {
   admins?: User[];
   currentUser?: User | null;
   handleOpenAddMember: () => void;
-  handleOpenAddAdmin: () => void;
   setOpenMembersModal: (open: boolean) => void;
 };
 
@@ -22,7 +21,6 @@ const MemberCard = ({
   admins,
   currentUser,
   handleOpenAddMember,
-  handleOpenAddAdmin,
   setOpenMembersModal,
 }: Props) => {
   const adminCount = admins?.length || 0;
@@ -83,18 +81,6 @@ const MemberCard = ({
                   className="flex-shrink-0"
                 >
                   Member
-                </Button>
-                <Button
-                  size="sm"
-                  color="primary"
-                  variant="flat"
-                  startContent={
-                    <AdminPanelSettingsRounded className="!w-4 !h-4" />
-                  }
-                  onPress={handleOpenAddAdmin}
-                  className="flex-shrink-0"
-                >
-                  Admin
                 </Button>
               </div>
             )}

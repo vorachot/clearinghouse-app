@@ -14,14 +14,9 @@ import {
   GroupRounded,
   PersonRounded,
   PersonRemoveRounded,
-  AdminPanelSettingsRounded,
 } from "@mui/icons-material";
 import { useState } from "react";
-import {
-  removeMembersFromOrganization,
-  addAdminToOrganization,
-  removeAdminFromOrganization,
-} from "@/api/member";
+import { removeMembersFromOrganization } from "@/api/member";
 import { mutate } from "swr";
 
 type Props = {
@@ -44,8 +39,6 @@ const MemberModal = ({
     new Set([]),
   );
   const [isRemoving, setIsRemoving] = useState(false);
-  const [isPromoting, setIsPromoting] = useState(false);
-  const [isDemoting, setIsDemoting] = useState(false);
 
   // Track admin and member IDs separately
   const adminIds = new Set(admins?.map((a) => a.id) || []);
@@ -82,11 +75,6 @@ const MemberModal = ({
     memberIds.has(id),
   );
 
-  // Check if any selected users are admins
-  const hasSelectedAdmins = Array.from(selectedMembers).some((id) =>
-    adminIds.has(id),
-  );
-
   const handleToggleMember = (memberId: string) => {
     const newSelected = new Set(selectedMembers);
     if (newSelected.has(memberId)) {
@@ -95,44 +83,6 @@ const MemberModal = ({
       newSelected.add(memberId);
     }
     setSelectedMembers(newSelected);
-  };
-
-  // const handlePromoteToAdmin = async () => {
-  //   if (selectedMembers.size === 0 || !orgId) return;
-
-  //   setIsPromoting(true);
-  //   try {
-  //     await addAdminToOrganization({
-  //       organization_id: orgId,
-  //       admins: Array.from(selectedMembers),
-  //     });
-  //     setSelectedMembers(new Set([]));
-  //     await mutate(["orgs", orgId]);
-  //     setOpenMembersModal(false);
-  //   } catch (error) {
-  //     console.error("Error promoting to admin:", error);
-  //   } finally {
-  //     setIsPromoting(false);
-  //   }
-  // };
-
-  const handleDemoteFromAdmin = async () => {
-    if (selectedMembers.size === 0 || !orgId) return;
-
-    setIsDemoting(true);
-    try {
-      await removeAdminFromOrganization({
-        organization_id: orgId,
-        admins: Array.from(selectedMembers),
-      });
-      setSelectedMembers(new Set([]));
-      await mutate(["orgs", orgId]);
-      setOpenMembersModal(false);
-    } catch (error) {
-      console.error("Error demoting from admin:", error);
-    } finally {
-      setIsDemoting(false);
-    }
   };
 
   const handleRemoveMembers = async () => {
@@ -179,86 +129,60 @@ const MemberModal = ({
         <ModalBody className="p-0">
           <ScrollShadow className="max-h-[60vh]">
             <div className="p-4 space-y-2">
-              {sortedUsers.map((member) => (
-                <div
-                  key={member.id}
-                  className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                    isCurrentUserAdmin
-                      ? "hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                      : ""
-                  }`}
-                  onClick={
-                    isCurrentUserAdmin
-                      ? () => handleToggleMember(member.id)
-                      : undefined
-                  }
-                >
-                  {isCurrentUserAdmin && (
-                    <Checkbox
-                      isSelected={selectedMembers.has(member.id)}
-                      onValueChange={() => handleToggleMember(member.id)}
-                    />
-                  )}
-                  <PersonRounded className="!w-5 !h-5 text-gray-600 dark:text-gray-400" />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 dark:text-white truncate">
-                      {member.first_name} {member.last_name}
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                      {member.email}
-                    </p>
-                  </div>
-                  <div className="flex gap-1">
-                    {adminIds.has(member.id) && (
-                      <Chip size="sm" color="primary" variant="flat">
-                        Admin
-                      </Chip>
+              {sortedUsers.map((member) => {
+                const isMember = memberIds.has(member.id);
+                const canRemove = isCurrentUserAdmin && isMember;
+
+                return (
+                  <div
+                    key={member.id}
+                    className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
+                      canRemove
+                        ? "hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                        : ""
+                    }`}
+                    onClick={
+                      canRemove
+                        ? () => handleToggleMember(member.id)
+                        : undefined
+                    }
+                  >
+                    {canRemove && (
+                      <Checkbox
+                        isSelected={selectedMembers.has(member.id)}
+                        onValueChange={() => handleToggleMember(member.id)}
+                      />
                     )}
-                    {memberIds.has(member.id) && (
-                      <Chip size="sm" color="success" variant="flat">
-                        Member
-                      </Chip>
-                    )}
+                    <PersonRounded className="!w-5 !h-5 text-gray-600 dark:text-gray-400" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 dark:text-white truncate">
+                        {member.first_name} {member.last_name}
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                        {member.email}
+                      </p>
+                    </div>
+                    <div className="flex gap-1">
+                      {adminIds.has(member.id) && (
+                        <Chip size="sm" color="primary" variant="flat">
+                          Admin
+                        </Chip>
+                      )}
+                      {isMember && (
+                        <Chip size="sm" color="success" variant="flat">
+                          Member
+                        </Chip>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </ScrollShadow>
         </ModalBody>
         <ModalFooter>
           {isCurrentUserAdmin && selectedMembers.size > 0 && (
             <>
-              {/* Check if selected users are members (can be promoted) */}
-              {/* {Array.from(selectedMembers).every(
-                (id) => sortedUsers.find((u) => u.id === id)?.role === "member",
-              ) && (
-                <Button
-                  color="primary"
-                  variant="flat"
-                  onPress={handlePromoteToAdmin}
-                  isLoading={isPromoting}
-                >
-                  Promote to Admin
-                </Button>
-              )} */}
-              {/* Show remove from admins if any selected users are admins */}
-              {hasSelectedAdmins && (
-                <Button
-                  color="warning"
-                  variant="flat"
-                  startContent={<AdminPanelSettingsRounded />}
-                  onPress={handleDemoteFromAdmin}
-                  isLoading={isDemoting}
-                  isDisabled={
-                    (currentUser && selectedMembers.has(currentUser.id)) ||
-                    false
-                  }
-                >
-                  {currentUser && selectedMembers.has(currentUser.id)
-                    ? "Cannot Remove Yourself from Admins"
-                    : `Remove from Admins (${selectedMembers.size})`}
-                </Button>
-              )}
               {/* Show remove from members if any selected users are members */}
               {hasSelectedMembers && (
                 <Button

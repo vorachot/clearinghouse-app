@@ -42,10 +42,12 @@ const AddMemberDialog = ({
     },
   );
 
-  // Filter out members who are already in the organization
+  // Filter out members who are already in the organization and super admins
   const existingMemberIds = new Set(existingMembers.map((m) => m.id));
   const availableMembers =
-    allMembers?.filter((member) => !existingMemberIds.has(member.id)) || [];
+    allMembers?.filter(
+      (member) => !existingMemberIds.has(member.id) && !member.is_super_admin,
+    ) || [];
 
   const handleSubmit = async () => {
     if (selectedMembers.size === 0) return;

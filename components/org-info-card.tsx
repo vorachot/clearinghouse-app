@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { useUser, User } from "@/context/UserContext";
 import { useEffect, useState } from "react";
 import { getResourcePoolsByOrgId } from "@/api/resource";
+import AdminModal from "./admin-modal";
 
 type ResourceQuota = {
   type_id: string;
@@ -60,6 +61,7 @@ const OrgInfoCard = ({
     AggregatedResource[]
   >([]);
   const [isLoadingResources, setIsLoadingResources] = useState(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchAndAggregateResources = async () => {
@@ -338,7 +340,18 @@ const OrgInfoCard = ({
       </CardBody>
       <Divider className="bg-gray-200 dark:bg-gray-700" />
       <CardFooter className="pt-3 pb-3">
-        {isSuperAdmin ? null : canViewDetails ? (
+        {isSuperAdmin ? (
+          <Button
+            fullWidth
+            size="sm"
+            color="primary"
+            variant="flat"
+            startContent={<AdminPanelSettingsRounded className="!w-4 !h-4" />}
+            onPress={() => setIsAdminModalOpen(true)}
+          >
+            Manage Admins
+          </Button>
+        ) : canViewDetails ? (
           <Button
             fullWidth
             size="sm"
@@ -355,6 +368,15 @@ const OrgInfoCard = ({
           </Button>
         )}
       </CardFooter>
+      {isAdminModalOpen && (
+        <AdminModal
+          key={id}
+          isOpen={isAdminModalOpen}
+          onClose={() => setIsAdminModalOpen(false)}
+          admins={admins}
+          orgId={id}
+        />
+      )}
     </Card>
   );
 };
