@@ -2,6 +2,7 @@ import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 import { Button } from "@heroui/button";
 import { Tooltip } from "@heroui/tooltip";
+import { Chip } from "@heroui/chip";
 import {
   StorageRounded as RamIcon,
   MemoryRounded as CpuIcon,
@@ -10,6 +11,9 @@ import {
   EditRounded,
   DeleteRounded,
   VisibilityRounded,
+  AdminPanelSettingsRounded,
+  PersonRounded,
+  StarRounded,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { useUser, User } from "@/context/UserContext";
@@ -106,8 +110,45 @@ const OrgInfoCard = ({
 
   const isSuperAdmin = user?.is_super_admin || false;
   const isAdmin = user && admins.some((admin) => admin.id === user.id);
-  const canViewDetails =
-    user && (isAdmin || members.some((member) => member.id === user.id));
+  const isMember = user && members.some((member) => member.id === user.id);
+  const canViewDetails = user && (isAdmin || isMember);
+
+  // Determine user roles for display (can have multiple)
+  const getUserRoles = () => {
+    const roles = [];
+
+    if (isSuperAdmin) {
+      roles.push({
+        label: "Super Admin",
+        color: "warning" as const,
+        icon: StarRounded,
+        variant: "flat" as const,
+      });
+      return roles; // Super admin only shows this badge
+    }
+
+    if (isAdmin) {
+      roles.push({
+        label: "Admin",
+        color: "primary" as const,
+        icon: AdminPanelSettingsRounded,
+        variant: "flat" as const,
+      });
+    }
+
+    if (isMember) {
+      roles.push({
+        label: "Member",
+        color: "success" as const,
+        icon: PersonRounded,
+        variant: "flat" as const,
+      });
+    }
+
+    return roles.length > 0 ? roles : null;
+  };
+
+  const userRoles = getUserRoles();
 
   const handleEdit = () => {
     if (id && onEdit) {
@@ -169,7 +210,7 @@ const OrgInfoCard = ({
       hover:shadow-2xl hover:scale-[1.03]"
       role="article"
     >
-      <CardHeader className="flex flex-col gap-3 pb-2">
+      <CardHeader className="flex flex-col gap-2 pb-2">
         <div className="flex items-start justify-between w-full">
           <div className="flex gap-3 items-center flex-1 min-w-0">
             <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
@@ -233,6 +274,22 @@ const OrgInfoCard = ({
             </div>
           )}
         </div>
+        {userRoles && userRoles.length > 0 && (
+          <div className="flex flex-wrap w-full items-start gap-1 px-1">
+            {userRoles.map((role, index) => (
+              <Chip
+                key={index}
+                size="sm"
+                color={role.color}
+                variant={role.variant}
+                startContent={<role.icon className="!w-3.5 !h-3.5 ml-1" />}
+                className="h-5 text-xs flex items-center gap-0.5 px-1 justify-center"
+              >
+                {role.label}
+              </Chip>
+            ))}
+          </div>
+        )}
       </CardHeader>
       <Divider className="bg-gray-200 dark:bg-gray-700" />
       <CardBody className="pt-4 pb-4">
