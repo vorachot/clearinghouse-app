@@ -98,6 +98,26 @@ const OrgInfoCard = ({
           }),
         );
 
+        // Sort resources: CPU, GPU, RAM first, then others alphabetically
+        const sortOrder = ["CPU", "GPU", "RAM"];
+        aggregatedArray.sort((a, b) => {
+          const aUpper = a.type_name.toUpperCase();
+          const bUpper = b.type_name.toUpperCase();
+
+          const aIndex = sortOrder.indexOf(aUpper);
+          const bIndex = sortOrder.indexOf(bUpper);
+
+          if (aIndex !== -1 && bIndex !== -1) {
+            return aIndex - bIndex;
+          }
+
+          if (aIndex !== -1) return -1;
+
+          if (bIndex !== -1) return 1;
+
+          return aUpper.localeCompare(bUpper);
+        });
+
         setAggregatedResources(aggregatedArray);
       } catch (error) {
         console.error("Error fetching resource pools:", error);
@@ -324,11 +344,13 @@ const OrgInfoCard = ({
                       {resource.type_name}
                     </span>
                   </div>
-                  <div className="flex items-baseline gap-1">
-                    <span className={`text-xl font-bold ${style.valueColor}`}>
+                  <div className="flex items-baseline">
+                    <span
+                      className={`text-xl font-bold ${style.valueColor} tabular-nums text-right min-w-[3.5rem]`}
+                    >
                       {resource.total_quantity}
                     </span>
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                    <span className="text-xs text-gray-600 dark:text-gray-400 ml-1 min-w-[2.0rem]">
                       {resource.unit}
                     </span>
                   </div>

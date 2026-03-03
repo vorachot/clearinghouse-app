@@ -15,7 +15,7 @@ type BreadcrumbData = {
 
 const isUUID = (str: string) => {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-    str
+    str,
   );
 };
 
@@ -166,11 +166,13 @@ const Breadcrumb = () => {
       aria-label="Breadcrumb"
       className="h-16 bg-blue-300 dark:bg-blue-950 dark:border-b dark:border-gray-700 fixed top-0 w-full z-40 flex items-center shadow-sm"
     >
-      <div className="w-full flex flex-1 px-6">
-        <span className="ml-2 font-extrabold text-transparent text-3xl bg-clip-text bg-gradient-to-tr from-blue-600 to-purple-500 tracking-tight select-none logo-font">
-          CrossCut
-        </span>
-        <ol className="flex items-center gap-1">
+      <div className="w-full flex flex-1 px-6 items-center">
+        <img
+          src="/logo.svg"
+          alt="CrossCut"
+          className="h-10 select-none brightness-0 dark:brightness-100 invert-0 dark:invert"
+        />
+        <ol className="flex items-center gap-1 ml-4">
           <li className="inline-flex items-center">
             {segments.length > 0 && (
               <svg
