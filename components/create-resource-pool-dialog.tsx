@@ -19,19 +19,21 @@ export default function CreateResourcePoolDialog({ orgId }: { orgId: string }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState("");
+  const [glideletUrn, setGlideletUrn] = useState("");
   const handleSubmit = async () => {
     setIsSubmitting(true);
 
     const data = {
       organization_id: orgId,
       name: name,
-      glidelet_urn: "default-glidelet-urn",
+      glidelet_urn: glideletUrn,
     };
 
     try {
       await createResourcePool(data);
       onOpenChange();
       setName("");
+      setGlideletUrn("");
       await mutate(["resourcePools", orgId], undefined, {
         revalidate: true,
       });
@@ -68,6 +70,13 @@ export default function CreateResourcePoolDialog({ orgId }: { orgId: string }) {
                     onValueChange={setName}
                     isRequired
                   />
+                  <Input
+                    label="Glidelet URN"
+                    placeholder="e.g., glidelet-urn-value"
+                    value={glideletUrn}
+                    onValueChange={setGlideletUrn}
+                    isRequired
+                  />
                   {/* <Textarea
                     label="Description"
                     placeholder="Optional description"
@@ -83,7 +92,7 @@ export default function CreateResourcePoolDialog({ orgId }: { orgId: string }) {
                 <Button
                   color="primary"
                   onPress={handleSubmit}
-                  isDisabled={!name}
+                  isDisabled={!name || !glideletUrn}
                   isLoading={isSubmitting}
                 >
                   Create

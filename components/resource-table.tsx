@@ -283,14 +283,20 @@ const ResourceTable = ({
             aria-label={pool.name}
             title={
               <div className="flex items-center justify-between w-full">
-                <div className="flex items-center gap-3">
-                  <h3 className="text-lg font-semibold">{pool.name}</h3>
-                  {pool.nodes && pool.nodes.length > 0 && (
-                    <Chip size="sm" color="primary" variant="flat">
-                      {pool.nodes.length}{" "}
-                      {pool.nodes.length === 1 ? "Node" : "Nodes"}
-                    </Chip>
-                  )}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-lg font-semibold">{pool.name}</h3>
+                    {pool.nodes && pool.nodes.length > 0 && (
+                      <Chip size="sm" color="primary" variant="flat">
+                        {pool.nodes.length}{" "}
+                        {pool.nodes.length === 1 ? "Node" : "Nodes"}
+                      </Chip>
+                    )}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    Glidelet URN:{" "}
+                    <span className="font-mono">{pool.glidelet_urn}</span>
+                  </div>
                 </div>
                 <div className="flex items-center gap-1">
                   <div

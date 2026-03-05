@@ -38,7 +38,7 @@ const EditResourcePoolDialog = ({
 }: EditResourcePoolDialogProps) => {
   const [formData, setFormData] = useState({
     name: poolName,
-    glidelet_urn: "default-glidelet-urn",
+    glidelet_urn: glideLetUrn,
   });
 
   useEffect(() => {
@@ -80,7 +80,7 @@ const EditResourcePoolDialog = ({
               }
               isRequired
             />
-            {/* <Input
+            <Input
               label="Glidelet URN"
               placeholder="Enter glidelet URN"
               value={formData.glidelet_urn}
@@ -88,7 +88,7 @@ const EditResourcePoolDialog = ({
                 setFormData({ ...formData, glidelet_urn: e.target.value })
               }
               isRequired
-            /> */}
+            />
           </div>
         </ModalBody>
         <ModalFooter>
