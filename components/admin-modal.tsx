@@ -63,9 +63,8 @@ const AdminModal = ({ isOpen, onClose, admins, orgId }: Props) => {
   // Filter out users who are already admins and super admin (super admin shouldn't add themselves)
   const availableUsers =
     allMembers?.filter(
-      (member) =>
-        !adminIds.has(member.id) &&
-        !(currentUser?.is_super_admin && member.id === currentUser?.id),
+      (member) => !adminIds.has(member.id),
+      // &&  !(currentUser?.is_super_admin && member.id === currentUser?.id),
     ) || [];
 
   const handleToggleAdmin = (adminId: string) => {
@@ -256,10 +255,15 @@ const AdminModal = ({ isOpen, onClose, admins, orgId }: Props) => {
               onPress={handleRemoveAdmins}
               isLoading={isRemoving}
               isDisabled={
-                (currentUser && selectedAdmins.has(currentUser.id)) || false
+                (currentUser &&
+                  selectedAdmins.has(currentUser.id) &&
+                  !currentUser.is_super_admin) ||
+                false
               }
             >
-              {currentUser && selectedAdmins.has(currentUser.id)
+              {currentUser &&
+              selectedAdmins.has(currentUser.id) &&
+              !currentUser.is_super_admin
                 ? "Cannot Remove Yourself from Admins"
                 : `Remove from Admins (${selectedAdmins.size})`}
             </Button>

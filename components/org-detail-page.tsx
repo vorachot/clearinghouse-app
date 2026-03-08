@@ -81,10 +81,11 @@ const OrgDetailPage = () => {
 
   const organization: OrgDetail = organizationData.data || {};
 
-  // Check if current user is an org admin
-  const isOrgAdmin = organization.admins?.some(
-    (admin) => admin.id === user?.id,
-  );
+  // Check if current user is a super admin or an org admin
+  // Super admin has full admin access to all organizations
+  const isOrgAdmin =
+    user?.is_super_admin ||
+    organization.admins?.some((admin) => admin.id === user?.id);
 
   // Check if user is only a member (not an admin)
   const isMemberOnly =

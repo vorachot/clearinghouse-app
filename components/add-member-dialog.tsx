@@ -46,7 +46,8 @@ const AddMemberDialog = ({
   const existingMemberIds = new Set(existingMembers.map((m) => m.id));
   const availableMembers =
     allMembers?.filter(
-      (member) => !existingMemberIds.has(member.id) && !member.is_super_admin,
+      (member) => !existingMemberIds.has(member.id),
+      // && !member.is_super_admin,
     ) || [];
 
   const handleSubmit = async () => {

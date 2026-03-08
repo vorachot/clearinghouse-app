@@ -146,7 +146,6 @@ const OrgInfoCard = ({
         icon: StarRounded,
         variant: "flat" as const,
       });
-      return roles; // Super admin only shows this badge
     }
 
     if (isAdmin) {
@@ -363,16 +362,32 @@ const OrgInfoCard = ({
       <Divider className="bg-gray-200 dark:bg-gray-700" />
       <CardFooter className="pt-3 pb-3">
         {isSuperAdmin ? (
-          <Button
-            fullWidth
-            size="sm"
-            color="primary"
-            variant="flat"
-            startContent={<AdminPanelSettingsRounded className="!w-4 !h-4" />}
-            onPress={() => setIsAdminModalOpen(true)}
-          >
-            Manage Admins
-          </Button>
+          <div className="flex gap-2 w-full">
+            <Button
+              fullWidth
+              size="sm"
+              color="primary"
+              variant="flat"
+              startContent={<AdminPanelSettingsRounded className="!w-4 !h-4" />}
+              onPress={() => setIsAdminModalOpen(true)}
+              className="overflow-hidden"
+            >
+              <span className="truncate">Manage Admins</span>
+            </Button>
+            {canViewDetails && (
+              <Button
+                fullWidth
+                size="sm"
+                color="primary"
+                variant="flat"
+                startContent={<VisibilityRounded className="!w-4 !h-4" />}
+                onPress={handleView}
+                className="overflow-hidden"
+              >
+                <span className="truncate">View Details</span>
+              </Button>
+            )}
+          </div>
         ) : canViewDetails ? (
           <Button
             fullWidth
