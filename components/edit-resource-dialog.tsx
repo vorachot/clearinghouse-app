@@ -54,7 +54,7 @@ const EditResourceDialog = ({
     onConfirm(resourceId, formData);
   };
 
-  const isFormValid = formData.name.trim() !== "" && formData.quantity > 0;
+  const isFormValid = formData.quantity > 0;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="md">
@@ -70,15 +70,6 @@ const EditResourceDialog = ({
             </div>
           )}
           <div className="space-y-4">
-            <Input
-              label="Resource Name"
-              placeholder="Enter resource name"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              isRequired
-            />
             <Input
               type="number"
               label="Quantity"

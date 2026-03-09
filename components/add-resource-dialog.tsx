@@ -31,7 +31,6 @@ export default function AddResourceDialog({
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [resourceType, setResourceType] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const resourceTypesData = useSWR(["resourceTypes"], () => getResourceType(), {
@@ -52,13 +51,12 @@ export default function AddResourceDialog({
       resource_node_id: nodeId,
       resource_type_id: resourceType,
       quantity: parseInt(quantity, 10),
-      name: name,
+      name: selectedResourceType?.name || resourceType,
     };
 
     try {
       await createResource(data);
       onOpenChange();
-      setName("");
       await mutate(["resourcePools", orgId], undefined, {
         revalidate: true,
       });
@@ -69,7 +67,7 @@ export default function AddResourceDialog({
     }
   };
 
-  const isFormValid = resourceType && name && quantity && !isSubmitting;
+  const isFormValid = resourceType && quantity && !isSubmitting;
 
   return (
     <>
@@ -106,14 +104,6 @@ export default function AddResourceDialog({
                       </SelectItem>
                     ))}
                   </Select>
-
-                  <Input
-                    label="Resource Name"
-                    placeholder="e.g., Main CPU Pool"
-                    value={name}
-                    onValueChange={setName}
-                    isRequired
-                  />
 
                   <Input
                     type="number"

@@ -32,7 +32,6 @@ import type { ResourcePool } from "@/types/resource";
 
 const resourceColumns = [
   { header: "TYPE", accessor: "type" },
-  { header: "NAME", accessor: "name" },
   { header: "QUANTITY", accessor: "quantity" },
   { header: "UNIT", accessor: "unit" },
   { header: "ACTION", accessor: "action" },
@@ -441,9 +440,6 @@ const ResourceTable = ({
                                     {resource.resource_type.name}
                                   </Chip>
                                 </TableCell>
-                                <TableCell className="dark:text-white font-medium">
-                                  {resource.name}
-                                </TableCell>
                                 <TableCell className="dark:text-white font-semibold">
                                   {resource.quantity}
                                 </TableCell>
@@ -501,7 +497,7 @@ const ResourceTable = ({
                           ) : (
                             <TableRow>
                               <TableCell
-                                colSpan={5}
+                                colSpan={4}
                                 className="text-center text-gray-500"
                               >
                                 No resources added yet

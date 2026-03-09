@@ -77,17 +77,17 @@ export default function OrganizationQuotaForm({
     {
       revalidateOnFocus: false,
       dedupingInterval: 5000,
-    }
+    },
   );
 
   const availableResourcePools: ResourcePool[] = resourcePoolsData || [];
   const availableNodes = formData.resourcePoolId
     ? availableResourcePools.find(
-        (pool: ResourcePool) => pool.id === formData.resourcePoolId
+        (pool: ResourcePool) => pool.id === formData.resourcePoolId,
       )?.nodes || []
     : [];
   const selectedNode = availableNodes.find(
-    (node) => node.id === formData.nodeId
+    (node) => node.id === formData.nodeId,
   );
   const nodeResources = selectedNode?.resources || [];
 
@@ -103,7 +103,7 @@ export default function OrganizationQuotaForm({
           maxQuantity: resource.quantity,
           price: 0.01,
           duration: 1,
-        }))
+        })),
       );
     } else {
       setResources([]);
@@ -113,12 +113,12 @@ export default function OrganizationQuotaForm({
   const handleResourceChange = (
     resourceId: string,
     field: keyof ResourceFormItem,
-    value: string | number
+    value: string | number,
   ) => {
     setResources(
       resources.map((r) =>
-        r.resourceId === resourceId ? { ...r, [field]: value } : r
-      )
+        r.resourceId === resourceId ? { ...r, [field]: value } : r,
+      ),
     );
   };
 
@@ -306,7 +306,6 @@ export default function OrganizationQuotaForm({
                   <Table aria-label="Resources table">
                     <TableHeader>
                       <TableColumn>RESOURCE TYPE</TableColumn>
-                      <TableColumn>NAME</TableColumn>
                       <TableColumn>AVAILABLE</TableColumn>
                       <TableColumn>QUANTITY</TableColumn>
                       <TableColumn>PRICE (credits/unit/hr)</TableColumn>
@@ -319,11 +318,6 @@ export default function OrganizationQuotaForm({
                           <TableCell>
                             <span className="font-medium">
                               {resource.resourceTypeName}
-                            </span>
-                          </TableCell>
-                          <TableCell>
-                            <span className="font-medium">
-                              {resource.resourceName}
                             </span>
                           </TableCell>
                           <TableCell>
@@ -343,7 +337,7 @@ export default function OrganizationQuotaForm({
                                   handleResourceChange(
                                     resource.resourceId,
                                     "quantity",
-                                    value as number
+                                    value as number,
                                   )
                                 }
                                 className="max-w-md"
@@ -363,7 +357,7 @@ export default function OrganizationQuotaForm({
                                 handleResourceChange(
                                   resource.resourceId,
                                   "price",
-                                  parseFloat(value) || 0
+                                  parseFloat(value) || 0,
                                 )
                               }
                               size="sm"
@@ -380,7 +374,7 @@ export default function OrganizationQuotaForm({
                                 handleResourceChange(
                                   resource.resourceId,
                                   "duration",
-                                  parseFloat(value) || 1
+                                  parseFloat(value) || 1,
                                 )
                               }
                               size="sm"

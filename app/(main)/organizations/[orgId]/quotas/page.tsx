@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardBody } from "@heroui/card";
 import OrganizationQuotaList from "@/components/org-quota-list";
 import OrganizationQuotaForm from "@/components/org-quota-form";
 import OrganizationQuotaDetail from "@/components/org-quota-detail";
@@ -79,36 +78,35 @@ const OrgQuotasPage = () => {
   );
 
   return (
-    <div className="container mx-auto pt-1 p-4 space-y-5">
+    <div className="container mx-auto pt-1 p-4 space-y-6">
       <div className="flex items-end justify-between gap-5">
-        <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">
-          Quota Management
-        </h1>
+        <div>
+          <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">
+            Inter-Org Quota Management
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Manage resource quotas shared between organizations
+          </p>
+        </div>
       </div>
 
       {/* Quotas Allocated by This Organization */}
-      <Card>
-        <CardBody className="p-4">
-          <OrganizationQuotaList
-            quotas={allocatedQuotas}
-            onCreateClick={() => setIsOrgFormOpen(true)}
-            onViewDetails={handleViewOrgQuotaDetails}
-            onDelete={handleDeleteOrgQuota}
-          />
-        </CardBody>
-      </Card>
+      <OrganizationQuotaList
+        quotas={allocatedQuotas}
+        onCreateClick={() => setIsOrgFormOpen(true)}
+        onViewDetails={handleViewOrgQuotaDetails}
+        onDelete={handleDeleteOrgQuota}
+      />
+
+      <div className="border-t border-gray-200 dark:border-gray-700" />
 
       {/* Quotas Received by This Organization */}
-      <Card>
-        <CardBody className="p-4">
-          <OrganizationQuotaList
-            quotas={receivedQuotas}
-            onCreateClick={() => {}} // No create button for received quotas
-            onViewDetails={handleViewOrgQuotaDetails}
-            hideCreateButton={true}
-          />
-        </CardBody>
-      </Card>
+      <OrganizationQuotaList
+        quotas={receivedQuotas}
+        onCreateClick={() => {}} // No create button for received quotas
+        onViewDetails={handleViewOrgQuotaDetails}
+        hideCreateButton={true}
+      />
 
       <OrganizationQuotaForm
         isOpen={isOrgFormOpen}

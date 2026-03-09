@@ -76,7 +76,7 @@ export default function ProjectQuotaExternalForm({
             maxQuantity: resource.quantity,
             price: resource.resource_prop?.price || 0.01,
             duration: (resource.resource_prop?.max_duration || 3600) / 3600, // Convert seconds to hours
-          }))
+          })),
         );
       } else {
         setResources([]);
@@ -90,12 +90,12 @@ export default function ProjectQuotaExternalForm({
   const handleResourceChange = (
     resourceId: string,
     field: keyof ResourceFormItem,
-    value: string | number
+    value: string | number,
   ) => {
     setResources(
       resources.map((r) =>
-        r.resourceId === resourceId ? { ...r, [field]: value } : r
-      )
+        r.resourceId === resourceId ? { ...r, [field]: value } : r,
+      ),
     );
   };
 
@@ -243,7 +243,6 @@ export default function ProjectQuotaExternalForm({
                   <Table aria-label="Resources table">
                     <TableHeader>
                       <TableColumn>RESOURCE TYPE</TableColumn>
-                      <TableColumn>NAME</TableColumn>
                       <TableColumn>AVAILABLE</TableColumn>
                       <TableColumn>QUANTITY</TableColumn>
                       <TableColumn>PRICE (credits/unit/hr)</TableColumn>
@@ -256,11 +255,6 @@ export default function ProjectQuotaExternalForm({
                           <TableCell>
                             <span className="font-medium">
                               {resource.resourceTypeName}
-                            </span>
-                          </TableCell>
-                          <TableCell>
-                            <span className="font-medium">
-                              {resource.resourceName}
                             </span>
                           </TableCell>
                           <TableCell>

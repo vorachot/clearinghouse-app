@@ -67,7 +67,7 @@ export default function ProjectQuotaInternalForm({
 
   // Get selected node resources
   const selectedNode = availableNodes.find(
-    (node) => node.id === formData.nodeId
+    (node) => node.id === formData.nodeId,
   );
   const nodeResources = selectedNode?.resources || [];
 
@@ -84,7 +84,7 @@ export default function ProjectQuotaInternalForm({
           maxQuantity: resource.quantity,
           price: 0.01,
           duration: 1,
-        }))
+        })),
       );
     } else {
       setResources([]);
@@ -94,18 +94,18 @@ export default function ProjectQuotaInternalForm({
   const handleResourceChange = (
     resourceId: string,
     field: keyof ResourceFormItem,
-    value: string | number
+    value: string | number,
   ) => {
     setResources(
       resources.map((r) =>
-        r.resourceId === resourceId ? { ...r, [field]: value } : r
-      )
+        r.resourceId === resourceId ? { ...r, [field]: value } : r,
+      ),
     );
   };
 
   const handleSubmit = () => {
     const selectedPool = resourcePools.find(
-      (pool) => pool.id === formData.resourcePoolId
+      (pool) => pool.id === formData.resourcePoolId,
     );
 
     const dto: CreateProjectQuotaInternalDTO = {
@@ -251,7 +251,6 @@ export default function ProjectQuotaInternalForm({
                   <Table aria-label="Resources table">
                     <TableHeader>
                       <TableColumn>RESOURCE TYPE</TableColumn>
-                      <TableColumn>NAME</TableColumn>
                       <TableColumn>AVAILABLE</TableColumn>
                       <TableColumn>QUANTITY</TableColumn>
                       <TableColumn>PRICE (credits/unit/hr)</TableColumn>
@@ -264,11 +263,6 @@ export default function ProjectQuotaInternalForm({
                           <TableCell>
                             <span className="font-medium">
                               {resource.resourceTypeName}
-                            </span>
-                          </TableCell>
-                          <TableCell>
-                            <span className="font-medium">
-                              {resource.resourceName}
                             </span>
                           </TableCell>
                           <TableCell>

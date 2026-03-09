@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@heroui/button";
-import { Card, CardBody, CardHeader } from "@heroui/card";
+import { Chip } from "@heroui/chip";
 import {
   Table,
   TableHeader,
@@ -14,8 +14,8 @@ import {
 import { Tooltip } from "@heroui/tooltip";
 import { OrganizationQuota } from "@/types/quota";
 import AddIcon from "@mui/icons-material/Add";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import DeleteOrgQuotaDialog from "./delete-org-quota-dialog";
 
 type OrganizationQuotaListProps = {
@@ -25,6 +25,21 @@ type OrganizationQuotaListProps = {
   onDelete?: (quotaId: string) => void;
   hideCreateButton?: boolean;
 };
+
+const resourceTypeColors: Record<
+  string,
+  "primary" | "secondary" | "success" | "warning" | "danger" | "default"
+> = {
+  GPU: "secondary",
+  CPU: "primary",
+  RAM: "success",
+};
+
+function getResourceColor(
+  typeName: string,
+): "primary" | "secondary" | "success" | "warning" | "danger" | "default" {
+  return resourceTypeColors[typeName?.toUpperCase()] || "default";
+}
 
 export default function OrganizationQuotaList({
   quotas,
@@ -62,161 +77,142 @@ export default function OrganizationQuotaList({
       }
     }
   };
+
   const formatDuration = (seconds: number) => {
-    if (seconds < 3600) {
-      return `${seconds / 60} min`;
-    }
-    return `${seconds / 3600} hr`;
+    if (seconds < 3600) return `${seconds / 60}m`;
+    return `${seconds / 3600}h`;
   };
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        {!hideCreateButton ? (
-          <>
-            <div className="mb-2">
-              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
-                Quotas Allocated by This Organization
+      <div className="flex justify-between items-start">
+        <div>
+          {!hideCreateButton ? (
+            <>
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+                Allocated by This Organization
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Resources allocated to other organizations
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                Quotas shared with other organizations
               </p>
-            </div>
-            <Button
-              color="primary"
-              startContent={<AddIcon />}
-              onPress={onCreateClick}
-              size="sm"
-            >
-              Create Quota
-            </Button>
-          </>
-        ) : (
-          <>
-            <div className="mb-2">
-              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
-                Quotas Received by This Organization
+            </>
+          ) : (
+            <>
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+                Received by This Organization
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Resources received from other organizations
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                Quotas received from other organizations
               </p>
-            </div>
-          </>
+            </>
+          )}
+        </div>
+        {!hideCreateButton && (
+          <Button
+            color="primary"
+            startContent={<AddIcon className="!w-4 !h-4" />}
+            onPress={onCreateClick}
+            size="sm"
+          >
+            Create Quota
+          </Button>
         )}
       </div>
 
-      <Card>
-        <CardBody className="p-0">
-          <Table aria-label="Organization quotas table">
-            <TableHeader>
-              <TableColumn>NAME</TableColumn>
-              <TableColumn>FROM → TO</TableColumn>
-              <TableColumn>RESOURCE TYPE</TableColumn>
-              <TableColumn>RESOURCE NAME</TableColumn>
-              <TableColumn>QUANTITY</TableColumn>
-              <TableColumn>DURATION</TableColumn>
-              <TableColumn>ACTIONS</TableColumn>
-            </TableHeader>
-            <TableBody emptyContent="No quotas found">
-              {quotas.map((quota) => {
-                return (
-                  <TableRow key={quota.id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-semibold">{quota.name}</p>
-                        {/* <p className="text-xs text-gray-500">
-                          {quota.description}
-                        </p> */}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm">
-                        <p className="font-medium">
-                          {quota.from_organization?.name ||
-                            quota.from_organization_id}
-                          →
-                          {quota.to_organization?.name ||
-                            quota.to_organization_id}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col gap-1">
-                        {quota.resources.map((resource) => (
-                          <div key={resource.id} className="text-sm">
-                            {resource.resource_prop.resource.resource_type
-                              .name ||
-                              resource.resource_prop.resource.resource_type.id}
-                          </div>
-                        ))}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col gap-1">
-                        {quota.resources.map((resource) => (
-                          <div key={resource.id} className="text-sm">
-                            {resource.resource_prop.resource.name ||
-                              resource.resource_prop.resource.id}
-                          </div>
-                        ))}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col gap-1">
-                        {quota.resources.map((resource) => (
-                          <div key={resource.id} className="text-sm">
-                            {resource.quantity}{" "}
-                            {resource.resource_prop.resource.resource_type.unit}
-                          </div>
-                        ))}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col gap-1">
-                        {quota.resources.map((resource) => (
-                          <div key={resource.id} className="text-sm">
-                            {formatDuration(
-                              resource.resource_prop.max_duration,
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        {/* <Tooltip content="View details">
-                          <Button
-                            size="sm"
-                            variant="light"
-                            isIconOnly
-                            color="primary"
-                            onPress={() => onViewDetails(quota)}
-                          >
-                            <VisibilityIcon className="!w-4 !h-4" />
-                          </Button>
-                        </Tooltip> */}
-                        {!hideCreateButton && onDelete && (
-                          <Tooltip content="Delete quota" color="danger">
-                            <Button
-                              size="sm"
-                              variant="light"
-                              isIconOnly
-                              color="danger"
-                              onPress={() => handleDelete(quota.id, quota.name)}
-                            >
-                              <DeleteIcon className="!w-4 !h-4" />
-                            </Button>
-                          </Tooltip>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </CardBody>
-      </Card>
+      {quotas.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-12 text-center border border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
+            {hideCreateButton
+              ? "No quotas have been received yet."
+              : 'No quotas allocated yet. Click "Create Quota" to get started.'}
+          </p>
+        </div>
+      ) : (
+        <Table
+          aria-label="Organization quotas table"
+          classNames={{
+            wrapper:
+              "rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm",
+            th: "bg-gray-50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-300 text-xs font-semibold uppercase tracking-wider",
+            td: "py-3",
+          }}
+        >
+          <TableHeader>
+            <TableColumn>QUOTA NAME</TableColumn>
+            <TableColumn>DIRECTION</TableColumn>
+            <TableColumn>RESOURCES</TableColumn>
+            <TableColumn>ACTIONS</TableColumn>
+          </TableHeader>
+          <TableBody>
+            {quotas.map((quota) => (
+              <TableRow
+                key={quota.id}
+                className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors"
+              >
+                <TableCell>
+                  <p className="font-semibold text-gray-900 dark:text-gray-100">
+                    {quota.name}
+                  </p>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="font-medium text-gray-700 dark:text-gray-200">
+                      {quota.from_organization?.name ||
+                        quota.from_organization_id}
+                    </span>
+                    <ArrowForwardIcon className="!w-4 !h-4 text-gray-400 flex-shrink-0" />
+                    <span className="font-medium text-gray-700 dark:text-gray-200">
+                      {quota.to_organization?.name || quota.to_organization_id}
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-2">
+                    {quota.resources.map((resource) => {
+                      const typeName =
+                        resource.resource_prop.resource.resource_type.name;
+                      const unit =
+                        resource.resource_prop.resource.resource_type.unit;
+                      const duration = formatDuration(
+                        resource.resource_prop.max_duration,
+                      );
+                      return (
+                        <Chip
+                          key={resource.id}
+                          size="sm"
+                          color={getResourceColor(typeName)}
+                          variant="flat"
+                          className="font-medium"
+                        >
+                          {typeName}: {resource.quantity} {unit} · {duration}
+                        </Chip>
+                      );
+                    })}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-1">
+                    {!hideCreateButton && onDelete && (
+                      <Tooltip content="Delete quota" color="danger">
+                        <Button
+                          size="sm"
+                          variant="light"
+                          isIconOnly
+                          color="danger"
+                          onPress={() => handleDelete(quota.id, quota.name)}
+                        >
+                          <DeleteIcon className="!w-4 !h-4" />
+                        </Button>
+                      </Tooltip>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+
       <DeleteOrgQuotaDialog
         isOpen={deleteDialogOpen}
         quotaName={selectedQuotaName}
