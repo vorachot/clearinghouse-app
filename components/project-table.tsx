@@ -29,6 +29,61 @@ import ProjectMembersOnlyModal from "./project-members-only-modal";
 import ProjectAdminModal from "./project-admin-modal";
 import AddProjectMemberDialog from "./add-project-member-dialog";
 import AddProjectAdminDialog from "./add-project-admin-dialog";
+import useSWR from "swr";
+import { getProjectQuotaTotal } from "@/api/quota";
+import { ResourceQuota } from "@/types/quota";
+
+function ProjectTotalQuota({
+  projectId,
+  organizationId,
+}: {
+  projectId: string;
+  organizationId: string;
+}) {
+  const router = useRouter();
+  const { data, isLoading } = useSWR(
+    ["project-quota-total", projectId],
+    () => getProjectQuotaTotal(projectId),
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 60000,
+    },
+  );
+
+  if (isLoading) {
+    return <span className="text-xs text-gray-400">Loading...</span>;
+  }
+
+  const quotas: ResourceQuota[] = data?.resource_quotas ?? [];
+
+  if (quotas.length === 0) {
+    return (
+      <Chip
+        size="sm"
+        color="warning"
+        variant="flat"
+        className="cursor-pointer hover:bg-warning-200 dark:hover:bg-warning-800 transition-colors font-medium"
+        onClick={() =>
+          router.push(`/organizations/${organizationId}/${projectId}/quotas`)
+        }
+      >
+        <span className="font-medium">No quotas - Click to set</span>
+      </Chip>
+    );
+  }
+
+  return (
+    <div className="flex gap-2 flex-wrap">
+      {quotas.map((rq) => (
+        <Chip key={rq.type_id} size="sm" color="primary" variant="flat">
+          <span className="font-medium">
+            {rq.type}: {rq.quota}
+          </span>
+        </Chip>
+      ))}
+    </div>
+  );
+}
 
 type Props = {
   organizationId: string;
@@ -100,17 +155,6 @@ const ProjectTable = ({
     setManagingAdminsProject(project);
   };
 
-  // Helper function to get quota value by resource type
-  const getQuotaByType = (project: Project, type: string): number | null => {
-    if (!project.resource_quotas || project.resource_quotas.length === 0) {
-      return null;
-    }
-    const quota = project.resource_quotas.find(
-      (q) => q.type.toUpperCase() === type.toUpperCase(),
-    );
-    return quota ? quota.quota : null;
-  };
-
   const columns = [
     { key: "name", label: "PROJECT NAME" },
     // { key: "cpu", label: "CPU" },
@@ -158,65 +202,10 @@ const ProjectTable = ({
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="flex gap-2 flex-wrap">
-                    {!project.resource_quotas ||
-                    project.resource_quotas.length === 0 ? (
-                      <Chip
-                        size="sm"
-                        color="warning"
-                        variant="flat"
-                        className="cursor-pointer hover:bg-warning-200 dark:hover:bg-warning-800 transition-colors font-medium"
-                        onClick={() =>
-                          router.push(
-                            `/organizations/${organizationId}/${project.id}/quotas`,
-                          )
-                        }
-                      >
-                        <span className="font-medium">
-                          No quotas - Click to set
-                        </span>
-                      </Chip>
-                    ) : (
-                      <>
-                        {getQuotaByType(project, "CPU") !== null && (
-                          <Chip
-                            size="sm"
-                            color="primary"
-                            variant="flat"
-                            className="font-medium"
-                          >
-                            <span className="font-medium">
-                              CPU: {getQuotaByType(project, "CPU")} Core
-                            </span>
-                          </Chip>
-                        )}
-                        {getQuotaByType(project, "GPU") !== null && (
-                          <Chip
-                            size="sm"
-                            color="secondary"
-                            variant="flat"
-                            className="font-medium"
-                          >
-                            <span className="font-medium">
-                              GPU: {getQuotaByType(project, "GPU")} GiB
-                            </span>
-                          </Chip>
-                        )}
-                        {getQuotaByType(project, "RAM") !== null && (
-                          <Chip
-                            size="sm"
-                            color="success"
-                            variant="flat"
-                            className="font-medium"
-                          >
-                            <span className="font-medium">
-                              RAM: {getQuotaByType(project, "RAM")} GiB
-                            </span>
-                          </Chip>
-                        )}
-                      </>
-                    )}
-                  </div>
+                  <ProjectTotalQuota
+                    projectId={project.id}
+                    organizationId={organizationId}
+                  />
                 </TableCell>
                 <TableCell>
                   <Chip

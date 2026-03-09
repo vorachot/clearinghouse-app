@@ -168,3 +168,13 @@ export type ResourceUsage = {
   quota: number;
   usage: number;
 };
+
+export type ResourceQuota = {
+  type_id: string;
+  type: string;
+  quota: number;
+};
+
+export type ResourceQuotaResponse = {
+  resource_quotas: ResourceQuota[];
+};

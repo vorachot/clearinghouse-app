@@ -34,6 +34,11 @@ export async function getProjectQuotasByProjectId(
   return response.data;
 }
 
+export async function getProjectQuotaTotal(projectId: string): Promise<any> {
+  const response = await apiClient.get(`/quota/project/${projectId}/total`);
+  return response.data;
+}
+
 export async function createProjectQuota(
   projectQuotaData: CreateProjectQuotaDTO,
 ): Promise<Response> {
