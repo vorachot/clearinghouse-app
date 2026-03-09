@@ -29,18 +29,21 @@ export default function CreateNodeDialog({
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const handleSubmit = async () => {
     setIsSubmitting(true);
 
     const data = {
       resource_pool_id: poolId,
       name: name,
+      ...(displayName.trim() && { display_name: displayName.trim() }),
     };
 
     try {
       await createResourceNode(data);
       onOpenChange();
       setName("");
+      setDisplayName("");
       await mutate(["resourcePools", orgId], undefined, {
         revalidate: true,
       });
@@ -76,6 +79,13 @@ export default function CreateNodeDialog({
                     value={name}
                     onValueChange={setName}
                     isRequired
+                  />
+                  <Input
+                    label="Display Name"
+                    placeholder="e.g., Primary Server Rack"
+                    value={displayName}
+                    onValueChange={setDisplayName}
+                    description="Optional human-readable label"
                   />
                 </div>
               </ModalBody>

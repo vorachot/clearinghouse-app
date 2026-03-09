@@ -45,6 +45,7 @@ export async function getResourcePoolById(poolId: string): Promise<any> {
 export async function createResourceNode(resourceNodeData: {
   resource_pool_id: string;
   name: string;
+  display_name?: string;
 }): Promise<Response> {
   const response = await apiClient.post(`/resources/node`, resourceNodeData);
 
@@ -138,7 +139,7 @@ export async function updateResourcePool(
 
 export async function updateResourceNode(
   resourceNodeId: string,
-  resourceData: { name?: string },
+  resourceData: { name?: string; display_name?: string },
 ): Promise<any> {
   const response = await apiClient.patch(`/resources/node/${resourceNodeId}`, resourceData);
 

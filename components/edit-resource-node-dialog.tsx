@@ -16,8 +16,12 @@ type EditResourceNodeDialogProps = {
   isOpen: boolean;
   nodeId: string;
   nodeName: string;
+  nodeDisplayName?: string;
   onClose: () => void;
-  onConfirm: (nodeId: string, data: { name: string }) => void;
+  onConfirm: (
+    nodeId: string,
+    data: { name: string; display_name?: string },
+  ) => void;
   isUpdating?: boolean;
   error?: string | null;
 };
@@ -26,21 +30,29 @@ const EditResourceNodeDialog = ({
   isOpen,
   nodeId,
   nodeName,
+  nodeDisplayName,
   onClose,
   onConfirm,
   isUpdating = false,
   error,
 }: EditResourceNodeDialogProps) => {
   const [name, setName] = useState(nodeName);
+  const [displayName, setDisplayName] = useState(nodeDisplayName ?? "");
 
   useEffect(() => {
     if (isOpen) {
       setName(nodeName);
+      setDisplayName(nodeDisplayName ?? "");
     }
-  }, [isOpen, nodeName]);
+  }, [isOpen, nodeName, nodeDisplayName]);
 
   const handleSubmit = () => {
-    onConfirm(nodeId, { name });
+    onConfirm(nodeId, {
+      name,
+      ...(displayName.trim()
+        ? { display_name: displayName.trim() }
+        : { display_name: "" }),
+    });
   };
 
   const isFormValid = name.trim() !== "";
@@ -64,6 +76,13 @@ const EditResourceNodeDialog = ({
             value={name}
             onChange={(e) => setName(e.target.value)}
             isRequired
+          />
+          <Input
+            label="Display Name"
+            placeholder="e.g., Primary Server Rack"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            description="Optional human-readable label"
           />
         </ModalBody>
         <ModalFooter>

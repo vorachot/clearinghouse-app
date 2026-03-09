@@ -91,6 +91,7 @@ const ResourceTable = ({
   const [editNodeData, setEditNodeData] = useState<{
     id: string;
     name: string;
+    display_name?: string;
   } | null>(null);
   const [isUpdatingNode, setIsUpdatingNode] = useState(false);
   const [editNodeError, setEditNodeError] = useState<string | null>(null);
@@ -209,10 +210,15 @@ const ResourceTable = ({
     }
   };
 
-  const handleEditNode = (nodeId: string, nodeName: string) => {
+  const handleEditNode = (
+    nodeId: string,
+    nodeName: string,
+    nodeDisplayName?: string,
+  ) => {
     setEditNodeData({
       id: nodeId,
       name: nodeName,
+      display_name: nodeDisplayName,
     });
     setEditNodeDialogOpen(true);
     setEditNodeError(null);
@@ -220,7 +226,7 @@ const ResourceTable = ({
 
   const handleConfirmEditNode = async (
     nodeId: string,
-    data: { name: string },
+    data: { name: string; display_name?: string },
   ) => {
     setIsUpdatingNode(true);
     try {
@@ -353,8 +359,13 @@ const ResourceTable = ({
                             <Chip size="sm" color="secondary" variant="flat">
                               NODE
                             </Chip>
-                            {node.name}
+                            {node.display_name || node.name}
                           </h4>
+                          {node.display_name && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 ml-1">
+                              {node.name}
+                            </p>
+                          )}
                           {/* {node.description && (
                           <p className="text-sm text-gray-500 ml-16">
                             {node.description}
@@ -376,7 +387,11 @@ const ResourceTable = ({
                                 color="warning"
                                 aria-label="Edit node"
                                 onPress={() =>
-                                  handleEditNode(node.id, node.name)
+                                  handleEditNode(
+                                    node.id,
+                                    node.name,
+                                    node.display_name,
+                                  )
                                 }
                               >
                                 <EditIcon className="!w-4 !h-4" />
@@ -549,6 +564,7 @@ const ResourceTable = ({
           isOpen={editNodeDialogOpen}
           nodeId={editNodeData.id}
           nodeName={editNodeData.name}
+          nodeDisplayName={editNodeData.display_name}
           onClose={() => setEditNodeDialogOpen(false)}
           onConfirm={handleConfirmEditNode}
           isUpdating={isUpdatingNode}

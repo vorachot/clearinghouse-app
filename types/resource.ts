@@ -15,6 +15,7 @@ export type ResourcePool = {
 export type ResourceNode = {
   id: string;
   name: string;
+  display_name?: string;
   resource_pool_id: string;
   resources?: Resource[];
 };
