@@ -56,20 +56,13 @@ export default function OrganizationQuotaForm({
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    fromOrgId: "",
+    fromOrgId: orgId,
     toOrgId: "",
     resourcePoolId: "",
     nodeId: "",
   });
 
   const [resources, setResources] = useState<ResourceFormItem[]>([]);
-
-  // Auto-select the current organization when form opens
-  useEffect(() => {
-    if (orgId && !formData.fromOrgId) {
-      setFormData((prev) => ({ ...prev, fromOrgId: orgId }));
-    }
-  }, [orgId]);
 
   const { data: resourcePoolsData, isLoading: isLoadingPools } = useSWR(
     formData.fromOrgId ? ["resourcePools", formData.fromOrgId] : null,
@@ -146,7 +139,7 @@ export default function OrganizationQuotaForm({
     setFormData({
       name: "",
       description: "",
-      fromOrgId: "",
+      fromOrgId: orgId,
       toOrgId: "",
       resourcePoolId: "",
       nodeId: "",
@@ -209,25 +202,11 @@ export default function OrganizationQuotaForm({
                 </h3>
               </CardHeader>
               <CardBody className="space-y-4">
-                <Select
+                <Input
                   label="From Organization"
-                  placeholder="Select source organization"
-                  selectedKeys={formData.fromOrgId ? [formData.fromOrgId] : []}
-                  onSelectionChange={(keys) => {
-                    const key = Array.from(keys)[0] as string;
-                    setFormData({
-                      ...formData,
-                      fromOrgId: key,
-                      resourcePoolId: "",
-                      nodeId: "",
-                    });
-                  }}
-                  isRequired
-                >
-                  <SelectItem key={orgId} className="dark:text-white">
-                    {organizations.find((org) => org.id === orgId)?.name || ""}
-                  </SelectItem>
-                </Select>
+                  value={organizations.find((org) => org.id === orgId)?.name || ""}
+                  isReadOnly
+                />
 
                 <Select
                   label="To Organization"
@@ -285,7 +264,7 @@ export default function OrganizationQuotaForm({
                 >
                   {availableNodes.map((node) => (
                     <SelectItem key={node.id} className="dark:text-white">
-                      {node.name}
+                      {node.display_name || node.name}
                     </SelectItem>
                   ))}
                 </Select>
