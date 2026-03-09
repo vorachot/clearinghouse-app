@@ -203,11 +203,11 @@ const NamespaceTable = ({
                         const usage = quotaUsages?.[q.id];
                         const resourceTypeId =
                           r.resource_prop?.resource?.resource_type_id;
-                        const matchingUsage = usage?.type?.find(
+                        const matchingUsage = usage?.usage?.find(
                           (usageType: any) =>
                             usageType.type_id === resourceTypeId,
                         );
-                        const usedAmount = matchingUsage?.used || 0;
+                        const usedAmount = matchingUsage?.usage || 0;
                         const totalAmount = r.quantity || 0;
                         const resourceTypeName =
                           r.resource_prop?.resource?.resource_type?.name ||
