@@ -247,7 +247,6 @@ export default function ProjectQuotaExternalForm({
                       <TableColumn>QUANTITY</TableColumn>
                       <TableColumn>PRICE (credits/unit/hr)</TableColumn>
                       <TableColumn>DURATION (hrs)</TableColumn>
-                      {/* <TableColumn>TOTAL</TableColumn> */}
                     </TableHeader>
                     <TableBody>
                       {resources.map((resource) => (
@@ -285,48 +284,15 @@ export default function ProjectQuotaExternalForm({
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              value={resource.price.toString()}
-                              onValueChange={(value) =>
-                                handleResourceChange(
-                                  resource.resourceId,
-                                  "price",
-                                  parseFloat(value) || 0,
-                                )
-                              }
-                              size="sm"
-                              className="w-24"
-                            />
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                              {resource.price}
+                            </span>
                           </TableCell>
                           <TableCell>
-                            <Input
-                              type="number"
-                              min="0.5"
-                              step="0.5"
-                              value={resource.duration.toString()}
-                              onValueChange={(value) =>
-                                handleResourceChange(
-                                  resource.resourceId,
-                                  "duration",
-                                  parseFloat(value) || 1,
-                                )
-                              }
-                              size="sm"
-                              className="w-24"
-                            />
-                          </TableCell>
-                          {/* <TableCell>
-                            <span className="font-semibold">
-                              {(
-                                resource.quantity *
-                                resource.price *
-                                resource.duration
-                              ).toFixed(2)}
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                              {resource.duration}
                             </span>
-                          </TableCell> */}
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

@@ -42,8 +42,8 @@ type ResourceFormItem = {
   resourceTypeName: string;
   quantity: number;
   maxQuantity: number;
-  price: number;
-  duration: number;
+  price: string;
+  duration: string;
 };
 
 export default function OrganizationQuotaForm({
@@ -101,8 +101,8 @@ export default function OrganizationQuotaForm({
           resourceTypeName: resource.resource_type?.name || "Unknown",
           quantity: 0,
           maxQuantity: resource.quantity,
-          price: 0.01,
-          duration: 1,
+          price: "0.01",
+          duration: "1",
         })),
       );
     } else {
@@ -134,8 +134,8 @@ export default function OrganizationQuotaForm({
         .map((r) => ({
           resource_id: r.resourceId,
           quantity: r.quantity,
-          price: r.price,
-          duration: r.duration * 3600,
+          price: parseFloat(r.price) || 0,
+          duration: (parseFloat(r.duration) || 1) * 3600,
         })),
     };
     onSubmit(dto);
@@ -161,7 +161,9 @@ export default function OrganizationQuotaForm({
     formData.nodeId &&
     resources.length > 0 &&
     resources.some((r) => r.quantity > 0) &&
-    resources.filter((r) => r.quantity > 0).every((r) => r.price >= 0);
+    resources
+      .filter((r) => r.quantity > 0)
+      .every((r) => parseFloat(r.price) >= 0);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="5xl" scrollBehavior="inside">
@@ -352,12 +354,12 @@ export default function OrganizationQuotaForm({
                               type="number"
                               min="0"
                               step="0.01"
-                              value={resource.price.toString()}
+                              value={resource.price}
                               onValueChange={(value) =>
                                 handleResourceChange(
                                   resource.resourceId,
                                   "price",
-                                  parseFloat(value) || 0,
+                                  value,
                                 )
                               }
                               size="sm"
@@ -369,12 +371,12 @@ export default function OrganizationQuotaForm({
                               type="number"
                               min="0.5"
                               step="0.5"
-                              value={resource.duration.toString()}
+                              value={resource.duration}
                               onValueChange={(value) =>
                                 handleResourceChange(
                                   resource.resourceId,
                                   "duration",
-                                  parseFloat(value) || 1,
+                                  value,
                                 )
                               }
                               size="sm"
