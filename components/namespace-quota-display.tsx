@@ -121,7 +121,10 @@ export default function NamespaceQuotaDisplay({
           const resources = quota.resources || [];
 
           return (
-            <Card key={quota.id} className="border border-gray-200 dark:border-gray-700">
+            <Card
+              key={quota.id}
+              className="border border-gray-200 dark:border-gray-700"
+            >
               <CardBody className="p-3">
                 <div className="space-y-4">
                   {/* Quota Header */}
@@ -162,12 +165,12 @@ export default function NamespaceQuotaDisplay({
                         resource?.resource_prop?.resource?.resource_type_id;
 
                       // Find matching usage data by type_id
-                      const matchingUsage = usage?.type?.find(
+                      const matchingUsage = usage?.usage?.find(
                         (usageType: any) =>
                           usageType.type_id === resourceTypeId,
                       );
 
-                      const usedAmount = matchingUsage?.used || 0;
+                      const usedAmount = matchingUsage?.usage || 0;
                       const totalAmount = resource.quantity || 0;
                       const resourceTypeName =
                         resource?.resource_prop?.resource?.resource_type
