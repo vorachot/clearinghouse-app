@@ -58,6 +58,8 @@ import ViewTemplateDialog from "@/components/view-template-dialog";
 import EditQuotaTemplateDialog from "@/components/edit-quota-template-dialog";
 import { getNamespaceByProjectId } from "@/api/namespace";
 import { Namespace } from "@/types/namespace";
+import { addToast } from "@heroui/toast";
+import axios from "axios";
 
 const ProjectQuotasPage = () => {
   const params = useParams();
@@ -144,14 +146,35 @@ const ProjectQuotasPage = () => {
     }
   }, [searchParams]);
 
+  const getErrorMessage = (error: unknown, fallback: string): string => {
+    if (axios.isAxiosError(error)) {
+      return (
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        error.message ||
+        fallback
+      );
+    }
+    return fallback;
+  };
+
   const handleCreateProjectQuota = async (data: CreateProjectQuotaDTO) => {
     try {
       await createProjectQuota(data);
       await mutate(["project-quotas", data.project_id], undefined, {
         revalidate: true,
       });
+      addToast({
+        title: "Project quota created successfully",
+        color: "success",
+      });
     } catch (error) {
       console.error("Error creating project quota:", error);
+      addToast({
+        title: "Failed to create project quota",
+        description: getErrorMessage(error, "An unexpected error occurred"),
+        color: "danger",
+      });
     }
   };
 
@@ -163,8 +186,17 @@ const ProjectQuotasPage = () => {
       await mutate(["project-quotas", data.project_id], undefined, {
         revalidate: true,
       });
+      addToast({
+        title: "Internal project quota created successfully",
+        color: "success",
+      });
     } catch (error) {
       console.error("Error creating project quota internal:", error);
+      addToast({
+        title: "Failed to create internal project quota",
+        description: getErrorMessage(error, "An unexpected error occurred"),
+        color: "danger",
+      });
     }
   };
 
@@ -174,8 +206,14 @@ const ProjectQuotasPage = () => {
       await mutate(["project-quotas", projectId], undefined, {
         revalidate: true,
       });
+      addToast({ title: "Project quota deleted", color: "success" });
     } catch (error) {
       console.error("Failed to delete project quota:", error);
+      addToast({
+        title: "Failed to delete project quota",
+        description: getErrorMessage(error, "An unexpected error occurred"),
+        color: "danger",
+      });
       throw error;
     }
   };
@@ -187,8 +225,17 @@ const ProjectQuotasPage = () => {
         revalidate: true,
       });
       setIsQuotaFormOpen(false);
+      addToast({
+        title: "Namespace quota created successfully",
+        color: "success",
+      });
     } catch (error) {
       console.error("Error creating namespace quota:", error);
+      addToast({
+        title: "Failed to create namespace quota",
+        description: getErrorMessage(error, "An unexpected error occurred"),
+        color: "danger",
+      });
     }
   };
 
@@ -198,8 +245,14 @@ const ProjectQuotasPage = () => {
       await mutate(["namespace-quotas", projectId], undefined, {
         revalidate: true,
       });
+      addToast({ title: "Namespace quota deleted", color: "success" });
     } catch (error) {
       console.error("Failed to delete namespace quota:", error);
+      addToast({
+        title: "Failed to delete namespace quota",
+        description: getErrorMessage(error, "An unexpected error occurred"),
+        color: "danger",
+      });
       throw error;
     }
   };
@@ -213,8 +266,14 @@ const ProjectQuotasPage = () => {
       await mutate(["namespace-quotas", projectId], undefined, {
         revalidate: true,
       });
+      addToast({ title: "Namespace quota updated", color: "success" });
     } catch (error) {
       console.error("Failed to update namespace quota:", error);
+      addToast({
+        title: "Failed to update namespace quota",
+        description: getErrorMessage(error, "An unexpected error occurred"),
+        color: "danger",
+      });
       throw error;
     }
   };
@@ -226,8 +285,17 @@ const ProjectQuotasPage = () => {
         revalidate: true,
       });
       setIsTemplateFormOpen(false);
+      addToast({
+        title: "Quota template created successfully",
+        color: "success",
+      });
     } catch (error) {
       console.error("Error creating namespace quota template:", error);
+      addToast({
+        title: "Failed to create quota template",
+        description: getErrorMessage(error, "An unexpected error occurred"),
+        color: "danger",
+      });
     }
   };
 
@@ -241,8 +309,14 @@ const ProjectQuotasPage = () => {
         revalidate: true,
       });
       setIsAssignFormOpen(false);
+      addToast({ title: "Template assigned to namespaces", color: "success" });
     } catch (error) {
       console.error("Error assigning template to namespaces:", error);
+      addToast({
+        title: "Failed to assign template",
+        description: getErrorMessage(error, "An unexpected error occurred"),
+        color: "danger",
+      });
     }
   };
 
@@ -262,11 +336,16 @@ const ProjectQuotasPage = () => {
           revalidate: true,
         });
         setDeleteTemplateDialogOpen(false);
+        addToast({ title: "Quota template deleted", color: "success" });
       } catch (error: any) {
         console.error("Error deleting template:", error);
-        setTemplateError(
-          error.response?.data?.error || "Failed to delete template",
-        );
+        const msg = error.response?.data?.error || "Failed to delete template";
+        setTemplateError(msg);
+        addToast({
+          title: "Failed to delete quota template",
+          description: msg,
+          color: "danger",
+        });
       } finally {
         setIsDeletingTemplate(false);
       }
@@ -282,8 +361,14 @@ const ProjectQuotasPage = () => {
       await mutate(["namespace-quota-templates", projectId], undefined, {
         revalidate: true,
       });
+      addToast({ title: "Quota template updated", color: "success" });
     } catch (error) {
       console.error("Error updating template:", error);
+      addToast({
+        title: "Failed to update quota template",
+        description: getErrorMessage(error, "An unexpected error occurred"),
+        color: "danger",
+      });
       throw error;
     }
   };

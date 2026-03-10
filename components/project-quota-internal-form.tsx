@@ -226,7 +226,7 @@ export default function ProjectQuotaInternalForm({
                 >
                   {availableNodes.map((node) => (
                     <SelectItem key={node.id} className="dark:text-white">
-                      {node.name}
+                      {node.display_name || node.name}
                     </SelectItem>
                   ))}
                 </Select>
