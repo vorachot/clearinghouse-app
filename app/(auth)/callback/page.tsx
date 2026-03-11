@@ -3,10 +3,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { googleAuthWithCH } from "@/api/auth";
+import { useUser } from "@/context/UserContext";
 
 const CallbackPage = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { fetchUser } = useUser();
   const queryString = searchParams.toString();
 
   const [isProcessing, setIsProcessing] = useState(true);
@@ -19,18 +21,47 @@ const CallbackPage = () => {
           const response = await googleAuthWithCH(queryString);
 
           if (response.ok) {
-            // Refresh auth status to get user data
-            // await checkAuthStatus();
+            await fetchUser();
             router.replace("/organizations");
           } else {
-            throw new Error(`Authentication failed: ${response.statusText}`);
+            // Extract error message from response body
+            let errorMessage = "Authentication failed";
+            try {
+              const errorData = await response.text();
+
+              try {
+                const errorObj = JSON.parse(errorData);
+
+                if (errorObj.error && typeof errorObj.error === "string") {
+                  try {
+                    const nestedError = JSON.parse(errorObj.error);
+                    errorMessage =
+                      nestedError.error ||
+                      nestedError.message ||
+                      errorObj.error;
+                  } catch {
+                    errorMessage = errorObj.error;
+                  }
+                } else if (errorObj.message) {
+                  errorMessage = errorObj.message;
+                } else {
+                  errorMessage = errorData;
+                }
+              } catch {
+                errorMessage = errorData || response.statusText;
+              }
+            } catch {
+              errorMessage = response.statusText;
+            }
+
+            throw new Error(errorMessage);
           }
         } else {
           setError("No authentication data received");
           setTimeout(() => router.replace("/login"), 2000);
         }
-      } catch {
-        setError("Authentication failed");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Authentication failed");
         setTimeout(() => router.replace("/login?error=callback_failed"), 2000);
       } finally {
         setIsProcessing(false);
