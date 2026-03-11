@@ -28,6 +28,7 @@ type Props = {
   admins?: User[];
   projectId?: string;
   orgId?: string;
+  orgAdmins?: User[];
   onAddAdmin?: () => void;
 };
 
@@ -37,6 +38,7 @@ const ProjectAdminModal = ({
   admins,
   projectId,
   orgId,
+  orgAdmins = [],
   onAddAdmin,
 }: Props) => {
   const { user: currentUser } = useUser();
@@ -58,7 +60,10 @@ const ProjectAdminModal = ({
   const currentAdmins = projectData?.admins || admins || [];
 
   const adminIds = new Set(currentAdmins.map((a: User) => a.id));
+  const orgAdminIds = new Set(orgAdmins.map((a) => a.id));
   const isCurrentUserAdmin = currentUser && adminIds.has(currentUser.id);
+  const isCurrentUserOrgAdmin = currentUser && orgAdminIds.has(currentUser.id);
+  const canManage = isCurrentUserAdmin || isCurrentUserOrgAdmin;
   const sortedAdmins = currentAdmins;
 
   const handleToggleAdmin = (adminId: string) => {
@@ -127,17 +132,17 @@ const ProjectAdminModal = ({
                       <div
                         key={admin.id}
                         className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                          isCurrentUserAdmin
+                          canManage
                             ? "hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
                             : ""
                         }`}
                         onClick={
-                          isCurrentUserAdmin
+                          canManage
                             ? () => handleToggleAdmin(admin.id)
                             : undefined
                         }
                       >
-                        {isCurrentUserAdmin && (
+                        {canManage && (
                           <Checkbox
                             isSelected={selectedAdmins.has(admin.id)}
                             onValueChange={() => handleToggleAdmin(admin.id)}
@@ -169,7 +174,7 @@ const ProjectAdminModal = ({
               </ScrollShadow>
             </ModalBody>
             <ModalFooter>
-              {isCurrentUserAdmin && onAddAdmin && (
+              {canManage && onAddAdmin && (
                 <Button
                   color="primary"
                   variant="flat"
@@ -182,7 +187,7 @@ const ProjectAdminModal = ({
                   Add Admin
                 </Button>
               )}
-              {isCurrentUserAdmin && selectedAdmins.size > 0 && (
+              {canManage && selectedAdmins.size > 0 && (
                 <Button
                   color="danger"
                   variant="flat"

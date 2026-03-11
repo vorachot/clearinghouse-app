@@ -354,6 +354,7 @@ const ProjectTable = ({
           admins={managingAdminsProject.admins}
           projectId={managingAdminsProject.id}
           orgId={organizationId}
+          orgAdmins={orgAdmins}
           onAddAdmin={() => {
             setAddingAdminProject(managingAdminsProject);
             setManagingAdminsProject(null);
