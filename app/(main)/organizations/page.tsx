@@ -61,11 +61,11 @@ const OrganizationsPage = () => {
   );
 
   if (isLoading) return <Loading />;
-  if (error) return <div>Error loading organizations</div>;
 
   const organizations: OrgDetail[] = data || [];
+  const is401 = error?.status === 401 || error?.response?.status === 401;
 
-  if (organizations.length === 0) {
+  if (organizations.length === 0 || is401) {
     return (
       <div className="container mx-auto pt-1 p-4 space-y-5">
         <div className="flex items-end justify-end gap-5">
