@@ -22,6 +22,7 @@ interface AddProjectAdminDialogProps {
   existingMembers?: User[];
   existingAdmins?: User[];
   orgAdmins?: User[];
+  orgMembers?: User[];
 }
 
 const AddProjectAdminDialog = ({
@@ -31,6 +32,7 @@ const AddProjectAdminDialog = ({
   existingMembers = [],
   existingAdmins = [],
   orgAdmins = [],
+  orgMembers = [],
 }: AddProjectAdminDialogProps) => {
   const [selectedAdmins, setSelectedAdmins] = useState<Set<string>>(
     new Set([]),
@@ -42,12 +44,15 @@ const AddProjectAdminDialog = ({
     setSelectedAdmins(new Set([]));
   }, [projectId]);
 
-  // Filter to show only organization admins who are not already project admins
-  // Note: Members can also be promoted to admins
+  // Combine org admins and org members (deduped), excluding already-project-admins
   const existingAdminIds = new Set(existingAdmins.map((a) => a.id));
-  const existingMemberIds = new Set(existingMembers.map((m) => m.id));
-  const availableUsers =
-    orgAdmins?.filter((admin) => !existingAdminIds.has(admin.id)) || [];
+  const seen = new Set<string>();
+  const allOrgUsers = [...orgAdmins, ...orgMembers].filter((u) => {
+    if (seen.has(u.id)) return false;
+    seen.add(u.id);
+    return true;
+  });
+  const availableUsers = allOrgUsers.filter((u) => !existingAdminIds.has(u.id));
 
   const handleSubmit = async () => {
     if (selectedAdmins.size === 0) return;
@@ -84,7 +89,7 @@ const AddProjectAdminDialog = ({
           {availableUsers.length === 0 ? (
             <div className="text-center py-4">
               <p className="text-gray-500 dark:text-gray-400">
-                No available organization admins to add as project admins
+                No available organization members to add as project admins
               </p>
             </div>
           ) : (

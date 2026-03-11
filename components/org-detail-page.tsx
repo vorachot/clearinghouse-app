@@ -148,6 +148,7 @@ const OrgDetailPage = () => {
                 organizationId={orgId}
                 projects={projects}
                 orgAdmins={organization.admins}
+                orgMembers={organization.members}
                 onDelete={handleDeleteProject}
               />
             </div>
@@ -315,6 +316,7 @@ const OrgDetailPage = () => {
                 organizationId={orgId}
                 projects={projects}
                 orgAdmins={organization.admins}
+                orgMembers={organization.members}
                 onDelete={handleDeleteProject}
               />
             </div>

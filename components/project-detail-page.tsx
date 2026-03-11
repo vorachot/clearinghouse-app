@@ -329,6 +329,7 @@ const ProjectDetailPage = () => {
           existingMembers={project.members}
           existingAdmins={project.admins}
           orgAdmins={organization.admins}
+          orgMembers={organization.members}
         />
       )}
 

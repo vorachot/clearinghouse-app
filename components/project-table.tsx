@@ -89,6 +89,7 @@ type Props = {
   organizationId: string;
   projects: Project[];
   orgAdmins?: User[];
+  orgMembers?: User[];
   onDelete?: (projectId: string) => void;
 };
 
@@ -96,6 +97,7 @@ const ProjectTable = ({
   organizationId,
   projects,
   orgAdmins,
+  orgMembers,
   onDelete,
 }: Props) => {
   const router = useRouter();
@@ -382,6 +384,7 @@ const ProjectTable = ({
           }}
           existingAdmins={addingAdminProject.admins}
           orgAdmins={orgAdmins}
+          orgMembers={orgMembers}
         />
       )}
     </>
