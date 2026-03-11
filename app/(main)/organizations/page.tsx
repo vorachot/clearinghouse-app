@@ -64,8 +64,9 @@ const OrganizationsPage = () => {
 
   const organizations: OrgDetail[] = data || [];
   const is401 = error?.status === 401 || error?.response?.status === 401;
+  const is403 = error?.status === 403 || error?.response?.status === 403;
 
-  if (organizations.length === 0 || is401) {
+  if (organizations.length === 0 || is401 || is403) {
     return (
       <div className="container mx-auto pt-1 p-4 space-y-5">
         <div className="flex items-end justify-end gap-5">
