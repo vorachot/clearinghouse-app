@@ -29,7 +29,9 @@ const LoginPage = () => {
             // disabled={isLoading}
             type="button"
             onPress={() => {
-              router.push(`${process.env.NEXT_PUBLIC_CLEARINGHOUSE_URL}/auth/login/google`);
+              router.push(
+                `${process.env.NEXT_PUBLIC_CLEARINGHOUSE_URL}/auth/login/google?portal=admin`,
+              );
             }}
           >
             <div className="flex gap-3 items-center justify-center">
