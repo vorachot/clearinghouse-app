@@ -101,7 +101,9 @@ const EditOrgQuotaDialog = ({
   const isValid =
     name.trim().length > 0 &&
     resources.length > 0 &&
-    resources.every((resource) => resource.price >= 0 && resource.duration >= 1);
+    resources.every(
+      (resource) => resource.price >= 0 && resource.duration >= 1,
+    );
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="4xl" scrollBehavior="inside">

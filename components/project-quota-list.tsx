@@ -149,7 +149,9 @@ export default function ProjectQuotaList({
       setSelectedQuota(null);
     } catch (error: any) {
       console.error("Error updating project quota:", error);
-      setEditError(error.response?.data?.error || "Failed to update project quota");
+      setEditError(
+        error.response?.data?.error || "Failed to update project quota",
+      );
     } finally {
       setIsUpdating(false);
     }

@@ -136,9 +136,7 @@ const EditProjectQuotaDialog = ({
           <div className="p-2 bg-primary-100 dark:bg-primary-900/30 rounded-lg">
             <EditRounded className="!w-5 !h-5 text-primary-600 dark:text-primary-400" />
           </div>
-          <span>
-            Edit {isInternal ? "Internal" : "External"} Project Quota
-          </span>
+          <span>Edit {isInternal ? "Internal" : "External"} Project Quota</span>
         </ModalHeader>
         <ModalBody className="space-y-4">
           <Input
