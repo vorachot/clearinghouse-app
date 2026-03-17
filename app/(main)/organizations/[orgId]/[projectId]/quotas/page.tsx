@@ -421,6 +421,7 @@ const ProjectQuotasPage = () => {
                 </div>
                 <NamespaceQuotaList
                   quotas={namespaceQuotasByProjectId}
+                  projectQuotas={projectQuotas}
                   onDelete={handleDeleteNamespaceQuota}
                   onEdit={handleEditNamespaceQuota}
                 />

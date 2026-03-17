@@ -54,6 +54,7 @@ export default function NamespaceQuotaManager({
             <CardBody className="p-4">
               <NamespaceQuotaList
                 quotas={namespaceQuotasByNamespace}
+                projectQuotas={projectQuotas}
                 onCreateClick={() => setIsQuotaFormOpen(true)}
               />
             </CardBody>
@@ -111,7 +112,7 @@ export default function NamespaceQuotaManager({
                                 >
                                   {r.resource_prop.resource.name}: {r.quantity}
                                 </span>
-                              ))
+                              )),
                             ) || (
                               <span className="text-gray-500 text-xs">
                                 No resources

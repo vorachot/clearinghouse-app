@@ -20,12 +20,17 @@ import {
   TableRow,
   TableCell,
 } from "@heroui/table";
-import { NamespaceQuota, UpdateNamespaceQuotaDTO } from "@/types/quota";
+import {
+  NamespaceQuota,
+  ProjectQuota,
+  UpdateNamespaceQuotaDTO,
+} from "@/types/quota";
 import { EditRounded } from "@mui/icons-material";
 
 type EditNamespaceQuotaDialogProps = {
   isOpen: boolean;
   quota: NamespaceQuota | null;
+  projectQuotas?: ProjectQuota[];
   onClose: () => void;
   onConfirm: (quotaId: string, data: UpdateNamespaceQuotaDTO) => void;
   isUpdating?: boolean;
@@ -44,6 +49,7 @@ type ResourceFormItem = {
 const EditNamespaceQuotaDialog = ({
   isOpen,
   quota,
+  projectQuotas = [],
   onClose,
   onConfirm,
   isUpdating = false,
@@ -58,6 +64,14 @@ const EditNamespaceQuotaDialog = ({
 
   useEffect(() => {
     if (quota) {
+      const projectQuotaById = quota.project_quota_id
+        ? projectQuotas.find((pq) => pq.id === quota.project_quota_id)
+        : undefined;
+      const projectQuotaByNode = projectQuotaById
+        ? projectQuotaById
+        : projectQuotas.find((pq) => pq.node_id === quota.node_id);
+      const projectQuota = projectQuotaByNode;
+
       setFormData({
         name: quota.name,
         description: "",
@@ -70,11 +84,23 @@ const EditNamespaceQuotaDialog = ({
           resourceTypeName: r.resource_prop.resource.resource_type.name,
           unit: r.resource_prop.resource.resource_type.unit,
           quantity: r.quantity,
-          maxQuantity: r.quantity, // Current quantity as max for now
+          maxQuantity: (() => {
+            const projectQuotaResource = projectQuota?.resources.find(
+              (pqResource) =>
+                pqResource.resource_prop.resource_id ===
+                r.resource_prop.resource_id,
+            );
+            if (!projectQuotaResource) {
+              return r.quantity;
+            }
+
+            const available = projectQuotaResource.quantity;
+            return Math.max(available + r.quantity, r.quantity);
+          })(),
         })),
       );
     }
-  }, [quota]);
+  }, [quota, projectQuotas]);
 
   const handleResourceChange = (resourceId: string, quantity: number) => {
     setResources(
@@ -216,7 +242,7 @@ const EditNamespaceQuotaDialog = ({
                                 size="sm"
                                 step={1}
                                 minValue={0}
-                                maxValue={resource.maxQuantity * 2}
+                                maxValue={resource.maxQuantity}
                                 value={resource.quantity}
                                 onChange={(value) =>
                                   handleResourceChange(
@@ -227,7 +253,8 @@ const EditNamespaceQuotaDialog = ({
                                 className="max-w-md"
                               />
                               <span className="text-xs text-default-500">
-                                {resource.quantity} / {resource.maxQuantity} {resource.unit}
+                                {resource.quantity} / {resource.maxQuantity}{" "}
+                                {resource.unit}
                               </span>
                             </div>
                           </TableCell>

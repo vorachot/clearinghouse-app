@@ -5,7 +5,11 @@ import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { Tooltip } from "@heroui/tooltip";
-import { NamespaceQuota, UpdateNamespaceQuotaDTO } from "@/types/quota";
+import {
+  NamespaceQuota,
+  ProjectQuota,
+  UpdateNamespaceQuotaDTO,
+} from "@/types/quota";
 import LayersIcon from "@mui/icons-material/Layers";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -15,6 +19,7 @@ import { BusinessRounded } from "@mui/icons-material";
 
 type NamespaceQuotaListProps = {
   quotas: NamespaceQuota[];
+  projectQuotas?: ProjectQuota[];
   onCreateClick?: () => void;
   onDelete?: (quotaId: string) => void;
   onEdit?: (quotaId: string, data: UpdateNamespaceQuotaDTO) => void;
@@ -22,6 +27,7 @@ type NamespaceQuotaListProps = {
 
 export default function NamespaceQuotaList({
   quotas,
+  projectQuotas,
   onCreateClick,
   onDelete,
   onEdit,
@@ -188,6 +194,7 @@ export default function NamespaceQuotaList({
       <EditNamespaceQuotaDialog
         isOpen={editDialogOpen}
         quota={selectedQuota}
+        projectQuotas={projectQuotas}
         onClose={() => {
           setEditDialogOpen(false);
           setSelectedQuota(null);

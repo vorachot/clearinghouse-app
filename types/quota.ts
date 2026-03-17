@@ -53,6 +53,7 @@ export type NamespaceQuota = {
   node_name: string;
   organization_name: string;
   project_id: string;
+  project_quota_id?: string;
   resources: QuotaResource[];
 };
 
