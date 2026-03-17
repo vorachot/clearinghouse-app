@@ -164,7 +164,7 @@ export default function NamespaceQuotaList({
                     <div className="flex items-center gap-2">
                       <span className="text-gray-500">Node:</span>
                       <span className="font-medium text-secondary-600">
-                        {quota.node_name}
+                        {quota.node_display_name || quota.node_name}
                       </span>
                     </div>
                     <div>

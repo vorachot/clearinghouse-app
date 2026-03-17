@@ -116,6 +116,7 @@ export default function NamespaceQuotaDisplay({
       <div className="grid grid-cols-1 gap-4">
         {namespaceQuotas.map((quota) => {
           const usage = quotaUsages[quota.id];
+          const nodeLabel = quota.node_display_name || quota.node_name;
 
           // Get resources from quota
           const resources = quota.resources || [];
@@ -140,9 +141,9 @@ export default function NamespaceQuotaDisplay({
                     </div>
 
                     <div className="flex gap-2 flex-wrap">
-                      {quota?.node_name && (
+                      {nodeLabel && (
                         <Chip size="sm" variant="flat" color="primary">
-                          {quota.node_name}
+                          {nodeLabel}
                         </Chip>
                       )}
                       {quota?.organization_name && (
@@ -150,7 +151,7 @@ export default function NamespaceQuotaDisplay({
                           {quota.organization_name}
                         </Chip>
                       )}
-                      {!quota?.node_name && !quota?.organization_name && (
+                      {!nodeLabel && !quota?.organization_name && (
                         <Chip size="sm" variant="flat" color="default">
                           Namespace Quota
                         </Chip>

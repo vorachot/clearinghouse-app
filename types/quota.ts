@@ -51,6 +51,7 @@ export type NamespaceQuota = {
   name: string;
   node_id: string;
   node_name: string;
+  node_display_name?: string;
   organization_name: string;
   project_id: string;
   project_quota_id?: string;
