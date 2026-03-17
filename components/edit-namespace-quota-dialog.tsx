@@ -90,12 +90,8 @@ const EditNamespaceQuotaDialog = ({
                 pqResource.resource_prop.resource_id ===
                 r.resource_prop.resource_id,
             );
-            if (!projectQuotaResource) {
-              return r.quantity;
-            }
 
-            const available = projectQuotaResource.quantity;
-            return Math.max(available + r.quantity, r.quantity);
+            return projectQuotaResource?.quantity ?? r.quantity;
           })(),
         })),
       );
