@@ -23,6 +23,8 @@ import {
   CreateProjectQuotaInternalDTO,
   NamespaceQuota,
   NamespaceQuotaTemplate,
+  UpdateProjectQuotaDTO,
+  UpdateProjectQuotaInternalDTO,
   UpdateQuotaTemplateDTO,
   UpdateNamespaceQuotaDTO,
 } from "@/types/quota";
@@ -41,6 +43,8 @@ import {
   getNamespaceQuotaTemplatesByProjectId,
   getOrgQuotasByOrgId,
   getProjectQuotasByProjectId,
+  updateProjectQuota,
+  updateProjectQuotaInternal,
   updateNamespaceQuotaTemplate,
   updateNamespaceQuota,
 } from "@/api/quota";
@@ -211,6 +215,41 @@ const ProjectQuotasPage = () => {
       console.error("Failed to delete project quota:", error);
       addToast({
         title: "Failed to delete project quota",
+        description: getErrorMessage(error, "An unexpected error occurred"),
+        color: "danger",
+      });
+      throw error;
+    }
+  };
+
+  const handleEditProjectQuota = async (
+    quotaId: string,
+    data: UpdateProjectQuotaDTO | UpdateProjectQuotaInternalDTO,
+  ) => {
+    try {
+      const targetQuota = projectQuotas.find((quota) => quota.id === quotaId);
+
+      if (!targetQuota) {
+        throw new Error("Project quota not found");
+      }
+
+      if (targetQuota.organization_quota_id) {
+        await updateProjectQuota(quotaId, data as UpdateProjectQuotaDTO);
+      } else {
+        await updateProjectQuotaInternal(
+          quotaId,
+          data as UpdateProjectQuotaInternalDTO,
+        );
+      }
+
+      await mutate(["project-quotas", projectId], undefined, {
+        revalidate: true,
+      });
+      addToast({ title: "Project quota updated", color: "success" });
+    } catch (error) {
+      console.error("Failed to update project quota:", error);
+      addToast({
+        title: "Failed to update project quota",
         description: getErrorMessage(error, "An unexpected error occurred"),
         color: "danger",
       });
@@ -399,6 +438,7 @@ const ProjectQuotasPage = () => {
                 onCreateQuota={handleCreateProjectQuota}
                 onCreateQuotaInternal={handleCreateProjectQuotaInternal}
                 onDeleteQuota={handleDeleteProjectQuota}
+                onEditQuota={handleEditProjectQuota}
               />
             </CardBody>
           </Card>

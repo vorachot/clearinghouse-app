@@ -4,7 +4,11 @@ import { useState } from "react";
 import OrganizationQuotaList from "@/components/org-quota-list";
 import OrganizationQuotaForm from "@/components/org-quota-form";
 import OrganizationQuotaDetail from "@/components/org-quota-detail";
-import { OrganizationQuota, CreateOrganizationQuotaDTO } from "@/types/quota";
+import {
+  OrganizationQuota,
+  CreateOrganizationQuotaDTO,
+  UpdateOrganizationQuotaDTO,
+} from "@/types/quota";
 import { Organization } from "@/types/org";
 import useSWR, { mutate } from "swr";
 import { getOrganizations } from "@/api/org";
@@ -12,8 +16,10 @@ import {
   createOrgQuota,
   getOrgQuotasByOrgId,
   deleteOrgQuota,
+  updateOrgQuota,
 } from "@/api/quota";
 import { useParams } from "next/navigation";
+import { addToast } from "@heroui/toast";
 
 const OrgQuotasPage = () => {
   const params = useParams();
@@ -70,6 +76,26 @@ const OrgQuotasPage = () => {
     }
   };
 
+  const handleUpdateOrgQuota = async (
+    quotaId: string,
+    data: UpdateOrganizationQuotaDTO,
+  ) => {
+    try {
+      await updateOrgQuota(quotaId, data);
+      await mutate(["org-quotas"], undefined, {
+        revalidate: true,
+      });
+      addToast({ title: "Organization quota updated", color: "success" });
+    } catch (error) {
+      console.error("Failed to update organization quota:", error);
+      addToast({
+        title: "Failed to update organization quota",
+        color: "danger",
+      });
+      throw error;
+    }
+  };
+
   const allocatedQuotas = orgQuotas.filter(
     (q) => q.from_organization_id === orgId,
   );
@@ -96,6 +122,7 @@ const OrgQuotasPage = () => {
         onCreateClick={() => setIsOrgFormOpen(true)}
         onViewDetails={handleViewOrgQuotaDetails}
         onDelete={handleDeleteOrgQuota}
+        onEdit={handleUpdateOrgQuota}
       />
 
       <div className="border-t border-gray-200 dark:border-gray-700" />

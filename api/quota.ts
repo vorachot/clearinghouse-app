@@ -5,6 +5,9 @@ import {
   CreateProjectQuotaDTO,
   CreateProjectQuotaInternalDTO,
   CreateQuotaTemplateDTO,
+  UpdateOrganizationQuotaDTO,
+  UpdateProjectQuotaDTO,
+  UpdateProjectQuotaInternalDTO,
   UpdateNamespaceQuotaDTO,
   UpdateQuotaTemplateDTO,
 } from "@/types/quota";
@@ -195,6 +198,54 @@ export async function deleteNamespaceQuotaTemplate(
 
   if (response.status !== 200) {
     throw new Error("Failed to delete namespace quota template");
+  }
+
+  return response.data;
+}
+
+export async function updateOrgQuota(
+  orgQuotaId: string,
+  updateData: UpdateOrganizationQuotaDTO,
+): Promise<any> {
+  const response = await apiClient.put(
+    `/quota/organization/${orgQuotaId}`,
+    updateData,
+  );
+
+  if (response.status !== 200) {
+    throw new Error("Failed to update organization quota");
+  }
+
+  return response.data;
+}
+
+export async function updateProjectQuota(
+  projectQuotaId: string,
+  updateData: UpdateProjectQuotaDTO,
+): Promise<any> {
+  const response = await apiClient.put(
+    `/quota/project/${projectQuotaId}`,
+    updateData,
+  );
+
+  if (response.status !== 200) {
+    throw new Error("Failed to update project quota");
+  }
+
+  return response.data;
+}
+
+export async function updateProjectQuotaInternal(
+  projectQuotaId: string,
+  updateData: UpdateProjectQuotaInternalDTO,
+): Promise<any> {
+  const response = await apiClient.put(
+    `/quota/project/internal/${projectQuotaId}`,
+    updateData,
+  );
+
+  if (response.status !== 200) {
+    throw new Error("Failed to update internal project quota");
   }
 
   return response.data;

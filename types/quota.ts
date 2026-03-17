@@ -120,6 +120,37 @@ export type CreateProjectQuotaInternalDTO = {
   }[];
 };
 
+export type UpdateOrganizationQuotaDTO = {
+  name: string;
+  description: string;
+  resources: {
+    resource_id: string;
+    quantity: number;
+    price: number;
+    duration: number;
+  }[];
+};
+
+export type UpdateProjectQuotaDTO = {
+  name: string;
+  description: string;
+  resources: {
+    resource_id: string;
+    quantity: number;
+  }[];
+};
+
+export type UpdateProjectQuotaInternalDTO = {
+  name: string;
+  description: string;
+  resources: {
+    resource_id: string;
+    quantity: number;
+    price: number;
+    duration: number;
+  }[];
+};
+
 export type CreateNamespaceQuotaDTO = {
   name: string;
   description: string;

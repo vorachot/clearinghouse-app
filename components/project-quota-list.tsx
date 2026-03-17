@@ -12,7 +12,11 @@ import {
   TableRow,
   TableCell,
 } from "@heroui/table";
-import { ProjectQuota } from "@/types/quota";
+import {
+  ProjectQuota,
+  UpdateProjectQuotaDTO,
+  UpdateProjectQuotaInternalDTO,
+} from "@/types/quota";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import useSWR from "swr";
@@ -20,11 +24,17 @@ import { getResourceNodeById } from "@/api/resource";
 import { getOrgQuotasByOrgId } from "@/api/quota";
 import DeleteProjectQuotaDialog from "./delete-project-quota-dialog";
 import { BusinessRounded } from "@mui/icons-material";
+import EditIcon from "@mui/icons-material/Edit";
+import EditProjectQuotaDialog from "./edit-project-quota-dialog";
 
 type ProjectQuotaListProps = {
   quotas: ProjectQuota[];
   onCreateClick?: () => void;
   onDelete?: (quotaId: string) => void;
+  onEdit?: (
+    quotaId: string,
+    data: UpdateProjectQuotaDTO | UpdateProjectQuotaInternalDTO,
+  ) => void;
   type?: "external" | "internal";
 };
 
@@ -80,6 +90,7 @@ export default function ProjectQuotaList({
   quotas,
   onCreateClick,
   onDelete,
+  onEdit,
   type = "external",
 }: ProjectQuotaListProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -87,6 +98,10 @@ export default function ProjectQuotaList({
   const [selectedQuotaName, setSelectedQuotaName] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedQuota, setSelectedQuota] = useState<ProjectQuota | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
 
   const handleDelete = (quotaId: string, quotaName: string) => {
     setSelectedQuotaId(quotaId);
@@ -113,6 +128,31 @@ export default function ProjectQuotaList({
   };
   const getSourceLabel = (quota: ProjectQuota) => {
     return quota.organization_quota_id ? "Org Quota" : "Resource Pool";
+  };
+
+  const handleEdit = (quota: ProjectQuota) => {
+    setSelectedQuota(quota);
+    setEditDialogOpen(true);
+    setEditError(null);
+  };
+
+  const handleConfirmEdit = async (
+    quotaId: string,
+    data: UpdateProjectQuotaDTO | UpdateProjectQuotaInternalDTO,
+  ) => {
+    if (!onEdit) return;
+
+    setIsUpdating(true);
+    try {
+      await onEdit(quotaId, data);
+      setEditDialogOpen(false);
+      setSelectedQuota(null);
+    } catch (error: any) {
+      console.error("Error updating project quota:", error);
+      setEditError(error.response?.data?.error || "Failed to update project quota");
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   // const calculateTotalPrice = (quota: ProjectQuota) => {
@@ -191,6 +231,19 @@ export default function ProjectQuotaList({
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
+                  {onEdit && (
+                    <Tooltip content="Edit quota" color="warning">
+                      <Button
+                        size="sm"
+                        variant="light"
+                        isIconOnly
+                        color="warning"
+                        onPress={() => handleEdit(quota)}
+                      >
+                        <EditIcon className="!w-4 !h-4" />
+                      </Button>
+                    </Tooltip>
+                  )}
                   {onDelete && (
                     <Tooltip content="Delete quota" color="danger">
                       <Button
@@ -222,6 +275,18 @@ export default function ProjectQuotaList({
         onConfirm={handleConfirmDelete}
         isDeleting={isDeleting}
         error={error}
+      />
+      <EditProjectQuotaDialog
+        isOpen={editDialogOpen}
+        quota={selectedQuota}
+        isInternal={type === "internal"}
+        onClose={() => {
+          setEditDialogOpen(false);
+          setSelectedQuota(null);
+        }}
+        onConfirm={handleConfirmEdit}
+        isUpdating={isUpdating}
+        error={editError}
       />
     </div>
   );

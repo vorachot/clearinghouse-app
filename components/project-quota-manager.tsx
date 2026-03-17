@@ -11,6 +11,8 @@ import {
   ProjectQuota,
   CreateProjectQuotaDTO,
   CreateProjectQuotaInternalDTO,
+  UpdateProjectQuotaDTO,
+  UpdateProjectQuotaInternalDTO,
 } from "@/types/quota";
 import { ResourcePool } from "@/types/resource";
 import { OrganizationQuota } from "@/types/quota";
@@ -24,6 +26,10 @@ type ProjectQuotaManagerProps = {
   onCreateQuota: (data: CreateProjectQuotaDTO) => void;
   onCreateQuotaInternal: (data: CreateProjectQuotaInternalDTO) => void;
   onDeleteQuota?: (quotaId: string) => void;
+  onEditQuota?: (
+    quotaId: string,
+    data: UpdateProjectQuotaDTO | UpdateProjectQuotaInternalDTO,
+  ) => void;
 };
 
 export default function ProjectQuotaManager({
@@ -35,6 +41,7 @@ export default function ProjectQuotaManager({
   onCreateQuota,
   onCreateQuotaInternal,
   onDeleteQuota,
+  onEditQuota,
 }: ProjectQuotaManagerProps) {
   const [isExternalFormOpen, setIsExternalFormOpen] = useState(false);
   const [isInternalFormOpen, setIsInternalFormOpen] = useState(false);
@@ -69,6 +76,7 @@ export default function ProjectQuotaManager({
               (q) => q.organization_quota_id !== null,
             )}
             onDelete={onDeleteQuota}
+            onEdit={onEditQuota}
             type="external"
           />
 
@@ -92,6 +100,7 @@ export default function ProjectQuotaManager({
               (q) => q.organization_quota_id === null,
             )}
             onDelete={onDeleteQuota}
+            onEdit={onEditQuota}
             type="internal"
           />
 

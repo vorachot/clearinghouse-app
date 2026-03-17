@@ -12,17 +12,20 @@ import {
   TableCell,
 } from "@heroui/table";
 import { Tooltip } from "@heroui/tooltip";
-import { OrganizationQuota } from "@/types/quota";
+import { OrganizationQuota, UpdateOrganizationQuotaDTO } from "@/types/quota";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import DeleteOrgQuotaDialog from "./delete-org-quota-dialog";
+import EditOrgQuotaDialog from "./edit-org-quota-dialog";
 
 type OrganizationQuotaListProps = {
   quotas: OrganizationQuota[];
   onCreateClick: () => void;
   onViewDetails: (quota: OrganizationQuota) => void;
   onDelete?: (quotaId: string) => void;
+  onEdit?: (quotaId: string, data: UpdateOrganizationQuotaDTO) => void;
   hideCreateButton?: boolean;
 };
 
@@ -46,6 +49,7 @@ export default function OrganizationQuotaList({
   onCreateClick,
   onViewDetails,
   onDelete,
+  onEdit,
   hideCreateButton = false,
 }: OrganizationQuotaListProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -53,6 +57,12 @@ export default function OrganizationQuotaList({
   const [selectedQuotaName, setSelectedQuotaName] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedQuota, setSelectedQuota] = useState<OrganizationQuota | null>(
+    null,
+  );
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
 
   const handleDelete = (quotaId: string, quotaName: string) => {
     setSelectedQuotaId(quotaId);
@@ -75,6 +85,33 @@ export default function OrganizationQuotaList({
       } finally {
         setIsDeleting(false);
       }
+    }
+  };
+
+  const handleEdit = (quota: OrganizationQuota) => {
+    setSelectedQuota(quota);
+    setEditDialogOpen(true);
+    setEditError(null);
+  };
+
+  const handleConfirmEdit = async (
+    quotaId: string,
+    data: UpdateOrganizationQuotaDTO,
+  ) => {
+    if (!onEdit) return;
+
+    setIsUpdating(true);
+    try {
+      await onEdit(quotaId, data);
+      setEditDialogOpen(false);
+      setSelectedQuota(null);
+    } catch (error: any) {
+      console.error("Error updating organization quota:", error);
+      setEditError(
+        error.response?.data?.error || "Failed to update organization quota",
+      );
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -192,6 +229,19 @@ export default function OrganizationQuotaList({
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1">
+                    {!hideCreateButton && onEdit && (
+                      <Tooltip content="Edit quota" color="warning">
+                        <Button
+                          size="sm"
+                          variant="light"
+                          isIconOnly
+                          color="warning"
+                          onPress={() => handleEdit(quota)}
+                        >
+                          <EditIcon className="!w-4 !h-4" />
+                        </Button>
+                      </Tooltip>
+                    )}
                     {!hideCreateButton && onDelete && (
                       <Tooltip content="Delete quota" color="danger">
                         <Button
@@ -220,6 +270,17 @@ export default function OrganizationQuotaList({
         onConfirm={handleConfirmDelete}
         isDeleting={isDeleting}
         error={error}
+      />
+      <EditOrgQuotaDialog
+        isOpen={editDialogOpen}
+        quota={selectedQuota}
+        onClose={() => {
+          setEditDialogOpen(false);
+          setSelectedQuota(null);
+        }}
+        onConfirm={handleConfirmEdit}
+        isUpdating={isUpdating}
+        error={editError}
       />
     </div>
   );
