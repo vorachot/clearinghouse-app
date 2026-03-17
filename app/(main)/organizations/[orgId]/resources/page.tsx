@@ -9,7 +9,6 @@ import {
   getResourcePoolsByOrgId,
   deleteResourcePool,
   deleteResourceNode,
-  deleteResource,
 } from "@/api/resource";
 import Loading from "@/app/loading";
 import { ResourcePool } from "@/types/resource";
@@ -56,16 +55,6 @@ const ResourcesPage = () => {
     }
   };
 
-  const handleDeleteResource = async (resourceId: string) => {
-    try {
-      await deleteResource(resourceId);
-      // Revalidate the resource pools data to refresh the list
-      resourcePoolsData.mutate();
-    } catch (error) {
-      console.error("Failed to delete resource:", error);
-      throw error;
-    }
-  };
   const resourcePools: ResourcePool[] = resourcePoolsData.data || [];
 
   const handleRefresh = () => {
@@ -161,7 +150,6 @@ const ResourcesPage = () => {
           resourcePools={resourcePools}
           onDelete={handleDeleteResourcePool}
           onDeleteNode={handleDeleteResourceNode}
-          onDeleteResource={handleDeleteResource}
           onRefresh={handleRefresh}
           selectedKeys={selectedKeys}
           onSelectionChange={setSelectedKeys}

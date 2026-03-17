@@ -19,7 +19,6 @@ import AddResourceDialog from "./add-resource-dialog";
 import CreateNodeDialog from "./create-node-dialog";
 import DeleteResourcePoolDialog from "./delete-resource-pool-dialog";
 import DeleteResourceNodeDialog from "./delete-resource-node-dialog";
-import DeleteResourceDialog from "./delete-resource-dialog";
 import EditResourcePoolDialog from "./edit-resource-pool-dialog";
 import EditResourceNodeDialog from "./edit-resource-node-dialog";
 import EditResourceDialog from "./edit-resource-dialog";
@@ -41,7 +40,6 @@ type Props = {
   resourcePools: ResourcePool[];
   onDelete?: (poolId: string) => void;
   onDeleteNode?: (nodeId: string) => void;
-  onDeleteResource?: (resourceId: string) => void;
   onRefresh?: () => void;
   selectedKeys: Set<string>;
   onSelectionChange: (keys: Set<string>) => void;
@@ -51,7 +49,6 @@ const ResourceTable = ({
   resourcePools,
   onDelete,
   onDeleteNode,
-  onDeleteResource,
   onRefresh,
   selectedKeys,
   onSelectionChange,
@@ -67,13 +64,6 @@ const ResourceTable = ({
   const [selectedNodeName, setSelectedNodeName] = useState<string>("");
   const [isDeletingNode, setIsDeletingNode] = useState(false);
   const [nodeError, setNodeError] = useState<string | null>(null);
-
-  const [deleteResourceDialogOpen, setDeleteResourceDialogOpen] =
-    useState(false);
-  const [selectedResourceId, setSelectedResourceId] = useState<string>("");
-  const [selectedResourceName, setSelectedResourceName] = useState<string>("");
-  const [isDeletingResource, setIsDeletingResource] = useState(false);
-  const [resourceError, setResourceError] = useState<string | null>(null);
 
   // Edit pool state
   const [editPoolDialogOpen, setEditPoolDialogOpen] = useState(false);
@@ -151,30 +141,6 @@ const ResourceTable = ({
         );
       } finally {
         setIsDeletingNode(false);
-      }
-    }
-  };
-
-  const handleDeleteResource = (resourceId: string, resourceName: string) => {
-    setSelectedResourceId(resourceId);
-    setSelectedResourceName(resourceName);
-    setDeleteResourceDialogOpen(true);
-    setResourceError(null);
-  };
-
-  const handleConfirmDeleteResource = async () => {
-    if (onDeleteResource && selectedResourceId) {
-      setIsDeletingResource(true);
-      try {
-        await onDeleteResource(selectedResourceId);
-        setDeleteResourceDialogOpen(false);
-      } catch (error: any) {
-        console.error("Error deleting resource:", error);
-        setResourceError(
-          error.response?.data?.error || "Failed to delete resource",
-        );
-      } finally {
-        setIsDeletingResource(false);
       }
     }
   };
@@ -468,28 +434,6 @@ const ResourceTable = ({
                                         </Button>
                                       </Tooltip>
                                     </div>
-                                    <div onClick={(e) => e.stopPropagation()}>
-                                      <Tooltip
-                                        content="Delete resource"
-                                        color="danger"
-                                      >
-                                        <Button
-                                          isIconOnly
-                                          size="sm"
-                                          variant="light"
-                                          color="danger"
-                                          aria-label="Delete"
-                                          onPress={() =>
-                                            handleDeleteResource(
-                                              resource.id,
-                                              resource.name,
-                                            )
-                                          }
-                                        >
-                                          <DeleteIcon className="!w-4 !h-4" />
-                                        </Button>
-                                      </Tooltip>
-                                    </div>
                                   </div>
                                 </TableCell>
                               </TableRow>
@@ -534,14 +478,6 @@ const ResourceTable = ({
         onConfirm={handleConfirmDeleteNode}
         isDeleting={isDeletingNode}
         error={nodeError}
-      />
-      <DeleteResourceDialog
-        isOpen={deleteResourceDialogOpen}
-        resourceName={selectedResourceName}
-        onClose={() => setDeleteResourceDialogOpen(false)}
-        onConfirm={handleConfirmDeleteResource}
-        isDeleting={isDeletingResource}
-        error={resourceError}
       />
       {editPoolData && (
         <EditResourcePoolDialog
