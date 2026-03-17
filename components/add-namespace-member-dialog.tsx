@@ -114,7 +114,7 @@ const AddNamespaceMemberDialog = ({
               isRequired
               classNames={{
                 trigger: "min-h-unit-12",
-                listbox: "max-h-[300px]",
+                // listbox: "max-h-[300px]",
               }}
             >
               {availableMembers.map((member) => (

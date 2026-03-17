@@ -215,7 +215,7 @@ const NamespaceDetailPage = () => {
                 {sortedMembers.length > 0 ? (
                   <>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {sortedMembers.slice(0, 6).map((member) => (
+                      {sortedMembers.map((member) => (
                         <Card
                           key={member.id}
                           className="border border-gray-200 dark:border-gray-700"
