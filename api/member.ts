@@ -1,8 +1,126 @@
 import apiClient from "@/utils/apiClient";
 
+function normalizeMemberResponse(data: unknown): any[] {
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  if (!data || typeof data !== "object") {
+    return [];
+  }
+
+  const payload = data as {
+    results?: unknown;
+    members?: unknown;
+    users?: unknown;
+    data?: unknown;
+    items?: unknown;
+  };
+
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.members)) return payload.members;
+  if (Array.isArray(payload.users)) return payload.users;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.items)) return payload.items;
+
+  return [];
+}
+
+function extractNextPage(data: unknown): number | null {
+  if (!data || typeof data !== "object") {
+    return null;
+  }
+
+  const payload = data as {
+    next?: unknown;
+    pagination?: { next_page?: unknown; page?: unknown; total_pages?: unknown };
+    meta?: { next_page?: unknown; page?: unknown; total_pages?: unknown };
+  };
+
+  if (typeof payload.next === "number" && Number.isFinite(payload.next)) {
+    return payload.next;
+  }
+
+  if (typeof payload.next === "string" && payload.next.length > 0) {
+    try {
+      const nextUrl = new URL(payload.next, "https://placeholder.local");
+      const page = Number(nextUrl.searchParams.get("page"));
+      if (Number.isFinite(page) && page > 0) {
+        return page;
+      }
+    } catch {
+      // Ignore invalid next URL shape and fallback to other pagination hints.
+    }
+  }
+
+  const paginationCandidates = [payload.pagination, payload.meta];
+  for (const pagination of paginationCandidates) {
+    if (!pagination || typeof pagination !== "object") {
+      continue;
+    }
+
+    if (
+      typeof pagination.next_page === "number" &&
+      Number.isFinite(pagination.next_page)
+    ) {
+      return pagination.next_page;
+    }
+
+    const page = Number(pagination.page);
+    const totalPages = Number(pagination.total_pages);
+    if (
+      Number.isFinite(page) &&
+      Number.isFinite(totalPages) &&
+      page > 0 &&
+      totalPages > page
+    ) {
+      return page + 1;
+    }
+  }
+
+  return null;
+}
+
+async function fetchAllMembers(endpoint: string): Promise<any[]> {
+  const pageSize = 100;
+  const maxPages = 200;
+
+  let page = 1;
+  let hasMore = true;
+  const allResults: any[] = [];
+
+  while (hasMore && page <= maxPages) {
+    const response = await apiClient.get(endpoint, {
+      params: {
+        page,
+        page_size: pageSize,
+        limit: pageSize,
+      },
+    });
+
+    const batch = normalizeMemberResponse(response.data);
+    allResults.push(...batch);
+
+    const nextPage = extractNextPage(response.data);
+    if (nextPage && nextPage > page) {
+      page = nextPage;
+      continue;
+    }
+
+    if (batch.length >= pageSize) {
+      page += 1;
+      continue;
+    }
+
+    hasMore = false;
+  }
+
+  // De-duplicate in case backend overlaps results between pages.
+  return Array.from(new Map(allResults.map((member) => [member.id, member])).values());
+}
+
 export async function getMembers(): Promise<any> {
-  const response = await apiClient.get(`organizations/members`);
-  return response.data;
+  return fetchAllMembers(`organizations/members`);
 }
 
 export async function addMembersToOrganization(memberData: {
@@ -28,8 +146,7 @@ export async function removeMembersFromOrganization(memberData: {
 }
 
 export async function getOrganizationMembers(orgId: string): Promise<any> {
-  const response = await apiClient.get(`organizations/${orgId}/members`);
-  return response.data;
+  return fetchAllMembers(`organizations/${orgId}/members`);
 }
 
 export async function getProjectMembers(projectId: string): Promise<any> {
@@ -86,7 +203,7 @@ export async function addAdminToOrganization(adminData: {
   admins: string[];
 }): Promise<any> {
   const response = await apiClient.post(`organizations/admins`, adminData);
-  
+
   if (response.status !== 200) {
     throw new Error("Failed to add admin to organization");
   }
@@ -112,7 +229,7 @@ export async function addAdminToProject(adminData: {
   admins: string[];
 }): Promise<any> {
   const response = await apiClient.post(`projects/admins`, adminData);
-  
+
   if (response.status !== 200) {
     throw new Error("Failed to add admin to project");
   }
